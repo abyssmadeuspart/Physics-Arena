@@ -34,7 +34,7 @@ Defaults:
 Current default engines:
   box3d joltphysics bepuphysics2 rapier3d avian3d unity_physics physx34 nvidia_physx34 nvidia_physx5
 
-Unreal Chaos is opt-in because it is much slower than the default comparison route.
+Unreal Engine Chaos is opt-in because it is much slower than the default comparison route.
 
 Examples:
   ./bench.sh run box-container-pile-10k --engine bepuphysics2 --engine joltphysics --engine physx34 --engine nvidia_physx34 --engine nvidia_physx5 --max-thread-count 4 --repeats 3

@@ -129,47 +129,47 @@
     {
       "id": "box3d",
       "release_artifact_manifest": "release/windows-x64/box3d/artifact-manifest.json",
-      "artifact_manifest_sha256": "3445e4837762f8c6fd0edb1093d6e3e59a2146d108aba29948ac12d8c2e85a16"
+      "artifact_manifest_sha256": "86eb530763a4944cf4e00d9b088e2a1235c67f33c867a2e0b10291345ed51ace"
     },
     {
       "id": "joltphysics",
       "release_artifact_manifest": "release/windows-x64/joltphysics/artifact-manifest.json",
-      "artifact_manifest_sha256": "c60d5a50c4326b32509b032bf36d27ed8e6ddbb0a9c5653b3c12a79cb7fe9c35"
+      "artifact_manifest_sha256": "663c27617af2a65280a3c9fbfe7f5464fa2e6df9bd79b6d14e79931ad26360d0"
     },
     {
       "id": "bepuphysics2",
       "release_artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json",
-      "artifact_manifest_sha256": "9f1ccd3942e24debbaa5afdfe0effc90f08f976688db33dce476718b368761a7"
+      "artifact_manifest_sha256": "5c8c74826b18f1c0969d57f5c2e5d1389c82a2e6a8c14bb4befafdc76f764679"
     },
     {
       "id": "rapier3d",
       "release_artifact_manifest": "release/windows-x64/rapier3d/artifact-manifest.json",
-      "artifact_manifest_sha256": "b9aba1ca70560109e80cad948ecbaecad2449d0ccadc4f80707bf01b7aea574a"
+      "artifact_manifest_sha256": "d0a4b471dd024b230492b2f9ae264844d42abaddacc2bd40575ca939335bc83b"
     },
     {
       "id": "avian3d",
       "release_artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json",
-      "artifact_manifest_sha256": "50cc5da044b19513c3709f40c350e799e0640f7797f1aedc600f73c32a7659f7"
+      "artifact_manifest_sha256": "1941b27847ee1ad542ff24fb1462140e7e6ec7b4e6891fb6188185ee7f954640"
     },
     {
       "id": "unity_physics",
       "release_artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json",
-      "artifact_manifest_sha256": "b9e6306a9838beda5e05df42948d5cb828ccefbcd37e60ee6f176aeb2f0b99f6"
+      "artifact_manifest_sha256": "9ed2ed763c71b56e82e0824e2b937be1a982242246bb86675f0825c3a13e83d6"
     },
     {
       "id": "physx34",
       "release_artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json",
-      "artifact_manifest_sha256": "1ba3316a19d1b1307dff6d724108d8e85ae5824da312daee0b34db5a3f88a137"
+      "artifact_manifest_sha256": "aceb4afaa72b2cb992bf7a82660e711030db7ddcd30ee3e2275879303be31014"
     },
     {
       "id": "nvidia_physx34",
       "release_artifact_manifest": "release/windows-x64/nvidia-physx-3.4/artifact-manifest.json",
-      "artifact_manifest_sha256": "f5c3f901269359bbbf3e4d08629544c72f8ff3ef177ffc9a9788453a05add47d"
+      "artifact_manifest_sha256": "707153657ac96047eb9136c28a67f15f7c6c47bfa00bfef9efe19d2380e19fa9"
     },
     {
       "id": "nvidia_physx5",
       "release_artifact_manifest": "release/windows-x64/nvidia-physx-5.6/artifact-manifest.json",
-      "artifact_manifest_sha256": "1ffc7317d5db5836ecc599af1667b1637712fdb1ee125bb67e0d87217427fdb1"
+      "artifact_manifest_sha256": "23d84c5331385bda988754002c36b897643f0d31ef99ea98b90f227ead9f7ce8"
     }
   ]
 }
