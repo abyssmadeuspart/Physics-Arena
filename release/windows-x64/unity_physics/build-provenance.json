@@ -1,0 +1,14 @@
+{
+  "build_target": "standalonewindows64_player",
+  "backend": "il2cpp",
+  "burst_enabled_state": "enabled",
+  "safety_check_state": "disabled",
+  "unity_package_versions": {
+    "com.unity.physics": "6.5.0",
+    "com.unity.entities": "6.5.0",
+    "com.unity.burst": "1.8.29",
+    "com.unity.collections": "6.5.0",
+    "com.unity.mathematics": "1.4.0"
+  },
+  "package_lock_sha256": "677aeb33affd2750c34c31767cf4371976c907a9c7dd710c5711037d08504566"
+}

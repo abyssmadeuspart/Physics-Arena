@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "engine_id": "nvidia_physx34",
+  "route_status": "working",
+  "supported_platforms": [
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/nvidia_physx34",
+  "report_metadata": {
+    "physics_settings": "solver_iterations=4,1; sleep_threshold=0",
+    "build_settings": "Visual Studio 2026 MSBuild Release; NVIDIA PhysX 3.4 SDK+runner"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "working",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "physx_version",
+    "sdk_toolchain_id",
+    "sdk_build_config",
+    "runner_compiler",
+    "host_route",
+    "toolchain_id"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count",
+    "effective_worker_count": "thread_count",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "nvidia_physx34_optimized_release",
+    "route_id": "nvidia_physx34_optimized_release",
+    "source_subdir": "",
+    "runner_source_dir": "src/nvidia_physx34/bench",
+    "shared_source_dirs": [
+      {
+        "source": "src/nvidia_physx34/cases",
+        "target": "cases"
+      }
+    ],
+    "runner_build_dir_windows": ".build/nvidia_physx34/runner/windows-release",
+    "package_dir_windows": "release/windows-x64/nvidia-physx-3.4",
+    "target": "nvidia_physx34_polygon_runner",
+    "cmake_build_type": "Release",
+    "toolchain_id_windows": "nvidia_physx34_optimized_release",
+    "cpu_isa_requirement": "x64",
+    "source_version": "3.4.2",
+    "sdk_solution": "PhysX_3.4/Source/compiler/vc15win64/PhysX.sln",
+    "sdk_bin_dir": "PhysX_3.4/Bin/vc15win64",
+    "sdk_lib_dir": "PhysX_3.4/Lib/vc15win64",
+    "sdk_pxshared_bin_dir": "PxShared/bin/vc15win64",
+    "sdk_pxshared_lib_dir": "PxShared/lib/vc15win64",
+    "sdk_configuration": "release",
+    "sdk_platform": "x64",
+    "runtime_dlls": [
+      "PhysX3_x64.dll",
+      "PhysX3Common_x64.dll",
+      "PhysX3Cooking_x64.dll",
+      "PxFoundation_x64.dll",
+      "PxPvdSDK_x64.dll"
+    ],
+    "required_import_libs": [
+      "PhysX3_x64.lib",
+      "PhysX3Common_x64.lib",
+      "PhysX3Cooking_x64.lib",
+      "PhysX3Extensions.lib",
+      "PxFoundation_x64.lib",
+      "PxPvdSDK_x64.lib",
+      "PxTask_x64.lib",
+      "PsFastXml_x64.lib"
+    ]
+  },
+  "run": {
+    "route": "nvidia_physx34_polygon_runner_cli",
+    "route_status": "working",
+    "executable_env": "NVIDIA_PHYSX34_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "nvidia_physx34_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "nvidia_physx34_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "threshold_zero",
+    "repeat_mode": "per_repeat",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/nvidia-physx-3.4/artifact-manifest.json"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "engine_id": "physx34",
+  "expected_physx_version": "3.4.0",
+  "required_source_dirs": [
+    "PhysX_3.4",
+    "PxShared",
+    "Externals"
+  ],
+  "required_nvtoolsext_include": "Externals/nvToolsExt/1/include",
+  "generated_adjustment_manifest": ".physx34-compatibility-adjustments.json",
+  "adjustment_id": "physx34_windows_nvtx_disabled_optional_nvtoolsext_import_lib",
+  "source_scope": "generated_copy_only",
+  "reason": "Generated-copy compatibility for Windows PhysX 3.4 under clang-cl, CMake 4, and NVTX-disabled builds.",
+  "text_adjustments": [
+    {
+      "relative_path": "Externals/CMakeModules/FindnvToolsExt.cmake",
+      "original": "IF(TARGET_BUILD_PLATFORM STREQUAL \"Windows\")\n\t# NOTE: Doesn't make sense for all platforms - ARM\n\tIF(CMAKE_CL_64)\n\t\tSET(NVTOOLSEXT_LIBNAME \"nvToolsExt64_1\")\n\t\tSET(NVTOOLSEXT_LIBPATH_SUFFIX \"x64\")\n\tELSE(CMAKE_CL_64)\n\t\tSET(NVTOOLSEXT_LIBNAME nvToolsExt32_1)\n\t\tSET(NVTOOLSEXT_LIBPATH_SUFFIX \"Win32\")\n\tENDIF(CMAKE_CL_64)\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\tFIND_LIBRARY(\tNVTOOLSEXT_LIBRARIES ${NVTOOLSEXT_LIBNAME}\n\t\t\t\t\t${GW_DEPS_ROOT}/nvToolsExt\n\t\t\t\t\t${GW_DEPS_ROOT}/Externals/nvToolsExt/1/lib/${NVTOOLSEXT_LIBPATH_SUFFIX}\n\t\t\t\t\t${GW_DEPS_ROOT}/sw/physx/externals/nvToolsExt/1/lib/${NVTOOLSEXT_LIBPATH_SUFFIX}\n\t\t\t\t\t)\n\t\n\tFIND_PACKAGE_HANDLE_STANDARD_ARGS(nvToolsExt DEFAULT_MSG NVTOOLSEXT_LIBRARIES NVTOOLSEXT_INCLUDE_DIRS)\nELSE()\n\t# Exclude the libraries for non-windows platforms\n\tFIND_PACKAGE_HANDLE_STANDARD_ARGS(nvToolsExt DEFAULT_MSG NVTOOLSEXT_INCLUDE_DIRS)\nENDIF()\n",
+      "patched": "IF(TARGET_BUILD_PLATFORM STREQUAL \"Windows\")\n\t# PX_NVTX is disabled by the Windows PhysX 3.4 release configuration used by this route.\n\t# Keep nvToolsExt headers available, but do not require or link the missing import library.\n\tIF(PHYSX_WINDOWS_ENABLE_NVTX OR PXSHARED_WINDOWS_ENABLE_NVTX)\n\t\tIF(CMAKE_CL_64)\n\t\t\tSET(NVTOOLSEXT_LIBNAME \"nvToolsExt64_1\")\n\t\t\tSET(NVTOOLSEXT_LIBPATH_SUFFIX \"x64\")\n\t\tELSE(CMAKE_CL_64)\n\t\t\tSET(NVTOOLSEXT_LIBNAME nvToolsExt32_1)\n\t\t\tSET(NVTOOLSEXT_LIBPATH_SUFFIX \"Win32\")\n\t\tENDIF(CMAKE_CL_64)\n\n\t\tFIND_LIBRARY(\tNVTOOLSEXT_LIBRARIES ${NVTOOLSEXT_LIBNAME}\n\t\t\t\t\t${GW_DEPS_ROOT}/nvToolsExt\n\t\t\t\t\t${GW_DEPS_ROOT}/Externals/nvToolsExt/1/lib/${NVTOOLSEXT_LIBPATH_SUFFIX}\n\t\t\t\t\t${GW_DEPS_ROOT}/sw/physx/externals/nvToolsExt/1/lib/${NVTOOLSEXT_LIBPATH_SUFFIX}\n\t\t\t\t\t)\n\n\t\tFIND_PACKAGE_HANDLE_STANDARD_ARGS(nvToolsExt DEFAULT_MSG NVTOOLSEXT_LIBRARIES NVTOOLSEXT_INCLUDE_DIRS)\n\tELSE()\n\t\tSET(NVTOOLSEXT_LIBRARIES \"\")\n\t\tFIND_PACKAGE_HANDLE_STANDARD_ARGS(nvToolsExt DEFAULT_MSG NVTOOLSEXT_INCLUDE_DIRS)\n\tENDIF()\nELSE()\n\t# Exclude the libraries for non-windows platforms\n\tFIND_PACKAGE_HANDLE_STANDARD_ARGS(nvToolsExt DEFAULT_MSG NVTOOLSEXT_INCLUDE_DIRS)\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/LowLevel.cmake",
+      "original": "TARGET_LINK_LIBRARIES(LowLevel PUBLIC ${NVTOOLSEXT_LIBRARIES})\n",
+      "patched": "IF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(LowLevel PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/LowLevelAABB.cmake",
+      "original": "TARGET_LINK_LIBRARIES(LowLevelAABB PUBLIC ${NVTOOLSEXT_LIBRARIES})\n",
+      "patched": "IF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(LowLevelAABB PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/LowLevelDynamics.cmake",
+      "original": "TARGET_LINK_LIBRARIES(LowLevelDynamics PUBLIC ${NVTOOLSEXT_LIBRARIES})\n",
+      "patched": "IF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(LowLevelDynamics PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/LowLevelParticles.cmake",
+      "original": "TARGET_LINK_LIBRARIES(LowLevelParticles PUBLIC ${NVTOOLSEXT_LIBRARIES})\n",
+      "patched": "IF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(LowLevelParticles PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/PhysXCommon.cmake",
+      "original": "TARGET_LINK_LIBRARIES(PhysXCommon PUBLIC ${NVTOOLSEXT_LIBRARIES} PxFoundation)\n",
+      "patched": "TARGET_LINK_LIBRARIES(PhysXCommon PUBLIC PxFoundation)\nIF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(PhysXCommon PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/PhysX.cmake",
+      "original": "TARGET_LINK_LIBRARIES(PhysX PRIVATE LowLevel LowLevelAABB LowLevelCloth LowLevelDynamics LowLevelParticles PxTask SceneQuery SimulationController PUBLIC ${NVTOOLSEXT_LIBRARIES} PhysXCommon PxFoundation PxPvdSDK)\n",
+      "patched": "TARGET_LINK_LIBRARIES(PhysX PRIVATE LowLevel LowLevelAABB LowLevelCloth LowLevelDynamics LowLevelParticles PxTask SceneQuery SimulationController PUBLIC PhysXCommon PxFoundation PxPvdSDK)\nIF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(PhysX PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PxShared/src/compiler/cmake/windows/PxPvdSDK.cmake",
+      "original": "TARGET_LINK_LIBRARIES(PxPvdSDK PUBLIC ${NVTOOLSEXT_LIBRARIES} PxFoundation)\n",
+      "patched": "TARGET_LINK_LIBRARIES(PxPvdSDK PUBLIC PxFoundation)\nIF(NVTOOLSEXT_LIBRARIES)\n\tTARGET_LINK_LIBRARIES(PxPvdSDK PUBLIC ${NVTOOLSEXT_LIBRARIES})\nENDIF()\n"
+    },
+    {
+      "relative_path": "PxShared/src/foundation/include/windows/PsWindowsAoS.h",
+      "original": "typedef __m128 FloatV;\ntypedef __m128 Vec3V;\ntypedef __m128 Vec4V;\ntypedef __m128 BoolV;\ntypedef __m128 VecU32V;\ntypedef __m128 VecI32V;\ntypedef __m128 VecU16V;\ntypedef __m128 VecI16V;\ntypedef __m128 QuatV;\n",
+      "patched": "#if defined(__clang__)\ntypedef union UnionM128\n{\n\tUnionM128()\n\t{\n\t}\n\tUnionM128(__m128 in)\n\t{\n\t\tm128 = in;\n\t}\n\tUnionM128(__m128i in)\n\t{\n\t\tm128i = in;\n\t}\n\toperator __m128()\n\t{\n\t\treturn m128;\n\t}\n\toperator const __m128() const\n\t{\n\t\treturn m128;\n\t}\n\tfloat m128_f32[4];\n\tsigned char m128_i8[16];\n\tshort m128_i16[8];\n\tint m128_i32[4];\n\tlong long m128_i64[2];\n\tunsigned short m128_u16[8];\n\tunsigned int m128_u32[4];\n\tunsigned long long m128_u64[2];\n\t__m128 m128;\n\t__m128i m128i;\n} UnionM128;\n\ntypedef __m128 FloatV;\ntypedef __m128 Vec3V;\ntypedef __m128 Vec4V;\ntypedef __m128 BoolV;\ntypedef UnionM128 VecU32V;\ntypedef __m128 VecI32V;\ntypedef UnionM128 VecU16V;\ntypedef UnionM128 VecI16V;\ntypedef __m128 QuatV;\n#else\ntypedef __m128 FloatV;\ntypedef __m128 Vec3V;\ntypedef __m128 Vec4V;\ntypedef __m128 BoolV;\ntypedef __m128 VecU32V;\ntypedef __m128 VecI32V;\ntypedef __m128 VecU16V;\ntypedef __m128 VecI16V;\ntypedef __m128 QuatV;\n#endif\n"
+    },
+    {
+      "relative_path": "PxShared/src/foundation/include/windows/PsWindowsInlineAoS.h",
+      "original": "PX_FORCE_INLINE VecI32V U4Load(const PxU32 i)\n",
+      "patched": "PX_FORCE_INLINE VecU32V U4Load(const PxU32 i)\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/LowLevelCloth/src/avx/SwSolveConstraints.cpp",
+      "original": "#if _MSC_VER >= 1700\n",
+      "patched": "#if _MSC_VER >= 1700 && !defined(__clang__)\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/LowLevelCloth/src/sse2/SimdTypes.h",
+      "original": "#if defined _MSC_VER && !(defined NV_SIMD_USE_NAMESPACE && NV_SIMD_USE_NAMESPACE)\n",
+      "patched": "#if defined _MSC_VER && !defined(__clang__) && !(defined NV_SIMD_USE_NAMESPACE && NV_SIMD_USE_NAMESPACE)\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/LowLevelCloth/src/sse2/SwCollisionHelpers.h",
+      "original": "\t_BitScanForward(&result, unsigned long(mask));\n",
+      "patched": "\t_BitScanForward(&result, static_cast<unsigned long>(mask));\n"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/CMakeLists.txt",
+      "original": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /MP /WX /W3 /GF /GS- /GR- /Gd /fp:fast\")",
+      "patched": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /MP /W3 /GF /GS- /GR- /Gd /fp:fast /clang:-Wno-unknown-pragmas /clang:-Wno-return-type-c-linkage\")"
+    },
+    {
+      "relative_path": "PhysX_3.4/Source/compiler/cmake/windows/CMakeLists.txt",
+      "original": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /MP /WX /W4 /GF /GS- /GR- /Gd /fp:fast\")",
+      "patched": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /MP /W4 /GF /GS- /GR- /Gd /fp:fast /clang:-Wno-unknown-pragmas /clang:-Wno-return-type-c-linkage\")"
+    },
+    {
+      "relative_path": "PxShared/src/compiler/cmake/windows/CMakeLists.txt",
+      "original": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /WX /W4 /GF /GS- /GR- /Gd /fp:fast\")",
+      "patched": "SET(CMAKE_CXX_FLAGS \"/Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /d2Zi+ /W4 /GF /GS- /GR- /Gd /fp:fast /clang:-Wno-unknown-pragmas /clang:-Wno-return-type-c-linkage\")"
+    }
+  ],
+  "resource_file_relative_paths": [
+    "PhysX_3.4/Source/compiler/resource_x64/PhysX3.rc",
+    "PhysX_3.4/Source/compiler/resource_x64/PhysX3CharacterKinematic.rc",
+    "PhysX_3.4/Source/compiler/resource_x64/PhysX3Common.rc",
+    "PhysX_3.4/Source/compiler/resource_x64/PhysX3Cooking.rc",
+    "PxShared/src/compiler/resource_x64/PxFoundation.rc",
+    "PxShared/src/compiler/resource_x64/PxPvdSDK.rc"
+  ],
+  "map_link_flag_relative_paths": [
+    "PhysX_3.4/Source/compiler/cmake/windows/LowLevel.cmake",
+    "PhysX_3.4/Source/compiler/cmake/windows/LowLevelAABB.cmake",
+    "PhysX_3.4/Source/compiler/cmake/windows/PhysX.cmake",
+    "PhysX_3.4/Source/compiler/cmake/windows/PhysXCommon.cmake",
+    "PhysX_3.4/Source/compiler/cmake/windows/PhysXCooking.cmake"
+  ],
+  "artifact_prefixes": [
+    "PhysX3",
+    "PhysX3Common",
+    "PhysX3Cooking",
+    "PhysX3Extensions",
+    "PxFoundation",
+    "PxPvdSDK",
+    "PxTask",
+    "PsFastXml"
+  ]
+}

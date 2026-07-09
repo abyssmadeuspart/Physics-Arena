@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "engine_id": "nvidia_physx5",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "5.6.1.51c1f783",
+  "source_provenance": "official NVIDIA PhysX source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/nvidia-physx-5.6/nvidia_physx5_polygon_runner.exe",
+  "launcher": "direct",
+  "required_sidecars": [
+    "release/windows-x64/nvidia-physx-5.6/PVDRuntime_64.dll",
+    "release/windows-x64/nvidia-physx-5.6/PhysXCommon_64.dll",
+    "release/windows-x64/nvidia-physx-5.6/PhysXCooking_64.dll",
+    "release/windows-x64/nvidia-physx-5.6/PhysXFoundation_64.dll",
+    "release/windows-x64/nvidia-physx-5.6/PhysX_64.dll"
+  ],
+  "compiler_runtime": {
+    "toolchain_id": "nvidia_physx5_vc17_cpu_release",
+    "compiler_detail": "Visual Studio 2026 MSBuild",
+    "runtime_detail": "windows-x64 native release"
+  },
+  "package_metadata": {
+    "build_label": "nvidia_physx5_vc17_cpu_release",
+    "physx_version": "5.6.1.51c1f783",
+    "sdk_toolchain_id": "vs2026_msbuild_release",
+    "sdk_build_config": "Release"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/nvidia_physx5_polygon_runner.exe",
+      "sha256": "815cc28786c7e5c7fd0905c879fe5086e8c094de4bf582cd22728890841e3a57",
+      "role": "executable"
+    },
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/PVDRuntime_64.dll",
+      "sha256": "4a0b3d325d081a76c4cd8aaa0f69fabd1dd5db858e24995e803e3cec0d16596b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/PhysXCommon_64.dll",
+      "sha256": "ecdf931c07202b3baf3123c3bfdcab901d1ae4bf2110fbc1e9dd8ab7977be1ef",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/PhysXCooking_64.dll",
+      "sha256": "7b56ede9bc7ad0342aca30661c5a991a794ab0317970b349144f6c9a277b4130",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/PhysXFoundation_64.dll",
+      "sha256": "dcf1b316f6fe5da14de4a4256f77431f9009b8f2d25f05b25a9f54abddbb22cc",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/nvidia-physx-5.6/PhysX_64.dll",
+      "sha256": "16f38666ebca45bd1fcfc85df7c8dde49542a08cd007f183cdd906fa48be9812",
+      "role": "sidecar"
+    }
+  ],
+  "license_id": "BSD-3-Clause",
+  "notice_license_reference": "SOURCES.md#nvidia_physx5",
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "engine_id": "box3d",
+  "route_status": "supported",
+  "supported_platforms": [
+    "linux",
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/box3d",
+  "report_metadata": {
+    "physics_settings": "substeps=4; sleep=disabled; continuous=disabled",
+    "build_settings": "clang-cl 22 Release static runner"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "compiler_detail",
+    "cmake_version",
+    "ninja_version",
+    "host_route",
+    "toolchain_id"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count_minus_one",
+    "effective_worker_count": "thread_count_minus_one",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "clang_cmake_ninja_release",
+    "runner_source_dir": "src/box3d/bench",
+    "source_subdir": "polygon_bench",
+    "build_dir_linux": ".build/box3d/linux-clang",
+    "build_dir_windows": ".build/box3d/windows-clang",
+    "target": "box3d_polygon_runner",
+    "cmake_build_type": "Release",
+    "cmake_args": [
+      "-DBOX3D_BENCHMARKS=OFF",
+      "-DBOX3D_SAMPLES=OFF",
+      "-DBOX3D_UNIT_TESTS=OFF",
+      "-DBOX3D_VALIDATE=OFF"
+    ],
+    "toolchain_id_linux": "linux_clang_release",
+    "toolchain_id_windows": "windows_clang_cl_release",
+    "shared_source_dirs": [
+      {
+        "source": "src/box3d/cases",
+        "target": "cases"
+      }
+    ]
+  },
+  "run": {
+    "route": "box3d_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "BOX3D_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "box3d_polygon_runner",
+      "box3d_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "box3d_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/box3d/artifact-manifest.json"
+  }
+}

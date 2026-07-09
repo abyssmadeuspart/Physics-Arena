@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "support_statuses": [
+    "supported",
+    "working",
+    "experimental",
+    "unsupported_platform",
+    "route_unavailable",
+    "tool_missing",
+    "ref_mismatch",
+    "fetch_failed"
+  ],
+  "release_platforms": {
+    "windows-x64": {
+      "host_route": "windows"
+    }
+  },
+  "engine_sets": {
+    "core": [
+      "box3d",
+      "joltphysics",
+      "bepuphysics2"
+    ],
+    "all": [
+      "box3d",
+      "joltphysics",
+      "bepuphysics2",
+      "rapier3d",
+      "avian3d"
+    ],
+    "working": [
+      "unity_physics"
+    ],
+    "unity": [
+      "unity_physics"
+    ],
+    "physx": [
+      "physx34",
+      "nvidia_physx34",
+      "nvidia_physx5"
+    ],
+    "default_release": [
+      "box3d",
+      "joltphysics",
+      "bepuphysics2",
+      "rapier3d",
+      "avian3d",
+      "unity_physics",
+      "physx34",
+      "nvidia_physx34",
+      "nvidia_physx5"
+    ],
+    "default_visual_release": [
+      "box3d",
+      "joltphysics",
+      "bepuphysics2",
+      "rapier3d",
+      "avian3d",
+      "unity_physics",
+      "physx34",
+      "nvidia_physx34",
+      "nvidia_physx5"
+    ]
+  },
+  "engines": [
+    {
+      "id": "box3d",
+      "display_name": "Box3D",
+      "repo_url": "https://github.com/erincatto/box3d",
+      "commit": "8441b4a06d6d09dcfb0b0f704df4d847d1437b92",
+      "default_ref_path": ".external/engines/box3d",
+      "override_env": "BOX3D_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "cmake",
+        "ninja",
+        "clang"
+      ],
+      "source_manifest": "src/box3d/engine.json"
+    },
+    {
+      "id": "joltphysics",
+      "display_name": "Jolt Physics",
+      "repo_url": "https://github.com/jrouwe/joltphysics",
+      "commit": "3b47ec390cb9b933769183eff599f72195c5873c",
+      "default_ref_path": ".external/engines/joltphysics",
+      "override_env": "JOLT_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "cmake",
+        "ninja",
+        "clang"
+      ],
+      "source_manifest": "src/joltphysics/engine.json"
+    },
+    {
+      "id": "bepuphysics2",
+      "display_name": "BEPUphysics v2",
+      "repo_url": "https://github.com/bepu/bepuphysics2",
+      "commit": "f73164bb3c9ca733eb3329f1f6b1cea4e216ece7",
+      "default_ref_path": ".external/engines/bepuphysics2",
+      "override_env": "BEPU_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "dotnet"
+      ],
+      "source_manifest": "src/bepuphysics2/engine.json"
+    },
+    {
+      "id": "rapier3d",
+      "display_name": "Rapier3D",
+      "repo_url": "https://github.com/dimforge/rapier",
+      "commit": "a1ef31035613154dfb97a9e1d480c6a5eb9d0010",
+      "default_ref_path": ".external/engines/rapier",
+      "override_env": "RAPIER_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "cargo",
+        "rustc"
+      ],
+      "source_manifest": "src/rapier3d/engine.json"
+    },
+    {
+      "id": "avian3d",
+      "display_name": "Avian3D",
+      "repo_url": "https://github.com/avianphysics/avian",
+      "commit": "fc99fdcdbff804fbbe6dc1eb7fc4137e677853d2",
+      "default_ref_path": ".external/engines/avian",
+      "override_env": "AVIAN_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "cargo",
+        "rustc"
+      ],
+      "source_manifest": "src/avian3d/engine.json"
+    },
+    {
+      "id": "unity_physics",
+      "display_name": "Unity DOTS Physics",
+      "source": "built_in",
+      "repo_url": "built_in",
+      "commit": "unity-6000.5.2f1-com.unity.physics-6.5.0",
+      "default_ref_path": "src/unity_physics",
+      "support_status": "working",
+      "tool_requirements": [
+        "unity"
+      ],
+      "source_manifest": "src/unity_physics/engine.json"
+    },
+    {
+      "id": "unreal_chaos",
+      "display_name": "Unreal Chaos",
+      "repo_url": "git@github.com:EpicGames/UnrealEngine.git",
+      "commit": "7deeb413d3dc1fc034f48d1aacc0861301829d32",
+      "default_ref_path": ".external/engines/unreal",
+      "override_env": "UNREAL_CHAOS_REF_PATH",
+      "support_status": "experimental",
+      "tool_requirements": [
+        "git",
+        "msbuild",
+        "dotnet"
+      ],
+      "source_manifest": "src/unreal_chaos/engine.json"
+    },
+    {
+      "id": "physx34",
+      "display_name": "Vite's PhysX 3.4",
+      "repo_url": "git@github.com:GapingPixel/UnrealEngineVite-PhysX.git",
+      "commit": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
+      "default_ref_path": ".external/engines/physx34",
+      "override_env": "PHYSX34_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "git",
+        "cmake",
+        "ninja",
+        "clang"
+      ],
+      "source_manifest": "src/physx34/engine.json"
+    },
+    {
+      "id": "nvidia_physx34",
+      "display_name": "NVIDIA PhysX 3.4",
+      "source": "versioned_source",
+      "repo_url": "https://github.com/NVIDIAGameWorks/PhysX-3.4",
+      "commit": "3.4.2",
+      "default_ref_path": ".external/engines/nvidia_physx34",
+      "override_env": "NVIDIA_PHYSX34_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "msbuild",
+        "cmake",
+        "ninja"
+      ],
+      "source_manifest": "src/nvidia_physx34/engine.json"
+    },
+    {
+      "id": "nvidia_physx5",
+      "display_name": "NVIDIA PhysX 5.6.1",
+      "source": "versioned_source",
+      "repo_url": "https://github.com/NVIDIA-Omniverse/PhysX",
+      "commit": "5.6.1.51c1f783",
+      "default_ref_path": ".external/engines/nvidia_physx5",
+      "override_env": "NVIDIA_PHYSX5_REF_PATH",
+      "support_status": "supported",
+      "tool_requirements": [
+        "msbuild",
+        "cmake",
+        "ninja"
+      ],
+      "source_manifest": "src/nvidia_physx5/engine.json"
+    }
+  ]
+}

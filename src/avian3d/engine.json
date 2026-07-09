@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "engine_id": "avian3d",
+  "route_status": "supported",
+  "supported_platforms": [
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/avian",
+  "report_metadata": {
+    "physics_settings": "substeps=4; sleep=disabled; solver_defaults=avian",
+    "build_settings": "Rust 1.95 Cargo release; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,f32,parry-f32,parallel,simd"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "source_version",
+    "avian_version",
+    "bevy_version",
+    "rust_version",
+    "cargo_version",
+    "toolchain_id",
+    "cargo_profile",
+    "cargo_features",
+    "cargo_lock_sha256",
+    "runner_manifest_sha256",
+    "host_route"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count",
+    "effective_worker_count": "thread_count",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "cargo_release",
+    "runner_source_dir": "src/avian3d/bench",
+    "runner_manifest": "src/avian3d/bench/Cargo.toml",
+    "cargo_lock": "src/avian3d/bench/Cargo.lock",
+    "cargo_target_dir": ".build/avian3d/cargo-release",
+    "build_metadata": ".build/avian3d/build-metadata.json",
+    "package_dir_windows": "release/windows-x64/avian3d",
+    "target": "avian3d_polygon_runner",
+    "executable_name_windows": "avian3d_polygon_runner.exe",
+    "toolchain_id": "rust_1_95_msvc_cargo_release",
+    "cargo_profile": "release",
+    "cargo_features": [
+      "3d",
+      "f32",
+      "parry-f32",
+      "parallel",
+      "simd"
+    ],
+    "package_metadata": {
+      "avian_version": "0.8.0-dev",
+      "bevy_version": "0.19.0"
+    },
+    "engine_build_scope": "generated_avian_source_plus_repo_runner_cargo",
+    "public_build_label": "Rust 1.95 Cargo release; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,f32,parry-f32,parallel,simd"
+  },
+  "run": {
+    "route": "avian3d_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "AVIAN3D_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "avian3d_polygon_runner",
+      "avian3d_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "avian3d_polygon_runner",
+    "timing_scope": "bevy_physics_schedule",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "launcher": "direct",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json"
+  }
+}

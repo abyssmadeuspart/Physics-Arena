@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "engine_id": "avian3d",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "fc99fdcdbff804fbbe6dc1eb7fc4137e677853d2",
+  "source_provenance": "pinned upstream source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/avian3d/avian3d_polygon_runner.exe",
+  "launcher": "direct",
+  "required_sidecars": [],
+  "compiler_runtime": {
+    "toolchain_id": "rust_1_95_msvc_cargo_release",
+    "compiler_detail": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "runtime_detail": "windows-x64 native Rust release executable"
+  },
+  "package_metadata": {
+    "build_label": "Rust 1.95 Cargo release; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,f32,parry-f32,parallel,simd",
+    "rust_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "cargo_version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+    "cargo_profile": "release",
+    "cargo_features": "3d,f32,parry-f32,parallel,simd",
+    "cargo_lock_sha256": "3856da4985e31fb118a258f2c8d3ee8346d6ae9f20d5198422de76a3795a386f",
+    "runner_manifest_sha256": "aba24c18ddb4527c4f038b9cee19d9f35e9894b6f26b4342e1d6ad27f76e0de3",
+    "avian_version": "0.8.0-dev",
+    "bevy_version": "0.19.0"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/avian3d/avian3d_polygon_runner.exe",
+      "sha256": "4004426401538ff34752fb4b642dea99aaea6490006a74c104ee2e2e6f192547",
+      "role": "executable"
+    }
+  ],
+  "license_id": "MIT OR Apache-2.0",
+  "notice_license_reference": "SOURCES.md#avian3d",
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

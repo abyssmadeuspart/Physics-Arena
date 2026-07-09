@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "engine_id": "joltphysics",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "3b47ec390cb9b933769183eff599f72195c5873c",
+  "source_provenance": "pinned upstream source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/joltphysics/jolt_polygon_runner.exe",
+  "launcher": "direct",
+  "required_sidecars": [],
+  "compiler_runtime": {
+    "toolchain_id": "windows_clang_cl_distribution",
+    "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
+    "runtime_detail": "statically linked runner executable"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/joltphysics/jolt_polygon_runner.exe",
+      "sha256": "f8de0439f040db57ff5de09d262d5c5d1a8b7192abee21a7e35674bab9a8983a",
+      "role": "executable"
+    }
+  ],
+  "license_id": "MIT",
+  "notice_license_reference": "SOURCES.md#joltphysics",
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

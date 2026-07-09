@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "engine_id": "unity_physics",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "unity-6000.5.2f1-com.unity.physics-6.5.0",
+  "source_provenance": "repo Unity project source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics.exe",
+  "launcher": "direct",
+  "required_sidecars": [
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Plugins/x86_64/lib_burst_generated.dll",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity default resources",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity_builtin_extra",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/RuntimeInitializeOnLoads.json",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/ScriptingAssemblies.json",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/StreamingAssets/EntityScenes/scene_info.bin",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/app.info",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/boot.config",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets.resS",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Metadata/global-metadata.dat",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Resources/mscorlib.dll-resources.dat",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/level0",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/resources.assets",
+    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/sharedassets0.assets",
+    "release/windows-x64/unity_physics/D3D12/D3D12Core.dll",
+    "release/windows-x64/unity_physics/GameAssembly.dll",
+    "release/windows-x64/unity_physics/UnityCrashHandler64.exe",
+    "release/windows-x64/unity_physics/UnityPlayer.dll",
+    "release/windows-x64/unity_physics/baselib.dll",
+    "release/windows-x64/unity_physics/build-provenance.json",
+    "release/windows-x64/unity_physics/dstorage.dll",
+    "release/windows-x64/unity_physics/dstoragecore.dll",
+    "release/windows-x64/unity_physics/player-build-metadata.json"
+  ],
+  "compiler_runtime": {
+    "toolchain_id": "unity_player",
+    "compiler_detail": "unity_editor_version= 6000.5.2f1",
+    "runtime_detail": "Unity IL2CPP StandaloneWindows64 player without generated backup/debug source folder"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics.exe",
+      "sha256": "ead801447b5ca90778f6cf2f35aab805bcbc57f404523399430cdb8474015a02",
+      "role": "executable"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Plugins/x86_64/lib_burst_generated.dll",
+      "sha256": "75660fbd5bf35c9dc83224e1da5cb7540bf04ffd30b1bd1c8734584a7ae6a4d7",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity default resources",
+      "sha256": "8a2af10a03beff92706eddcd6a8dbac8abddbee6866849123a79c21a03992661",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity_builtin_extra",
+      "sha256": "c194f6c2716e3e185275d4c2a60feadb04a1308f69443d7d68ca5dc351faf694",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/RuntimeInitializeOnLoads.json",
+      "sha256": "fd8683d8357f3428dcf9f698276d78061b7c5b41e1ed6bc2d6152bb6d282bef7",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/ScriptingAssemblies.json",
+      "sha256": "c6e72d9655b751c0fe97ef10d570f8f2712dac04ef7f7be576a40f57e6aa23df",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/StreamingAssets/EntityScenes/scene_info.bin",
+      "sha256": "dfed8f552d8f90ac1aadb941e0b69d41485fc599869797956ed292975e4b4ca4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/app.info",
+      "sha256": "941cba24d86e7f405dad058eccbb311a88998fc949c3db06aa7c3ea433ff7da4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/boot.config",
+      "sha256": "24f1300d01aeed11a9d86ee757095f46d9bb8a57db789e4a84ebc36a2eae92ec",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers",
+      "sha256": "628a6d6e74abff8defea674fc52863a166a19c2d913337273e302c3164e9fd86",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets",
+      "sha256": "f853c42a5a6c0b68ee3b19b2132f896d7ec3260be4a5b26a838025eb2dc20cd2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets.resS",
+      "sha256": "39dd38fcd8dd95d41d6d55fe16a448d29fe2c31d9a162c825c24c6d99a893d7a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Metadata/global-metadata.dat",
+      "sha256": "9e2ea0468e7cdb34d56f4e02d5c861722680b123949eb96f11b92dbc7facbd7c",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Resources/mscorlib.dll-resources.dat",
+      "sha256": "c5baa176a5b72cd545266340e42102d393a5e43d38c95796bc828918bb95277f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/level0",
+      "sha256": "63ab21cfb8eecf78a521e6b9bce283945c56b72fbb575d48a447590742b24815",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/resources.assets",
+      "sha256": "5465044b878a6b8447e153e027e7989e6190a34c2aa35de64079483b55a0e65c",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/sharedassets0.assets",
+      "sha256": "0064ac89a7e7d237d8cc833ce593ee59f075b44b9449e71b508fb5f0cb35f35e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/D3D12/D3D12Core.dll",
+      "sha256": "625bd40005b1c3708695d5256ecf230d278e6b8edba5a88af70f3d91324f3052",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/GameAssembly.dll",
+      "sha256": "8c4a38c2348dad32bb55af2c80c05cb8d8a2163078e5e552731f754c4403cf3a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/UnityCrashHandler64.exe",
+      "sha256": "616c52918f1f297e46671d9ba8b787e0522f077c60ae3e058c877555c41661ad",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/UnityPlayer.dll",
+      "sha256": "13b8f157368f55c06c2a7ebf9c2d9907b797b3299329f225da351beb741e54b8",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/baselib.dll",
+      "sha256": "aa0be80a60dc25de919d4298570982f354ee48c5d729bbdedd5e78c20f0d305e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/build-provenance.json",
+      "sha256": "cb9a1dade870835888b005604ced27a0b3aff143627ca1b96759ef1442341ccb",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/dstorage.dll",
+      "sha256": "cae65787f61514bec6f012f44546e68b19e39d8854a9ab52af813370d44b272a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/dstoragecore.dll",
+      "sha256": "cf85b19a92a8276f8baca0db9bbcd60735bad50768deb303d310e84d5f4fdd11",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/unity_physics/player-build-metadata.json",
+      "sha256": "fb84aa4695a6a7fe80e416c0ee3c6ddf2671711eedb66897f9ec458db6e12f34",
+      "role": "sidecar"
+    }
+  ],
+  "license_id": "Unity-Companion-License",
+  "notice_license_reference": "SOURCES.md#unity_physics",
+  "package_metadata": {
+    "build_target": "standalonewindows64_player",
+    "backend": "il2cpp",
+    "burst_enabled_state": "enabled",
+    "safety_check_state": "disabled",
+    "unity_package_versions": {
+      "com.unity.physics": "6.5.0",
+      "com.unity.entities": "6.5.0",
+      "com.unity.burst": "1.8.29",
+      "com.unity.collections": "6.5.0",
+      "com.unity.mathematics": "1.4.0"
+    },
+    "package_lock_sha256": "677aeb33affd2750c34c31767cf4371976c907a9c7dd710c5711037d08504566"
+  },
+  "visual": {
+    "route_status": "working",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "producer_prefix_args": [
+      "-batchmode",
+      "-nographics",
+      "-logFile",
+      "-",
+      "--"
+    ]
+  }
+}

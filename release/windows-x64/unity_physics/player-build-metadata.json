@@ -1,0 +1,7 @@
+{
+    "schema_version": 1,
+    "build_target": "standalonewindows64_player",
+    "backend": "il2cpp",
+    "burst_enabled_state": "enabled",
+    "safety_check_state": "disabled"
+}

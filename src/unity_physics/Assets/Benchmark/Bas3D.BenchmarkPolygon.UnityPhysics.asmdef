@@ -1,0 +1,20 @@
+{
+  "name": "Bas3D.BenchmarkPolygon.UnityPhysics",
+  "rootNamespace": "Bas3D.BenchmarkPolygon.UnityPhysics",
+  "references": [
+    "Unity.Burst",
+    "Unity.Collections",
+    "Unity.Entities",
+    "Unity.Mathematics",
+    "Unity.Physics"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

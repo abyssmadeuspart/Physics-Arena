@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "result_statuses": [
+    "ok",
+    "unsupported",
+    "build_failed",
+    "run_failed",
+    "invalid_result",
+    "metric_unavailable",
+    "tool_missing",
+    "ref_mismatch",
+    "fetch_failed",
+    "unsupported_platform",
+    "route_unavailable",
+    "unsupported_thread_count"
+  ],
+  "benchmark_modes": [
+    "matched_quality_discrete",
+    "matched_quality_ccd",
+    "best_throughput",
+    "headless_api",
+    "visualized_local",
+    "visualized_release"
+  ],
+  "host_routes": [
+    "linux",
+    "windows"
+  ],
+  "cases": [
+    {
+      "id": "box_container_pile_10k",
+      "slug": "box-container-pile-10k",
+      "display_name": "Box Container Pile 10k",
+      "category": "simulation",
+      "dynamic_box_count": 10000,
+      "static_box_count": 5,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "body_count": 10005,
+      "shape_count": 10005,
+      "box_half_extents": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "gravity": [
+        0,
+        -10,
+        0
+      ],
+      "timestep_hz": 60,
+      "step_count": 300,
+      "warmup_steps": 30,
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 3
+      },
+      "benchmark_mode": "headless_api",
+      "supported_engine_sets": [
+        "core",
+        "default_release",
+        "default_visual_release"
+      ],
+      "stability_counters": [
+        "invalid_transform_count",
+        "below_floor_count"
+      ],
+      "fixture_contract": {
+        "semantic": "open_container_falling_pile",
+        "required_metadata_columns": [
+          "fixture_semantic",
+          "fixture_version",
+          "static_box_count"
+        ],
+        "engine_fixture_versions": {
+          "bepuphysics2": "bepu_open_container_v1",
+          "avian3d": "avian3d_open_container_v1",
+          "box3d": "box3d_open_container_v1",
+          "joltphysics": "jolt_open_container_v1",
+          "nvidia_physx34": "nvidia_physx34_open_container_v1",
+          "nvidia_physx5": "nvidia_physx5_open_container_v1",
+          "physx34": "physx34_open_container_v1",
+          "rapier3d": "rapier3d_open_container_v1",
+          "unreal_chaos": "unreal_chaos_open_container_v1",
+          "unity_physics": "unity_physics_open_container_v1"
+        }
+      },
+      "notes": "Deterministic 25x25x16 grid of 1m dynamic boxes falling into an open static floor and four-wall container."
+    },
+    {
+      "id": "box_drop_grid",
+      "slug": "box-drop-grid",
+      "display_name": "Box Drop Grid",
+      "category": "simulation",
+      "dynamic_box_count": 1024,
+      "static_box_count": 1,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "body_count": 1025,
+      "shape_count": 1025,
+      "thread_counts": [
+        1
+      ],
+      "repeat_presets": {
+        "qualification": 1
+      },
+      "benchmark_mode": "matched_quality_discrete",
+      "supported_engine_sets": [
+        "core"
+      ],
+      "notes": "Regular grid of identical dynamic boxes falling onto one static floor box."
+    }
+  ]
+}

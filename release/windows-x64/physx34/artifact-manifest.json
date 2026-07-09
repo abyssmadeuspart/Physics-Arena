@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "engine_id": "physx34",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
+  "source_provenance": "pinned upstream source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/physx34/physx34_polygon_runner.exe",
+  "launcher": "direct",
+  "required_sidecars": [
+    "release/windows-x64/physx34/PhysX3Common_x64.dll",
+    "release/windows-x64/physx34/PhysX3Cooking_x64.dll",
+    "release/windows-x64/physx34/PhysX3_x64.dll",
+    "release/windows-x64/physx34/PxFoundation_x64.dll",
+    "release/windows-x64/physx34/PxPvdSDK_x64.dll"
+  ],
+  "compiler_runtime": {
+    "toolchain_id": "windows_clang_cl_release",
+    "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
+    "runtime_detail": "Vite's PhysX 3.4 runtime DLLs plus repo runner executable"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/physx34/physx34_polygon_runner.exe",
+      "sha256": "3e3093eb8feb67af2754d07d8047a47c8594f3a8cfa202f675dce53073bfb323",
+      "role": "executable"
+    },
+    {
+      "path": "release/windows-x64/physx34/PhysX3Common_x64.dll",
+      "sha256": "c8be7f2afa825fc443452e60eca5723abae98c19101f5061f1cf0f4646ad427f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/physx34/PhysX3Cooking_x64.dll",
+      "sha256": "5f53452ee6e4a24ca0c0baec3aa2e6dde64ce8984cc79636565bdfb554bc9e72",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/physx34/PhysX3_x64.dll",
+      "sha256": "97eba113e2358a96049f4883bc1c1d3d36afc14979eb2f648cae9e349ca429df",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/physx34/PxFoundation_x64.dll",
+      "sha256": "94579cf6fab137ec067dd0fa24a01b1107bfe07b60b205a2865f816f1efebb0e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/physx34/PxPvdSDK_x64.dll",
+      "sha256": "251eca41a6dd2153649f8bfa2d5a4b48cdd16d1677b0c069aebe0def51c60520",
+      "role": "sidecar"
+    }
+  ],
+  "license_id": "BSD-3-Clause",
+  "notice_license_reference": "SOURCES.md#physx34",
+  "package_metadata": {
+    "physx_version": "3.4.0",
+    "sdk_build_config": "release",
+    "sdk_platform": "windows",
+    "sdk_compiler": "clang-cl.exe",
+    "sdk_toolset": "unknown",
+    "sdk_windows_sdk": "unknown",
+    "sdk_optimization": "release optimized build",
+    "sdk_build_id": "windows-clangcl-release",
+    "runner_compiler": "clang-cl.exe",
+    "runner_optimization": "release optimized build",
+    "cpu_isa_requirement": "x64",
+    "binary_release_status": "packaged_runtime_artifacts",
+    "cmake_version": "cmake version 4.3.1-msvc1",
+    "ninja_version": "1.13.2",
+    "linker_detail": "LLD 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)"
+  },
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

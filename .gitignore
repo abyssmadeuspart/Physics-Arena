@@ -1,0 +1,56 @@
+# Unity editor project byproducts
+/src/unity_physics/*.csproj
+/src/unity_physics/*.sln
+/src/unity_physics/Library/
+/src/unity_physics/Temp/
+/src/unity_physics/Obj/
+/src/unity_physics/Logs/
+/src/unity_physics/UserSettings/
+/src/unity_physics/Builds/
+/src/unity_physics/Build/
+/src/unity_physics/ProfilerCaptures/
+**/.idea/
+
+# Unreal project byproducts
+/src/unreal_chaos/.vs/
+/src/unreal_chaos/Binaries/
+/src/unreal_chaos/DerivedDataCache/
+/src/unreal_chaos/Intermediate/
+/src/unreal_chaos/Saved/
+/src/unreal_chaos/*.sln
+/src/unreal_chaos/*.opensdf
+/src/unreal_chaos/*.sdf
+/src/unreal_chaos/*.suo
+/src/unreal_chaos/*.xcodeproj/
+
+# Native and managed build byproducts
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+*.obj
+*.o
+*.a
+*.lib
+*.exp
+*.ilk
+*.tlog
+*.recipe
+*.binlog
+
+# Logs and scratch files
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Checked-in Windows x64 release files
+!/release/
+!/release/windows-x64/
+!/release/windows-x64/**

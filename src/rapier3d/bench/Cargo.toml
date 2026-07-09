@@ -1,0 +1,12 @@
+[package]
+name = "rapier3d_polygon_runner"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89"
+
+[[bin]]
+name = "rapier3d_polygon_runner"
+path = "src/main.rs"
+
+[dependencies]
+rapier3d = { path = "../../../.generated/engines/rapier3d/crates/rapier3d", features = ["parallel"] }

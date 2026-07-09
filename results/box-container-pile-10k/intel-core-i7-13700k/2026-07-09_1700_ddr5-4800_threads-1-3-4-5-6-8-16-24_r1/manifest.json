@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1",
+  "host_route": "windows",
+  "case_id": "box_container_pile_10k",
+  "benchmark_mode": "headless_api",
+  "thread_counts": [
+    1,
+    3,
+    4,
+    5,
+    6,
+    8,
+    16,
+    24
+  ],
+  "thread_selection": {
+    "mode": "explicit",
+    "host_logical_threads": 24,
+    "thread_counts": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      8,
+      16,
+      24
+    ],
+    "requested_max": 0,
+    "effective_max": 0,
+    "requested_thread_counts": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      8,
+      16,
+      24
+    ],
+    "dropped_thread_counts": [],
+    "generated_thread_counts": []
+  },
+  "step_count": 300,
+  "warmup_steps": 30,
+  "repeat_count": 1,
+  "run_slug_metadata": {
+    "run_slug": "2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1",
+    "base_run_slug": "2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1",
+    "timestamp": "2026-07-09_1700",
+    "timestamp_source": "local_time",
+    "timestamp_format": "%Y-%m-%d_%H%M",
+    "thread_selection_token": "threads-1-3-4-5-6-8-16-24",
+    "collision_suffix": ""
+  },
+  "host": {
+    "cpu": {
+      "model": "Intel Core i7-13700K",
+      "physical_cores": 16,
+      "logical_threads": 24,
+      "max_clock_mhz": 3400,
+      "current_clock_mhz": 3400,
+      "p_core_count": 8,
+      "e_core_count": 8,
+      "topology": "8P+8E / 24T"
+    },
+    "memory": {
+      "total_gb": 64,
+      "type": "DDR5",
+      "configured_clock_mhz": 4800,
+      "modules": [
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller0-DIMMA2"
+        },
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller1-DIMMB2"
+        }
+      ]
+    },
+    "os": {
+      "name": "Microsoft Windows 11 Pro for Workstations",
+      "version": "10.0.26200",
+      "build": "26200",
+      "architecture": "64-bit"
+    },
+    "motherboard": {
+      "model": "Micro-Star International Co., Ltd. PRO Z790-A WIFI (MS-7E07)",
+      "bios_version": "A.E0",
+      "bios_date": "2024-09-30"
+    },
+    "metadata_sources": {
+      "cpu.model": "windows_cim",
+      "cpu.physical_cores": "windows_processor_topology_api",
+      "cpu.logical_threads": "windows_processor_topology_api",
+      "cpu.max_clock_mhz": "windows_cim",
+      "cpu.current_clock_mhz": "windows_cim",
+      "memory.total_gb": "windows_cim",
+      "memory.type": "windows_cim",
+      "memory.configured_clock_mhz": "windows_cim",
+      "memory.modules": "windows_cim",
+      "os.name": "windows_cim",
+      "os.version": "windows_cim",
+      "os.build": "windows_cim",
+      "os.architecture": "windows_cim",
+      "motherboard.model": "windows_cim",
+      "motherboard.bios_version": "windows_cim",
+      "motherboard.bios_date": "windows_cim",
+      "cpu.p_core_count": "windows_processor_topology_api",
+      "cpu.e_core_count": "windows_processor_topology_api",
+      "cpu.topology": "windows_processor_topology_api"
+    }
+  },
+  "engines": [
+    {
+      "id": "unreal_chaos",
+      "release_artifact_manifest": "release/windows-x64/unreal_chaos/artifact-manifest.json",
+      "artifact_manifest_sha256": "fa31a7ef837509608f2b396c0e27b2add6f189dacab5a07d67874e38ecd24ef9"
+    }
+  ]
+}

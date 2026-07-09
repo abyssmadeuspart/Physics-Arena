@@ -1,0 +1,267 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="764" viewBox="0 0 1280 764">
+<defs>
+<style><![CDATA[
+  text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#0f172a;dominant-baseline:middle}
+  .tab{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .title{font-size:22px;font-weight:760}
+  .subtitle{font-size:13px;fill:#475569}
+  .meta-label{font-size:13px;font-weight:760;fill:#0f172a}
+  .meta-value{font-size:13.5px;fill:#26364d}
+  .meta-key{font-weight:650;fill:#102033}
+  .legend{font-size:13px;font-weight:560}
+  .small{font-size:12px;fill:#475569}
+  .column{font-size:12px;fill:#334155;font-weight:620}
+  .group{font-size:15px;font-weight:760}
+  .row{font-size:13px}
+  .value{font-size:13px;font-weight:600}
+  .fast{}
+]]></style>
+<symbol id="engine-logo-unreal_chaos" viewBox="16.51 8.48 642.82 525.02">
+<image href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJMYXllcl8xIiB2aWV3Qm94PSIxNi41MSA4LjQ4IDY0Mi44MiA1MjUuMDIiPjx0aXRsZT5VbnJlYWwgRW5naW5lIGxvZ288L3RpdGxlPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbC1ydWxlOmV2ZW5vZGQ7fTwvc3R5bGU+PC9kZWZzPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIxOC41Myw1MzIuODlIMTY4LjN2LTQ2LjFoNDkuNDRWNDk3aC0zNnY3Ljg1aDM0LjA4djkuNjNIMTgxLjc2djcuOTRoMzYuNzd2MTAuNDlabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTUwNy41Myw1MzIuODlINDU4LjA5VjQ4Ny41Mmg0OC42N3YxMEg0NzEuMzR2Ny43MmgzMy41NHY5LjQ3SDQ3MS4zNHY3LjgyaDM2LjE5djEwLjMzWm0wLDAiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yODYuNjQsNTMyLjg5SDI2Ni4zMmwtMjYuNzYtMzQuNDhoLS4yNnYzNC40OEgyMjZ2LTQ2LjFoMjAuNjVsMjYuNDMsMzQuNTJoLjI2VjQ4Ni43OWgxMy4zM3Y0Ni4xWm0wLDAiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik00NDcuNyw1MzIuODlINDI3LjM4bC0yNi43Ni0zNC40OGgtLjI2djM0LjQ4SDM4N3YtNDYuMWgyMC42NWwyNi40MywzNC41MmguMjZWNDg2Ljc5SDQ0Ny43djQ2LjFabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTMyNS45MSw1MzMuNXEtNi4zOSwwLTExLS4zMkE0MS4xOSw0MS4xOSwwLDAsMSwzMDcsNTMyYTE1LjEsMTUuMSwwLDAsMS01LjI3LTIuNDcsMTAuMzgsMTAuMzgsMCwwLDEtMy4xNi00LjFBMjAuOTMsMjAuOTMsMCwwLDEsMjk3LDUxOS4zYTgwLjQyLDgwLjQyLDAsMCwxLS4zOS04LjUydi0xLjM1YTc4LjM4LDc4LjM4LDAsMCwxLC40MS04LjU4LDIwLjkzLDIwLjkzLDAsMCwxLDEuNTQtNi4xNiwxMC41NSwxMC41NSwwLDAsMSwzLjE3LTQuMDksMTQuNywxNC43LDAsMCwxLDUuMjgtMi40Miw0MS4yMiw0MS4yMiwwLDAsMSw3Ljg5LTEuMTdxNC42NS0uMywxMS0uM2gycTUuMzIsMCw5LjMyLjIzYTQ4LjA4LDQ4LjA4LDAsMCwxLDYuODcuODQsMTYuNzMsMTYuNzMsMCwwLDEsNC43NSwxLjY2LDguNDgsOC40OCwwLDAsMSwzLDIuNjcsMTAuMjUsMTAuMjUsMCwwLDEsMS41MSwzLjg5LDI5LjM4LDI5LjM4LDAsMCwxLC40Miw1LjI5djEuNzdoLTEzdi0uNTZhNi40MSw2LjQxLDAsMCwwLS40OS0yLjY0LDMuNjIsMy42MiwwLDAsMC0xLjkxLTEuNzEsMTMuOTEsMTMuOTEsMCwwLDAtNC0uOXEtMi41OC0uMjUtNi44LS4yNmgtMS4xNHEtMy44MywwLTYuNTQuMTNhMjUsMjUsMCwwLDAtNC41MS41Nyw3LjU0LDcuNTQsMCwwLDAtMi44NSwxLjI3LDQuODksNC44OSwwLDAsMC0xLjU4LDIuMjMsMTMuMjEsMTMuMjEsMCwwLDAtLjY2LDMuNWMtLjEsMS4zOS0uMTUsMy4wNi0uMTUsNXYuODJjMCwxLjkxLjA1LDMuNTQuMTUsNC45YTEyLjg5LDEyLjg5LDAsMCwwLC42NiwzLjQzLDQuODMsNC44MywwLDAsMCwxLjU4LDIuMjEsNy41NCw3LjU0LDAsMCwwLDIuODUsMS4yNywyNS4xMiwyNS4xMiwwLDAsMCw0LjUxLjU3cTIuNzEuMTQsNi41NC4xM2gxLjE0YzIuMDgsMCwzLjg3LDAsNS4zNy0uMTFzMi43Ny0uMiwzLjgtLjM2YTkuNTUsOS41NSwwLDAsMCwyLjQ2LS42OSwzLjc1LDMuNzUsMCwwLDAsMS40My0xLjEyLDMuNjQsMy42NCwwLDAsMCwuNjctMS41NywxMy4wOSwxMy4wOSwwLDAsMCwuMTYtMi4xMnYtMS4yOEgzMjMuNzd2LTguOUgzNTQuM3YxMC4yNGEzNC41NCwzNC41NCwwLDAsMS0uNDMsNS44MywxMi40NywxMi40NywwLDAsMS0xLjU2LDQuMzMsOS4yNyw5LjI3LDAsMCwxLTMsMywxNi4xNiwxNi4xNiwwLDAsMS00LjgzLDEuOTEsNDQuMTEsNDQuMTEsMCwwLDEtNywxYy0yLjcyLjItNS44OC4zLTkuNS4zWm0wLDAiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zNzcuMiw1MzNIMzYzLjY5VjQ4Ny4yNEgzNzcuMlY1MzNabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTY0LjcyLDQ2Mi42NHEtOS44LDAtMTcuMTgtLjUzYTc5LjMyLDc5LjMyLDAsMCwxLTEyLjc0LTEuNzksMzAuMzUsMzAuMzUsMCwwLDEtOC44Ny0zLjQ0LDE3LjI5LDE3LjI5LDAsMCwxLTUuNjEtNS40NCwyMS43MiwyMS43MiwwLDAsMS0yLjk1LTcuNzgsNTYuMzMsNTYuMzMsMCwwLDEtLjg2LTEwLjU0di01MmgyMy43djQ0LjMycTAsNC4xMS4yOSw3LjA2YTE3LjA4LDE3LjA4LDAsMCwwLDEuMTcsNSw4LjE0LDguMTQsMCwwLDAsMi41NSwzLjM2LDEyLjM2LDEyLjM2LDAsMCwwLDQuNDEsMiwzMy45LDMzLjksMCwwLDAsNi43NSwxYzIuNjguMTUsNS44Ni4yMyw5LjU3LjIzaDJxNS41NSwwLDkuNTYtLjI2YTM4LjIzLDM4LjIzLDAsMCwwLDYuNzYtLjk1LDExLjg3LDExLjg3LDAsMCwwLDQuNDEtMiw4LjQ4LDguNDgsMCwwLDAsMi41NC0zLjM2LDE2Ljc2LDE2Ljc2LDAsMCwwLDEuMTgtNXEuMjgtMywuMjgtN1YzODEuMTFoMjMuNzF2NTJhNjEuNTIsNjEuNTIsMCwwLDEtLjgsMTAuNTEsMjEuNDksMjEuNDksMCwwLDEtMi44Nyw3LjgxLDE3LjA5LDE3LjA5LDAsMCwxLTUuNTUsNS40NCwzMC4xLDMwLjEsMCwwLDEtOC44NSwzLjQ0LDc5LjM1LDc5LjM1LDAsMCwxLTEyLjc5LDEuNzlxLTcuNDUuNTItMTcuMzUuNTNaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjM3LjI2LDQ2MS42NUgyMDEuODJsLTQ2LjY2LTYwLjNoLS40NnY2MC4zSDEzMS40NlYzODFoMzZsNDYuMDksNjAuMzZIMjE0VjM4MWgyMy4yNHY4MC42MVptMCwwIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMzA3LjEzLDQyMS43MmM0LjA5LDAsNy4zNC0uMTIsOS43Ny0uMzdhMTMuMjIsMTMuMjIsMCwwLDAsNS41Mi0xLjU3LDUuNDYsNS40NiwwLDAsMCwyLjQ2LTMuMjksMjIuMSwyMi4xLDAsMCwwLC41OC01LjU5di0xLjM5YTIxLjc4LDIxLjc4LDAsMCwwLS41OC01LjUyLDUuMiw1LjIsMCwwLDAtMi40OS0zLjI0LDEzLjg3LDEzLjg3LDAsMCwwLTUuNTUtMS41MWMtMi40My0uMjUtNS42Ni0uMzctOS43MS0uMzdIMjc3LjU5djIyLjg1Wm00Mi4yLDM5LjkzSDMyNS45MXYtNi41NGE1NS45LDU1LjksMCwwLDAtLjI4LTYuMDgsMTIuMzcsMTIuMzcsMCwwLDAtMS4yMS00LjMxLDcuMzcsNy4zNywwLDAsMC0yLjU3LTIuODMsMTIuOTQsMTIuOTQsMCwwLDAtNC4zOC0xLjY1LDQyLjU1LDQyLjU1LDAsMCwwLTYuNy0uNzhxLTQtLjIxLTkuNDgtLjIxaC0yMy43djIyLjRIMjU0LjExVjM4MWg2Mi41M2E4OC44MSw4OC44MSwwLDAsMSwxNi4yLDEuMjIsMjMuMTMsMjMuMTMsMCwwLDEsMTAsNC4wOCwxNC43MiwxNC43MiwwLDAsMSw1LjA3LDcuNTgsNDEuNjUsNDEuNjUsMCwwLDEsMS40LDExLjY2djIuODNhNDEuNDksNDEuNDksMCwwLDEtLjc0LDguMzEsMTguMDcsMTguMDcsMCwwLDEtMi40MSw2LjEzLDE0LDE0LDAsMCwxLTQuMjksNC4yNSwyMC40MywyMC40MywwLDAsMS02LjQ3LDIuNTV2LjQ2YTM0LjY1LDM0LjY1LDAsMCwxLDYuOTUsMS43Nyw5LjMzLDkuMzMsMCwwLDEsNC4yNywzLjE4LDEyLjg0LDEyLjg0LDAsMCwxLDIuMTIsNS41Myw1NC42LDU0LjYsMCwwLDEsLjU3LDguNzN2MTIuMzNabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTQ1Mi4zMiw0NjEuNjVoLTg3LjZWMzgxaDg2LjIydjE3LjgzSDM4OC4xOXYxMy43MWg1OS40M3YxNi44NEgzODguMTl2MTMuODloNjQuMTN2MTguMzRabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTUzMS41Miw0MzAuNDFsLTE2LjQzLTMyLjM1aC0uNThMNDk4LjIsNDMwLjQxWk01NzMsNDYxLjcxSDU0Ny40NGwtNy4zOS0xNC40N0g0ODkuNzhsLTcuMjcsMTQuNDdINDU3LjE0bDQzLjI5LTgwLjZoMjkuMDlMNTczLDQ2MS43MVptMCwwIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNjU5LjMzLDQ2MS43MUg1ODEuNjl2LTgwLjZoMjMuN1Y0NDNoNTMuOTR2MTguNzVabTAsMCIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTQzNC44MiwxOTVoMGMtMi44MSwxMy41Ni0xNS4zMiw0OC4zNC01NS4xOSw2Ny4xOGwtMTYtMTgtMjcsMjcuMTZhOTkuNzIsOTkuNzIsMCwwLDEtNzguODYtNDAuNDUsMzguODgsMzguODgsMCwwLDAsOC44NCwxLjY2YzQuNDIuMDgsOS4yMS0xLjU0LDkuMjEtOVYxNTAuM2ExMi4wNiwxMi4wNiwwLDAsMC0xNS4xOC0xMi4wN2MtMTIuNSwyLjg2LTIyLjUsMzQuMDctMjIuNSwzNC4wN2E5OS4yNSw5OS4yNSwwLDAsMSwzNC4zNi03Ni4wNkMyOTEuMTIsODAuNDYsMzA5LjMxLDc1LDMyMy4xMyw3Mi44NiwzMDkuNDgsODAuNjQsMzAxLjgsOTMuMzQsMzAxLjgsMTA0YzAsMTcuMDksMTAuMzIsMTUuMDcsMTMuMzgsMTIuNTV2OTguOTJhMTYsMTYsMCwwLDAsMiwzLjQ5QTE0LjU5LDE0LjU5LDAsMCwwLDMyOS4xNSwyMjVjMTAuMzQsMCwyMy43NS0xMS44LDIzLjc1LTExLjh2LTgwLjFjMC04LjE1LTYuMTQtMTgtMTIuMjktMjEuMzYsMCwwLDExLjM4LTIsMjAuMTgsNC43MWgwYTc0LjIsNzQuMiwwLDAsMSw1LjI2LTUuNzlDMzg2LjUxLDkwLjU2LDQwNS44Miw4NC44Niw0MjEuOSw4Mmgwcy0yOS4yNywyMy0yOS4yNyw1My44YzAsMjIuOTMuNTksNzguODQuNTksNzguODRDNDA0LjExLDIyNS4xLDQyMC4yNCwyMTAsNDM0LjgyLDE5NVoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzcuOTIsOC40OEExNjMuMDcsMTYzLjA3LDAsMSwwLDUwMSwxNzEuNTQsMTYzLjA2LDE2My4wNiwwLDAsMCwzMzcuOTIsOC40OFptMCwzMTkuNjFBMTU2LjU1LDE1Ni41NSwwLDEsMSw0OTQuNDYsMTcxLjU0LDE1Ni41NSwxNTYuNTUsMCwwLDEsMzM3LjkyLDMyOC4wOVoiLz48L3N2Zz4=" x="0" y="0" width="642.82" height="525.02" preserveAspectRatio="xMidYMid meet"/>
+</symbol>
+</defs>
+<rect width="100%" height="100%" fill="#f6f8fb"/>
+<rect x="24" y="24" width="1232" height="716" rx="14" fill="#ffffff" stroke="#d9e0ea"/>
+<text x="48" y="58" class="title">Box Container Pile 10k</text>
+<rect x="40" y="76" width="1192" height="250" rx="9" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="48" y="91.0" class="meta-label">Metric</text>
+<text x="150" y="91.0" class="meta-value"><tspan>Median Physics ms/frame; lower is better.</tspan></text>
+<line x1="40" y1="106.0" x2="1232" y2="106.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="121.0" class="meta-label">Case</text>
+<text x="150" y="121.0" class="meta-value"><tspan>Box Container Pile 10k; 10,005 bodies, 10,005 shapes.</tspan></text>
+<line x1="40" y1="136.0" x2="1232" y2="136.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="151.0" class="meta-label">Run</text>
+<text x="150" y="151.0" class="meta-value"><tspan>Headless, no-graphics run; Windows x64 release files; 1 repeat; threads 1, 3, 4, 5, 6, 8, 16, 24; 300 measured steps + 30 warmup; 60 Hz.</tspan></text>
+<line x1="40" y1="166.0" x2="1232" y2="166.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="199.0" class="meta-label">Host</text>
+<text x="150" y="181.0" class="meta-value"><tspan>Intel Core i7-13700K (8P+8E / 24T); max 3.40 GHz</tspan></text>
+<text x="150" y="199.0" class="meta-value"><tspan>64 GB DDR5 4800 MHz</tspan></text>
+<text x="150" y="217.0" class="meta-value"><tspan>Micro-Star International Co., Ltd. PRO Z790-A WIFI (MS-7E07) BIOS A.E0; Microsoft Windows 11 Pro for Workstations 64-bit 10.0.26200</tspan></text>
+<line x1="40" y1="232.0" x2="1232" y2="232.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="249.0" class="meta-label">Engines</text>
+<use href="#engine-logo-unreal_chaos" x="150.0" y="240.0" width="22.0" height="18.0"/>
+<text x="181.0" y="249.0" class="meta-value">Unreal Chaos</text>
+<line x1="40" y1="266.0" x2="1232" y2="266.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="281.0" class="meta-label">Physics</text>
+<text x="150" y="281.0" class="meta-value"><tspan class="meta-key">Physics solver iterations</tspan><tspan>: 4; </tspan><tspan class="meta-key">rigid-body sleeping</tspan><tspan>: disabled.</tspan></text>
+<line x1="40" y1="296.0" x2="1232" y2="296.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="311.0" class="meta-label">Builds</text>
+<text x="150" y="311.0" class="meta-value"><tspan class="meta-key">unreal_chaos:</tspan><tspan> Unreal Engine release branch Chaos Program target; Win64 Shipping.</tspan></text>
+<line x1="126" y1="80" x2="126" y2="321" stroke="#d9e2ee" stroke-width="1"/>
+<rect x="32.0" y="354.0" width="599.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="56.0" y="378.0" class="group">1 thread</text>
+<text x="270.0" y="378.0" class="small tab" text-anchor="middle">0</text>
+<text x="319.0" y="378.0" class="small tab" text-anchor="middle">242</text>
+<text x="368.0" y="378.0" class="small tab" text-anchor="middle">484</text>
+<text x="417.0" y="378.0" class="small tab" text-anchor="middle">726</text>
+<text x="466.0" y="378.0" class="small tab" text-anchor="middle">968</text>
+<text x="515.0" y="378.0" class="small tab" text-anchor="middle">1210</text>
+<text x="607.0" y="378.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="270.0" y1="398.0" x2="515.0" y2="398.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="392.0" x2="270.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="398.0" x2="270.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="319.0" y1="392.0" x2="319.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="319.0" y1="398.0" x2="319.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="368.0" y1="392.0" x2="368.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="368.0" y1="398.0" x2="368.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="417.0" y1="392.0" x2="417.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="417.0" y1="398.0" x2="417.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="466.0" y1="392.0" x2="466.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="466.0" y1="398.0" x2="466.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="515.0" y1="392.0" x2="515.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="515.0" y1="398.0" x2="515.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="56.0" y="406.0" width="24.4" height="20.0"/>
+<text x="98.0" y="416.0" class="row">Unreal Chaos</text>
+<rect x="270.0" y="409.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="270.0" y="409.0" width="213.0" height="14" rx="4" fill="#555555"/>
+<text x="607.0" y="416.0" class="value tab" text-anchor="end">1052.09 ms</text>
+<rect x="649.0" y="354.0" width="599.0" height="80" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="673.0" y="378.0" class="group">3 threads</text>
+<text x="887.0" y="378.0" class="small tab" text-anchor="middle">0</text>
+<text x="936.0" y="378.0" class="small tab" text-anchor="middle">242</text>
+<text x="985.0" y="378.0" class="small tab" text-anchor="middle">484</text>
+<text x="1034.0" y="378.0" class="small tab" text-anchor="middle">726</text>
+<text x="1083.0" y="378.0" class="small tab" text-anchor="middle">968</text>
+<text x="1132.0" y="378.0" class="small tab" text-anchor="middle">1210</text>
+<text x="1224.0" y="378.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="887.0" y1="398.0" x2="1132.0" y2="398.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="392.0" x2="887.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="398.0" x2="887.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="936.0" y1="392.0" x2="936.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="936.0" y1="398.0" x2="936.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="985.0" y1="392.0" x2="985.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="985.0" y1="398.0" x2="985.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1034.0" y1="392.0" x2="1034.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1034.0" y1="398.0" x2="1034.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1083.0" y1="392.0" x2="1083.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1083.0" y1="398.0" x2="1083.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1132.0" y1="392.0" x2="1132.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1132.0" y1="398.0" x2="1132.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="673.0" y="406.0" width="24.4" height="20.0"/>
+<text x="715.0" y="416.0" class="row">Unreal Chaos</text>
+<rect x="887.0" y="409.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="887.0" y="409.0" width="212.9" height="14" rx="4" fill="#555555"/>
+<text x="1224.0" y="416.0" class="value tab" text-anchor="end">1051.41 ms</text>
+<rect x="32.0" y="452.0" width="599.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="56.0" y="476.0" class="group">4 threads</text>
+<text x="270.0" y="476.0" class="small tab" text-anchor="middle">0</text>
+<text x="319.0" y="476.0" class="small tab" text-anchor="middle">242</text>
+<text x="368.0" y="476.0" class="small tab" text-anchor="middle">484</text>
+<text x="417.0" y="476.0" class="small tab" text-anchor="middle">726</text>
+<text x="466.0" y="476.0" class="small tab" text-anchor="middle">968</text>
+<text x="515.0" y="476.0" class="small tab" text-anchor="middle">1210</text>
+<text x="607.0" y="476.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="270.0" y1="496.0" x2="515.0" y2="496.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="490.0" x2="270.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="496.0" x2="270.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="319.0" y1="490.0" x2="319.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="319.0" y1="496.0" x2="319.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="368.0" y1="490.0" x2="368.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="368.0" y1="496.0" x2="368.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="417.0" y1="490.0" x2="417.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="417.0" y1="496.0" x2="417.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="466.0" y1="490.0" x2="466.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="466.0" y1="496.0" x2="466.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="515.0" y1="490.0" x2="515.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="515.0" y1="496.0" x2="515.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="56.0" y="504.0" width="24.4" height="20.0"/>
+<text x="98.0" y="514.0" class="row">Unreal Chaos</text>
+<rect x="270.0" y="507.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="270.0" y="507.0" width="192.6" height="14" rx="4" fill="#555555"/>
+<text x="607.0" y="514.0" class="value tab" text-anchor="end">951.36 ms</text>
+<rect x="649.0" y="452.0" width="599.0" height="80" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="673.0" y="476.0" class="group">5 threads</text>
+<text x="887.0" y="476.0" class="small tab" text-anchor="middle">0</text>
+<text x="936.0" y="476.0" class="small tab" text-anchor="middle">242</text>
+<text x="985.0" y="476.0" class="small tab" text-anchor="middle">484</text>
+<text x="1034.0" y="476.0" class="small tab" text-anchor="middle">726</text>
+<text x="1083.0" y="476.0" class="small tab" text-anchor="middle">968</text>
+<text x="1132.0" y="476.0" class="small tab" text-anchor="middle">1210</text>
+<text x="1224.0" y="476.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="887.0" y1="496.0" x2="1132.0" y2="496.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="490.0" x2="887.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="496.0" x2="887.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="936.0" y1="490.0" x2="936.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="936.0" y1="496.0" x2="936.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="985.0" y1="490.0" x2="985.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="985.0" y1="496.0" x2="985.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1034.0" y1="490.0" x2="1034.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1034.0" y1="496.0" x2="1034.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1083.0" y1="490.0" x2="1083.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1083.0" y1="496.0" x2="1083.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1132.0" y1="490.0" x2="1132.0" y2="502.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1132.0" y1="496.0" x2="1132.0" y2="518.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="673.0" y="504.0" width="24.4" height="20.0"/>
+<text x="715.0" y="514.0" class="row">Unreal Chaos</text>
+<rect x="887.0" y="507.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="887.0" y="507.0" width="173.7" height="14" rx="4" fill="#555555"/>
+<text x="1224.0" y="514.0" class="value tab" text-anchor="end">857.89 ms</text>
+<rect x="32.0" y="550.0" width="599.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="56.0" y="574.0" class="group">6 threads</text>
+<text x="270.0" y="574.0" class="small tab" text-anchor="middle">0</text>
+<text x="319.0" y="574.0" class="small tab" text-anchor="middle">242</text>
+<text x="368.0" y="574.0" class="small tab" text-anchor="middle">484</text>
+<text x="417.0" y="574.0" class="small tab" text-anchor="middle">726</text>
+<text x="466.0" y="574.0" class="small tab" text-anchor="middle">968</text>
+<text x="515.0" y="574.0" class="small tab" text-anchor="middle">1210</text>
+<text x="607.0" y="574.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="270.0" y1="594.0" x2="515.0" y2="594.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="588.0" x2="270.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="594.0" x2="270.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="319.0" y1="588.0" x2="319.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="319.0" y1="594.0" x2="319.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="368.0" y1="588.0" x2="368.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="368.0" y1="594.0" x2="368.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="417.0" y1="588.0" x2="417.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="417.0" y1="594.0" x2="417.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="466.0" y1="588.0" x2="466.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="466.0" y1="594.0" x2="466.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="515.0" y1="588.0" x2="515.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="515.0" y1="594.0" x2="515.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="56.0" y="602.0" width="24.4" height="20.0"/>
+<text x="98.0" y="612.0" class="row">Unreal Chaos</text>
+<rect x="270.0" y="605.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="270.0" y="605.0" width="160.4" height="14" rx="4" fill="#555555"/>
+<text x="607.0" y="612.0" class="value tab" text-anchor="end">791.97 ms</text>
+<rect x="649.0" y="550.0" width="599.0" height="80" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="673.0" y="574.0" class="group">8 threads</text>
+<text x="887.0" y="574.0" class="small tab" text-anchor="middle">0</text>
+<text x="936.0" y="574.0" class="small tab" text-anchor="middle">242</text>
+<text x="985.0" y="574.0" class="small tab" text-anchor="middle">484</text>
+<text x="1034.0" y="574.0" class="small tab" text-anchor="middle">726</text>
+<text x="1083.0" y="574.0" class="small tab" text-anchor="middle">968</text>
+<text x="1132.0" y="574.0" class="small tab" text-anchor="middle">1210</text>
+<text x="1224.0" y="574.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="887.0" y1="594.0" x2="1132.0" y2="594.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="588.0" x2="887.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="594.0" x2="887.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="936.0" y1="588.0" x2="936.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="936.0" y1="594.0" x2="936.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="985.0" y1="588.0" x2="985.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="985.0" y1="594.0" x2="985.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1034.0" y1="588.0" x2="1034.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1034.0" y1="594.0" x2="1034.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1083.0" y1="588.0" x2="1083.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1083.0" y1="594.0" x2="1083.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1132.0" y1="588.0" x2="1132.0" y2="600.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1132.0" y1="594.0" x2="1132.0" y2="616.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="673.0" y="602.0" width="24.4" height="20.0"/>
+<text x="715.0" y="612.0" class="row">Unreal Chaos</text>
+<rect x="887.0" y="605.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="887.0" y="605.0" width="142.7" height="14" rx="4" fill="#555555"/>
+<text x="1224.0" y="612.0" class="value tab" text-anchor="end">704.66 ms</text>
+<rect x="32.0" y="648.0" width="599.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="56.0" y="672.0" class="group">16 threads</text>
+<text x="270.0" y="672.0" class="small tab" text-anchor="middle">0</text>
+<text x="319.0" y="672.0" class="small tab" text-anchor="middle">242</text>
+<text x="368.0" y="672.0" class="small tab" text-anchor="middle">484</text>
+<text x="417.0" y="672.0" class="small tab" text-anchor="middle">726</text>
+<text x="466.0" y="672.0" class="small tab" text-anchor="middle">968</text>
+<text x="515.0" y="672.0" class="small tab" text-anchor="middle">1210</text>
+<text x="607.0" y="672.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="270.0" y1="692.0" x2="515.0" y2="692.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="686.0" x2="270.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="270.0" y1="692.0" x2="270.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="319.0" y1="686.0" x2="319.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="319.0" y1="692.0" x2="319.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="368.0" y1="686.0" x2="368.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="368.0" y1="692.0" x2="368.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="417.0" y1="686.0" x2="417.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="417.0" y1="692.0" x2="417.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="466.0" y1="686.0" x2="466.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="466.0" y1="692.0" x2="466.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="515.0" y1="686.0" x2="515.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="515.0" y1="692.0" x2="515.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="56.0" y="700.0" width="24.4" height="20.0"/>
+<text x="98.0" y="710.0" class="row">Unreal Chaos</text>
+<rect x="270.0" y="703.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="270.0" y="703.0" width="124.7" height="14" rx="4" fill="#555555"/>
+<text x="607.0" y="710.0" class="value tab" text-anchor="end">615.89 ms</text>
+<rect x="649.0" y="648.0" width="599.0" height="80" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="673.0" y="672.0" class="group">24 threads</text>
+<text x="887.0" y="672.0" class="small tab" text-anchor="middle">0</text>
+<text x="936.0" y="672.0" class="small tab" text-anchor="middle">242</text>
+<text x="985.0" y="672.0" class="small tab" text-anchor="middle">484</text>
+<text x="1034.0" y="672.0" class="small tab" text-anchor="middle">726</text>
+<text x="1083.0" y="672.0" class="small tab" text-anchor="middle">968</text>
+<text x="1132.0" y="672.0" class="small tab" text-anchor="middle">1210</text>
+<text x="1224.0" y="672.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="887.0" y1="692.0" x2="1132.0" y2="692.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="686.0" x2="887.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="887.0" y1="692.0" x2="887.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="936.0" y1="686.0" x2="936.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="936.0" y1="692.0" x2="936.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="985.0" y1="686.0" x2="985.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="985.0" y1="692.0" x2="985.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1034.0" y1="686.0" x2="1034.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1034.0" y1="692.0" x2="1034.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1083.0" y1="686.0" x2="1083.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1083.0" y1="692.0" x2="1083.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="1132.0" y1="686.0" x2="1132.0" y2="698.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="1132.0" y1="692.0" x2="1132.0" y2="714.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-unreal_chaos" x="673.0" y="700.0" width="24.4" height="20.0"/>
+<text x="715.0" y="710.0" class="row">Unreal Chaos</text>
+<rect x="887.0" y="703.0" width="245.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="887.0" y="703.0" width="117.7" height="14" rx="4" fill="#555555"/>
+<text x="1224.0" y="710.0" class="value tab" text-anchor="end">581.25 ms</text>
+</svg>

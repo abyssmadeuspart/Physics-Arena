@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "run_id": "2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10",
+  "host_route": "windows",
+  "case_id": "box_container_pile_10k",
+  "benchmark_mode": "headless_api",
+  "thread_counts": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    16,
+    24
+  ],
+  "thread_selection": {
+    "mode": "default",
+    "host_logical_threads": 24,
+    "thread_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      16,
+      24
+    ],
+    "requested_max": 0,
+    "effective_max": 0,
+    "requested_thread_counts": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      16,
+      24
+    ],
+    "dropped_thread_counts": []
+  },
+  "step_count": 300,
+  "warmup_steps": 30,
+  "repeat_count": 10,
+  "run_slug_metadata": {
+    "run_slug": "2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10",
+    "base_run_slug": "2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10",
+    "timestamp": "2026-07-09_0112",
+    "timestamp_source": "local_time",
+    "timestamp_format": "%Y-%m-%d_%H%M",
+    "thread_selection_token": "threads-1-2-3-4-5-6-8-16-24",
+    "collision_suffix": ""
+  },
+  "host": {
+    "cpu": {
+      "model": "Intel Core i7-13700K",
+      "physical_cores": 16,
+      "logical_threads": 24,
+      "max_clock_mhz": 3400,
+      "current_clock_mhz": 3400,
+      "p_core_count": 8,
+      "e_core_count": 8,
+      "topology": "8P+8E / 24T"
+    },
+    "memory": {
+      "total_gb": 64,
+      "type": "DDR5",
+      "configured_clock_mhz": 4800,
+      "modules": [
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller0-DIMMA2"
+        },
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller1-DIMMB2"
+        }
+      ]
+    },
+    "os": {
+      "name": "Microsoft Windows 11 Pro for Workstations",
+      "version": "10.0.26200",
+      "build": "26200",
+      "architecture": "64-bit"
+    },
+    "motherboard": {
+      "model": "Micro-Star International Co., Ltd. PRO Z790-A WIFI (MS-7E07)",
+      "bios_version": "A.E0",
+      "bios_date": "2024-09-30"
+    },
+    "metadata_sources": {
+      "cpu.model": "windows_cim",
+      "cpu.physical_cores": "windows_processor_topology_api",
+      "cpu.logical_threads": "windows_processor_topology_api",
+      "cpu.max_clock_mhz": "windows_cim",
+      "cpu.current_clock_mhz": "windows_cim",
+      "memory.total_gb": "windows_cim",
+      "memory.type": "windows_cim",
+      "memory.configured_clock_mhz": "windows_cim",
+      "memory.modules": "windows_cim",
+      "os.name": "windows_cim",
+      "os.version": "windows_cim",
+      "os.build": "windows_cim",
+      "os.architecture": "windows_cim",
+      "motherboard.model": "windows_cim",
+      "motherboard.bios_version": "windows_cim",
+      "motherboard.bios_date": "windows_cim",
+      "cpu.p_core_count": "windows_processor_topology_api",
+      "cpu.e_core_count": "windows_processor_topology_api",
+      "cpu.topology": "windows_processor_topology_api"
+    }
+  },
+  "engines": [
+    {
+      "id": "box3d",
+      "release_artifact_manifest": "release/windows-x64/box3d/artifact-manifest.json",
+      "artifact_manifest_sha256": "3445e4837762f8c6fd0edb1093d6e3e59a2146d108aba29948ac12d8c2e85a16"
+    },
+    {
+      "id": "joltphysics",
+      "release_artifact_manifest": "release/windows-x64/joltphysics/artifact-manifest.json",
+      "artifact_manifest_sha256": "c60d5a50c4326b32509b032bf36d27ed8e6ddbb0a9c5653b3c12a79cb7fe9c35"
+    },
+    {
+      "id": "bepuphysics2",
+      "release_artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json",
+      "artifact_manifest_sha256": "9f1ccd3942e24debbaa5afdfe0effc90f08f976688db33dce476718b368761a7"
+    },
+    {
+      "id": "rapier3d",
+      "release_artifact_manifest": "release/windows-x64/rapier3d/artifact-manifest.json",
+      "artifact_manifest_sha256": "b9aba1ca70560109e80cad948ecbaecad2449d0ccadc4f80707bf01b7aea574a"
+    },
+    {
+      "id": "avian3d",
+      "release_artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json",
+      "artifact_manifest_sha256": "50cc5da044b19513c3709f40c350e799e0640f7797f1aedc600f73c32a7659f7"
+    },
+    {
+      "id": "unity_physics",
+      "release_artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json",
+      "artifact_manifest_sha256": "b9e6306a9838beda5e05df42948d5cb828ccefbcd37e60ee6f176aeb2f0b99f6"
+    },
+    {
+      "id": "physx34",
+      "release_artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json",
+      "artifact_manifest_sha256": "1ba3316a19d1b1307dff6d724108d8e85ae5824da312daee0b34db5a3f88a137"
+    },
+    {
+      "id": "nvidia_physx34",
+      "release_artifact_manifest": "release/windows-x64/nvidia-physx-3.4/artifact-manifest.json",
+      "artifact_manifest_sha256": "f5c3f901269359bbbf3e4d08629544c72f8ff3ef177ffc9a9788453a05add47d"
+    },
+    {
+      "id": "nvidia_physx5",
+      "release_artifact_manifest": "release/windows-x64/nvidia-physx-5.6/artifact-manifest.json",
+      "artifact_manifest_sha256": "1ffc7317d5db5836ecc599af1667b1637712fdb1ee125bb67e0d87217427fdb1"
+    }
+  ]
+}

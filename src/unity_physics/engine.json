@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "engine_id": "unity_physics",
+  "route_status": "working",
+  "supported_platforms": [
+    "linux",
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/unity_physics",
+  "report_metadata": {
+    "physics_settings": "PhysicsStep default solver; synchronize_collision_world=on",
+    "build_settings": "Unity 6000.5.2f1 Release IL2CPP player; Burst on; safety off"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "working",
+      "visual": "working"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "unity_editor_version",
+    "unity_physics_package_version",
+    "entities_package_version",
+    "burst_package_version",
+    "collections_package_version",
+    "build_target",
+    "backend",
+    "burst_enabled_state",
+    "safety_check_state"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count_minus_one",
+    "effective_worker_count": "thread_count_minus_one",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "unity_batchmode",
+    "route_status": "working"
+  },
+  "run": {
+    "route": "unity_player",
+    "route_status": "working",
+    "executable_env": "UNITY_PHYSICS_PLAYER_EXE",
+    "executable_names": [
+      "BenchmarkPolygonUnityPhysics",
+      "BenchmarkPolygonUnityPhysics.exe",
+      "BenchmarkPolygonUnityPhysics.app"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "unity_player",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "not_applicable",
+    "repeat_mode": "per_repeat",
+    "args": [
+      "-batchmode",
+      "-nographics",
+      "--",
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "working",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "working"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json"
+  }
+}

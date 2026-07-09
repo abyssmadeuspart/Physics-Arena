@@ -1,0 +1,81 @@
+{
+  "TargetName": "BenchmarkPolygonChaosRunner",
+  "Platform": "Win64",
+  "Configuration": "Shipping",
+  "BuildSettingsVersion": "V1",
+  "TargetBuildEnvironment": "Unique",
+  "TargetType": "Program",
+  "IsTestTarget": false,
+  "Architecture": "x64",
+  "Project": "../../BenchmarkPolygonChaos.uproject",
+  "Launch": "$(ProjectDir)/Binaries/Win64/BenchmarkPolygonChaosRunner-Win64-Shipping.exe",
+  "Version": {
+    "MajorVersion": 5,
+    "MinorVersion": 8,
+    "PatchVersion": 0,
+    "Changelist": 0,
+    "CompatibleChangelist": 0,
+    "IsLicenseeVersion": 0,
+    "IsPromotedBuild": 0,
+    "BranchName": "UE5",
+    "BuildId": "407c656b-6fe3-43d1-8e2a-1239dec3fd7b"
+  },
+  "BuildProducts": [
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/BenchmarkPolygonChaosRunner-Win64-Shipping.exe",
+      "Type": "Executable"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/BenchmarkPolygonChaosRunner-Win64-Shipping.pdb",
+      "Type": "SymbolFile"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/D3D12/x64/D3D12Core.dll",
+      "Type": "DynamicLibrary"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/D3D12/x64/d3d12SDKLayers.dll",
+      "Type": "DynamicLibrary"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/tbb12.dll",
+      "Type": "DynamicLibrary"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/tbbmalloc.dll",
+      "Type": "DynamicLibrary"
+    }
+  ],
+  "RuntimeDependencies": [
+    {
+      "Path": "$(EngineDir)/Binaries/ThirdParty/DbgHelp/dbghelp.dll",
+      "Type": "NonUFS"
+    },
+    {
+      "Path": "$(ProjectDir)/BenchmarkPolygonChaos.uproject",
+      "Type": "UFS"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/D3D12/x64/D3D12Core.dll",
+      "Type": "NonUFS"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/D3D12/x64/d3d12SDKLayers.dll",
+      "Type": "NonUFS"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/tbb12.dll",
+      "Type": "NonUFS"
+    },
+    {
+      "Path": "$(ProjectDir)/Binaries/Win64/tbbmalloc.dll",
+      "Type": "NonUFS"
+    }
+  ],
+  "AdditionalProperties": [
+    {
+      "Name": "SDK",
+      "Value": "Not Applicable"
+    }
+  ]
+}

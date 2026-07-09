@@ -1,0 +1,1165 @@
+{
+  "schema_version": 1,
+  "engine_id": "bepuphysics2",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "f73164bb3c9ca733eb3329f1f6b1cea4e216ece7",
+  "source_provenance": "pinned upstream source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.exe",
+  "launcher": "direct",
+  "required_sidecars": [
+    "release/windows-x64/bepuphysics2/BepuPhysics.dll",
+    "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.deps.json",
+    "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.dll",
+    "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.runtimeconfig.json",
+    "release/windows-x64/bepuphysics2/BepuUtilities.dll",
+    "release/windows-x64/bepuphysics2/Microsoft.CSharp.dll",
+    "release/windows-x64/bepuphysics2/Microsoft.VisualBasic.Core.dll",
+    "release/windows-x64/bepuphysics2/Microsoft.VisualBasic.dll",
+    "release/windows-x64/bepuphysics2/Microsoft.Win32.Primitives.dll",
+    "release/windows-x64/bepuphysics2/Microsoft.Win32.Registry.dll",
+    "release/windows-x64/bepuphysics2/System.AppContext.dll",
+    "release/windows-x64/bepuphysics2/System.Buffers.dll",
+    "release/windows-x64/bepuphysics2/System.Collections.Concurrent.dll",
+    "release/windows-x64/bepuphysics2/System.Collections.Immutable.dll",
+    "release/windows-x64/bepuphysics2/System.Collections.NonGeneric.dll",
+    "release/windows-x64/bepuphysics2/System.Collections.Specialized.dll",
+    "release/windows-x64/bepuphysics2/System.Collections.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.Annotations.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.DataAnnotations.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.EventBasedAsync.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.TypeConverter.dll",
+    "release/windows-x64/bepuphysics2/System.ComponentModel.dll",
+    "release/windows-x64/bepuphysics2/System.Configuration.dll",
+    "release/windows-x64/bepuphysics2/System.Console.dll",
+    "release/windows-x64/bepuphysics2/System.Core.dll",
+    "release/windows-x64/bepuphysics2/System.Data.Common.dll",
+    "release/windows-x64/bepuphysics2/System.Data.DataSetExtensions.dll",
+    "release/windows-x64/bepuphysics2/System.Data.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.Contracts.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.Debug.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.DiagnosticSource.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.FileVersionInfo.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.Process.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.StackTrace.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.TextWriterTraceListener.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.Tools.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.TraceSource.dll",
+    "release/windows-x64/bepuphysics2/System.Diagnostics.Tracing.dll",
+    "release/windows-x64/bepuphysics2/System.Drawing.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.Drawing.dll",
+    "release/windows-x64/bepuphysics2/System.Dynamic.Runtime.dll",
+    "release/windows-x64/bepuphysics2/System.Formats.Asn1.dll",
+    "release/windows-x64/bepuphysics2/System.Formats.Tar.dll",
+    "release/windows-x64/bepuphysics2/System.Globalization.Calendars.dll",
+    "release/windows-x64/bepuphysics2/System.Globalization.Extensions.dll",
+    "release/windows-x64/bepuphysics2/System.Globalization.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Compression.Brotli.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Compression.FileSystem.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Compression.Native.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Compression.ZipFile.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Compression.dll",
+    "release/windows-x64/bepuphysics2/System.IO.FileSystem.AccessControl.dll",
+    "release/windows-x64/bepuphysics2/System.IO.FileSystem.DriveInfo.dll",
+    "release/windows-x64/bepuphysics2/System.IO.FileSystem.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.IO.FileSystem.Watcher.dll",
+    "release/windows-x64/bepuphysics2/System.IO.FileSystem.dll",
+    "release/windows-x64/bepuphysics2/System.IO.IsolatedStorage.dll",
+    "release/windows-x64/bepuphysics2/System.IO.MemoryMappedFiles.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Pipelines.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Pipes.AccessControl.dll",
+    "release/windows-x64/bepuphysics2/System.IO.Pipes.dll",
+    "release/windows-x64/bepuphysics2/System.IO.UnmanagedMemoryStream.dll",
+    "release/windows-x64/bepuphysics2/System.IO.dll",
+    "release/windows-x64/bepuphysics2/System.Linq.AsyncEnumerable.dll",
+    "release/windows-x64/bepuphysics2/System.Linq.Expressions.dll",
+    "release/windows-x64/bepuphysics2/System.Linq.Parallel.dll",
+    "release/windows-x64/bepuphysics2/System.Linq.Queryable.dll",
+    "release/windows-x64/bepuphysics2/System.Linq.dll",
+    "release/windows-x64/bepuphysics2/System.Memory.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Http.Json.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Http.dll",
+    "release/windows-x64/bepuphysics2/System.Net.HttpListener.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Mail.dll",
+    "release/windows-x64/bepuphysics2/System.Net.NameResolution.dll",
+    "release/windows-x64/bepuphysics2/System.Net.NetworkInformation.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Ping.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Quic.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Requests.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Security.dll",
+    "release/windows-x64/bepuphysics2/System.Net.ServerSentEvents.dll",
+    "release/windows-x64/bepuphysics2/System.Net.ServicePoint.dll",
+    "release/windows-x64/bepuphysics2/System.Net.Sockets.dll",
+    "release/windows-x64/bepuphysics2/System.Net.WebClient.dll",
+    "release/windows-x64/bepuphysics2/System.Net.WebHeaderCollection.dll",
+    "release/windows-x64/bepuphysics2/System.Net.WebProxy.dll",
+    "release/windows-x64/bepuphysics2/System.Net.WebSockets.Client.dll",
+    "release/windows-x64/bepuphysics2/System.Net.WebSockets.dll",
+    "release/windows-x64/bepuphysics2/System.Net.dll",
+    "release/windows-x64/bepuphysics2/System.Numerics.Vectors.dll",
+    "release/windows-x64/bepuphysics2/System.Numerics.dll",
+    "release/windows-x64/bepuphysics2/System.ObjectModel.dll",
+    "release/windows-x64/bepuphysics2/System.Private.CoreLib.dll",
+    "release/windows-x64/bepuphysics2/System.Private.DataContractSerialization.dll",
+    "release/windows-x64/bepuphysics2/System.Private.Uri.dll",
+    "release/windows-x64/bepuphysics2/System.Private.Xml.Linq.dll",
+    "release/windows-x64/bepuphysics2/System.Private.Xml.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.DispatchProxy.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Emit.ILGeneration.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Emit.Lightweight.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Emit.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Extensions.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Metadata.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.TypeExtensions.dll",
+    "release/windows-x64/bepuphysics2/System.Reflection.dll",
+    "release/windows-x64/bepuphysics2/System.Resources.Reader.dll",
+    "release/windows-x64/bepuphysics2/System.Resources.ResourceManager.dll",
+    "release/windows-x64/bepuphysics2/System.Resources.Writer.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.CompilerServices.Unsafe.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.CompilerServices.VisualC.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Extensions.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Handles.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.JavaScript.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.RuntimeInformation.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Intrinsics.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Loader.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Numerics.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Formatters.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Json.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Xml.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.Serialization.dll",
+    "release/windows-x64/bepuphysics2/System.Runtime.dll",
+    "release/windows-x64/bepuphysics2/System.Security.AccessControl.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Claims.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.Algorithms.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.Cng.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.Csp.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.Encoding.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.OpenSsl.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.Primitives.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.X509Certificates.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Cryptography.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Principal.Windows.dll",
+    "release/windows-x64/bepuphysics2/System.Security.Principal.dll",
+    "release/windows-x64/bepuphysics2/System.Security.SecureString.dll",
+    "release/windows-x64/bepuphysics2/System.Security.dll",
+    "release/windows-x64/bepuphysics2/System.ServiceModel.Web.dll",
+    "release/windows-x64/bepuphysics2/System.ServiceProcess.dll",
+    "release/windows-x64/bepuphysics2/System.Text.Encoding.CodePages.dll",
+    "release/windows-x64/bepuphysics2/System.Text.Encoding.Extensions.dll",
+    "release/windows-x64/bepuphysics2/System.Text.Encoding.dll",
+    "release/windows-x64/bepuphysics2/System.Text.Encodings.Web.dll",
+    "release/windows-x64/bepuphysics2/System.Text.Json.dll",
+    "release/windows-x64/bepuphysics2/System.Text.RegularExpressions.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.AccessControl.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Channels.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Overlapped.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Tasks.Dataflow.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Tasks.Extensions.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Tasks.Parallel.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Tasks.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Thread.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.ThreadPool.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.Timer.dll",
+    "release/windows-x64/bepuphysics2/System.Threading.dll",
+    "release/windows-x64/bepuphysics2/System.Transactions.Local.dll",
+    "release/windows-x64/bepuphysics2/System.Transactions.dll",
+    "release/windows-x64/bepuphysics2/System.ValueTuple.dll",
+    "release/windows-x64/bepuphysics2/System.Web.HttpUtility.dll",
+    "release/windows-x64/bepuphysics2/System.Web.dll",
+    "release/windows-x64/bepuphysics2/System.Windows.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.Linq.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.ReaderWriter.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.Serialization.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.XDocument.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.XPath.XDocument.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.XPath.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.XmlDocument.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.XmlSerializer.dll",
+    "release/windows-x64/bepuphysics2/System.Xml.dll",
+    "release/windows-x64/bepuphysics2/System.dll",
+    "release/windows-x64/bepuphysics2/WindowsBase.dll",
+    "release/windows-x64/bepuphysics2/clretwrc.dll",
+    "release/windows-x64/bepuphysics2/clrgc.dll",
+    "release/windows-x64/bepuphysics2/clrgcexp.dll",
+    "release/windows-x64/bepuphysics2/clrjit.dll",
+    "release/windows-x64/bepuphysics2/coreclr.dll",
+    "release/windows-x64/bepuphysics2/hostfxr.dll",
+    "release/windows-x64/bepuphysics2/hostpolicy.dll",
+    "release/windows-x64/bepuphysics2/mscorlib.dll",
+    "release/windows-x64/bepuphysics2/mscorrc.dll",
+    "release/windows-x64/bepuphysics2/msquic.dll",
+    "release/windows-x64/bepuphysics2/netstandard.dll"
+  ],
+  "compiler_runtime": {
+    "toolchain_id": "dotnet10_release_no_profiling_self_contained",
+    "compiler_detail": "10.0.301",
+    "runtime_detail": "net10.0 self-contained win-x64 apphost with Microsoft.NETCore.App 10.0.9; no installed .NET 10 runtime required"
+  },
+  "package_metadata": {
+    "build_label": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling",
+    "package_mode": "self_contained_apphost",
+    "runtime_target_framework": "net10.0",
+    "included_frameworks": [
+      "Microsoft.NETCore.App 10.0.9"
+    ],
+    "runner_configuration": "Release",
+    "bepu_physics_configuration": "ReleaseNoProfiling",
+    "bepu_utilities_configuration": "Release"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuPhysics.dll",
+      "sha256": "692a0c980d6e3cbc947848f962f367e1406de6b01b581874749aa7463bc8a175",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.deps.json",
+      "sha256": "4e68d575b18983e9be5889a4dd9d9f12eea5f3e57ce47d37fa1393ce9de31d18",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.dll",
+      "sha256": "1266c3b005ebb15ad98064e08476ce395a970875589234c358cecea0ab74a816",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.exe",
+      "sha256": "ae14b55cf99214b2a57d449c0500c77caccfebc5ed2f1e847798ee9c6cbce890",
+      "role": "executable"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuPhysics2.PolygonRunner.runtimeconfig.json",
+      "sha256": "0a869730100437b0af93e6dd119bad57dcde6cf55ded981d7abc76bb6110aeb8",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/BepuUtilities.dll",
+      "sha256": "7d1b66e0ff7f0b9b80b4ae9698d53fcec7b49c873a07bb84b221c56be9d4d292",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/Microsoft.CSharp.dll",
+      "sha256": "c43485d9e96cb000ae0e21d7db370955c4ccb77e9142be76477d6481aa2e72e1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/Microsoft.VisualBasic.Core.dll",
+      "sha256": "28a5995189906c15f76e6738cb2c53fa8ff23f0e60d15a412bb06dc298d03aa2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/Microsoft.VisualBasic.dll",
+      "sha256": "ffc58a6ae8d21014bc88c27c9c258fdd74ce5d62d2761825e29978ad374768a0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/Microsoft.Win32.Primitives.dll",
+      "sha256": "948107ac6afb355344751a1454bfb9ff8bee5a90909be71e5a4a9856d40e963f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/Microsoft.Win32.Registry.dll",
+      "sha256": "c3bc5123f63651c7b1faa11c313a03826895721b0934e1f2b3118ba7a70df5d5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.AppContext.dll",
+      "sha256": "d5a9be99ff048122f11f39b8c5b4394c3ab5753596c2eff7b7ee1abeaea9bc1b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Buffers.dll",
+      "sha256": "e1ba509ef2ae77acafbe60907fd0fea4ee1c32e8afa0399ed1e23d4d93fc2aa3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Collections.Concurrent.dll",
+      "sha256": "0d1a713952d044f3f707a6d0b7b03bd64d410d4866d55cd0c172aea5c315387d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Collections.Immutable.dll",
+      "sha256": "f1bf4d036baf22580ced0afcd1512d1582e9990edad9ad50e83a0a5870330a29",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Collections.NonGeneric.dll",
+      "sha256": "79e04d080b8c3eb92bd75d3358939b2e0adf2cad2639654ccc3b9722dde2ba14",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Collections.Specialized.dll",
+      "sha256": "5393620f914b78e5b40caa4d04bc5340fe5af5d23e288f1400d531cc9708fd75",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Collections.dll",
+      "sha256": "e8a4b43005fff65121433b298659322410a69bc02bcf44b223f1ed282a3a0335",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.Annotations.dll",
+      "sha256": "a1017091b7811152d6781a5d40aa4c9e20df80e7cfdaa5b851e8f7943720b04c",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.DataAnnotations.dll",
+      "sha256": "937368f90c008d6f264187d2c63d1f9ef293e93840e989b12c05e0f915c3fc1d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.EventBasedAsync.dll",
+      "sha256": "cb3d56e9f47d93ef5d71d9e4c5fbaf66d36d360d652772c82461154785329247",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.Primitives.dll",
+      "sha256": "cd2ba2cd76736c694e681b16b637bd6438d8bbda85017097efe4f3434ceaea3e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.TypeConverter.dll",
+      "sha256": "2028ce8bddd7438ae07851921dba921c4bec2f2554038658aca4f9a58a24a16d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ComponentModel.dll",
+      "sha256": "aa146801ec84f20bdd0ba2f9114d868b8dc5723b75c7052d73dc16482eef7d4a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Configuration.dll",
+      "sha256": "b4eb54b12477324bd48a7b31553ac5b407e5f3016170ca7a1a6987e568cabc2e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Console.dll",
+      "sha256": "07313d866c7e63c8e197b49389bf6c8fc7f14a23d21c9f8851743a45c6d6b305",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Core.dll",
+      "sha256": "0028df97a8bc980612c9307e955bbb484d8b896942ccf11f3fb83be8f095ecd0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Data.Common.dll",
+      "sha256": "edff10951101269bfd3ea05c722f724c3e4cb337801209c3b4cbb32b7844f298",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Data.DataSetExtensions.dll",
+      "sha256": "cdf705bbec712be45beab5fef030c35839f86249044ef97776b6233c7d742ad3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Data.dll",
+      "sha256": "80124b86561d529f986b4f539b09b957555d82a1dc4cd42a184096bbaa9258f6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.Contracts.dll",
+      "sha256": "00c65d5b567ca6eb3d9688e5e43aa526efec14c02b87cd1dcb52e70087fc28bf",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.Debug.dll",
+      "sha256": "313f40e64ad892cb72f7892969fcb833a751c9e8b5ddaa498c5597bc04ae7ea5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.DiagnosticSource.dll",
+      "sha256": "659102f1bd66b38a5416ecc387f90881d9afb99ee3a32df66f21711424af16d1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.FileVersionInfo.dll",
+      "sha256": "8fdb8e65845e0eebc8d633811230a2a09209f003caefbc1512ef8190c1013e20",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.Process.dll",
+      "sha256": "3e1e85eb09b1e7f23c5a26e40f725dfe95810e27b7d038fdfbf24664948de5d3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.StackTrace.dll",
+      "sha256": "12fc06aa3e24fd2d68792d67fd0de4f33eea209851d626a3e6598ff71ef93e77",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.TextWriterTraceListener.dll",
+      "sha256": "1e86c620203b06637500c2f9f09e0259b2696721f5dbc13f9cf7e97b4e798eba",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.Tools.dll",
+      "sha256": "bb16f727574d9bd88ac301e30f652bbcf510466492057995edf9e647f0c4e984",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.TraceSource.dll",
+      "sha256": "1c6f990375348ad3230f025d1b7243ef1f945e19150d7a807262ecf5766945bd",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Diagnostics.Tracing.dll",
+      "sha256": "6da7623be2f8f1bae1876bf9b8f3ad459e26bdb90a24d29d4d7b46fd6df618aa",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Drawing.Primitives.dll",
+      "sha256": "f3433ee65bd917f3a7053db0c82b279e497b20d21e7315c30ae0ea7db7988679",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Drawing.dll",
+      "sha256": "b4228c7604d8d14550e93d13fb8ca1f89d960760b9fdb4abdb14e4d5c21783b2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Dynamic.Runtime.dll",
+      "sha256": "11944c0ad34cb0c5d223f5f28867782f76b724304dd82a3062f367a1d0cdb6fd",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Formats.Asn1.dll",
+      "sha256": "b469339fc34280c568934a40f2aacaa57e6a39596895e6872f5820b85e0c8e2e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Formats.Tar.dll",
+      "sha256": "fe6ee82b2812733676603a8b0a1519ffb77637d806de1fafcc7de0bc9369c136",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Globalization.Calendars.dll",
+      "sha256": "c627092c73fb4edf920688b3cabfa501f5afe3b6d7f60444206035dea61c5d5b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Globalization.Extensions.dll",
+      "sha256": "6b3fb2d2e07ce6c9ea283f644ce80085ba8e968f64ed44b73bef90b8802340c0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Globalization.dll",
+      "sha256": "d3cb08ee8e2733ea4b285a0af9ea7e33c2cbdbd27ccf6cb3d102980958cca50b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Compression.Brotli.dll",
+      "sha256": "ef253b34086d2819f0c4764d15c13a862cb9a320ae65e801a8b51de225f80d14",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Compression.FileSystem.dll",
+      "sha256": "300adfa8e1b24efc98fe6efe174022119b7a7c3bc6aeea4da080844c48f86845",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Compression.Native.dll",
+      "sha256": "3345a88bec37b8cd6af68060a3d714e521184864249d1d136ebb6486ed0a51e9",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Compression.ZipFile.dll",
+      "sha256": "bf8e10ebf3dbf781030af6003dd2552f17a61e84a289922ef29b28bdb04397d6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Compression.dll",
+      "sha256": "fe9f9a5629d365bbc366b009218e79875d130bfc9e479b8bab681d0307d16ea4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.FileSystem.AccessControl.dll",
+      "sha256": "df43290dde6312e9e217c0a2eb223f2891f5629f5d2215aae413abc71bf0b4e8",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.FileSystem.DriveInfo.dll",
+      "sha256": "f1e5141478ef400c2ca193675e44f46137cf02ddc29a931698df1cd2080931c3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.FileSystem.Primitives.dll",
+      "sha256": "2fa73a05d19a1f7fdac471f8969016a188eab7e604072c05f2e1bcf6e337512c",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.FileSystem.Watcher.dll",
+      "sha256": "ef6b54491ec9be9491ed4b4dfacde183edc0f5a17a35cfb5a2da09e623d25299",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.FileSystem.dll",
+      "sha256": "4a22e9a2d690bab42aa8131850f86356b87f6a48348b3044c34f862b0fc34f57",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.IsolatedStorage.dll",
+      "sha256": "34283a7e1620021dedc07bb0a61a26809dafab36698289a6b0774fec5475473e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.MemoryMappedFiles.dll",
+      "sha256": "c1cc1836b805f2544f49bbfa0fb3bc920143a1d6f8c437214cfdef655037e2d5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Pipelines.dll",
+      "sha256": "337f64b658e93192560bfb6f1a0debf152f02263c39aed68636181df48921086",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Pipes.AccessControl.dll",
+      "sha256": "8ce9a1db25eb64e032ff190b3a3511c3c7069a97751651f8cc2ae7a888dd7a55",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.Pipes.dll",
+      "sha256": "476d4e967080c0f41b4f71d3593f4c6cbd6f492e14a923f21e5d5c272c0eb6ce",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.UnmanagedMemoryStream.dll",
+      "sha256": "8014405c32e07f9f4f8d024d374855aabf09a6490e6f5a7c2758a46b8d0c727e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.IO.dll",
+      "sha256": "f5f0aaa66f552c7c0867c3ca00c3df1b4108a8539817b24a33f002da19e59ac1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Linq.AsyncEnumerable.dll",
+      "sha256": "bad2460349585a7bd8a661c0f71c00005bc4e7261e00853fdd1e16cb5d5b1e0b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Linq.Expressions.dll",
+      "sha256": "359b7d6512e2cce0520548a919bb9a2bfc1948b523c8c276b6ea4bfa1d550090",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Linq.Parallel.dll",
+      "sha256": "9f3559634e8f812d6571b1e1cfe8199e7356b92c211d333f62d604395466c3b9",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Linq.Queryable.dll",
+      "sha256": "4471914fc73ffc60739d53e3c0ec0e24059f70c62ba66043089c94e3c63f3ad1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Linq.dll",
+      "sha256": "2142f1e852b8edbf8dceddb575177295dde02c8a368e716f0ca0c902d42bfe03",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Memory.dll",
+      "sha256": "8a9eb705fe5a69e936e49f86b507cbcb8dd1d2889f925485b5cd412deaa8dc50",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Http.Json.dll",
+      "sha256": "aecb94668a6a5cd744978e4551bcbcbb88b93e9a4a028015cea7d499e03987f9",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Http.dll",
+      "sha256": "9b6b1e1f5e8b6ac535241cd514e1b1c1e15b2fac9df30fc0f1369c1b8a9d1433",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.HttpListener.dll",
+      "sha256": "5d4770ade352b4d33018025e8d3195d62847e6bfba7e7fdb38e504a7015b1858",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Mail.dll",
+      "sha256": "fd6280fdb57aeaec0d753509ecf88b5a8a4a6ca79d3e617f83ae345ccc382a49",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.NameResolution.dll",
+      "sha256": "7c25f1ccb5adca2e5303d12e9ea7c1d0fb1c89a03eaa54dd23355533274384b5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.NetworkInformation.dll",
+      "sha256": "9cf015327c5587233d3663ed26ee6d23096ea26b388199afbe397fa18d4a4f52",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Ping.dll",
+      "sha256": "2aaa666a5ead9a907d71ccd6751841f7e9787b747733124ac193595ead5b5c45",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Primitives.dll",
+      "sha256": "e18855a267b2c1ee06b45d35f5497fe12762850eec5b15595aeb2d2f0520e107",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Quic.dll",
+      "sha256": "7443294ca7ccea1b8732989e6f94e65cd1e3049fbc8ebdbf5f98e515b7e74ea2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Requests.dll",
+      "sha256": "ac796cba2e96c0720f151c204a6a296f7f7b443b8ffc288d9d6afe4f05105c3a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Security.dll",
+      "sha256": "34349b8333c371434f9bf516d6d41c50c96556ab0fe65605d452fbe5157e1a39",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.ServerSentEvents.dll",
+      "sha256": "6d30c7a67699f727bb3a64f28d4cf3d322673a6ea2220c3e341e40a1145838f2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.ServicePoint.dll",
+      "sha256": "b967a71748365c892ebb74add5d14c4cb2db2f8a20e28ceba2c3794a2bfe9dab",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.Sockets.dll",
+      "sha256": "59e0541248eec218e55cfb8512d659bbfee679475e9e90cf3e481400e85e52e2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.WebClient.dll",
+      "sha256": "1528a8add57ac0f3694a495e251bcc0ae5002d344df874c3611e8cdd940af185",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.WebHeaderCollection.dll",
+      "sha256": "b2f04b6bbdd761ae7f92bff371325cc3a7bf92bb07eb04025ea6f6a24bb29532",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.WebProxy.dll",
+      "sha256": "d695d9832cc46434e88ada89551c59d481e19f95f8dca8ec87f7c34223fb84cf",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.WebSockets.Client.dll",
+      "sha256": "c40513e37e56feb92e80890a945192d48234946031d751072d078bb4493a1743",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.WebSockets.dll",
+      "sha256": "e263f60be5a675465d98380924f6d08fbc9e008ec9ffb0f231df1ecbf93c618b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Net.dll",
+      "sha256": "913d4c5541e2e6a06068d248fa287dc0dc1a680172346dcd11c620c60463959a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Numerics.Vectors.dll",
+      "sha256": "7dfa028fb9fa83782a0f07123639179345bb68d14a9303d33b200270c66cee13",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Numerics.dll",
+      "sha256": "5e8f8df8f1a9e4a8d6c6f0294b74621d83feabb3e7b6682433ef33a4db6b12f0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ObjectModel.dll",
+      "sha256": "967398fe2576406a60b4b0e9a1a6c81f9440799cb3923b2787a74fe3a02044da",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Private.CoreLib.dll",
+      "sha256": "dc1945de746f94987ec705a1f27d512abf72a41a1da37e414d1951e4e823037a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Private.DataContractSerialization.dll",
+      "sha256": "33be9654ddcd570100ac6882500684ed95d3715415071ea3a1b35e8da7366896",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Private.Uri.dll",
+      "sha256": "5eba7dfb1d8a639c918ea182a15bd35256a11f9853003d39e7ad757ae08d4fca",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Private.Xml.Linq.dll",
+      "sha256": "ed6e043dca4b801ae45167cd0e392485c6742e07a4598eb5eb0df8e72ee24cc6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Private.Xml.dll",
+      "sha256": "2a77ab83449ec192b49dcff0abec753de95f8dc693fcfa07ed2f7024c3c169e6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.DispatchProxy.dll",
+      "sha256": "ac12d3522a371eb0a86204fdb4471c65c4a850d88551aff12ef571d4c13be06f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Emit.ILGeneration.dll",
+      "sha256": "d54aa2d2647145b759feb6ed8531d1bddd5ed159ee1049d127d4204da38c708d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Emit.Lightweight.dll",
+      "sha256": "4e9733b036d0b4464b81a1ff049e85856fd9248dc170a78841733837aa0ff2d6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Emit.dll",
+      "sha256": "e9dda395b1f6d686c8304f0e962b46ef25b3f52b5c384a19e0c97c117f9f92e0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Extensions.dll",
+      "sha256": "b36f7ef141d5b1e43e5961bd6f0caffb243a48a90c7d5e7567f5c608b53ed668",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Metadata.dll",
+      "sha256": "03bcaa6abdec4bb0194689e41fb9c8bd07e4eb098421bba60d19d2134691a265",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.Primitives.dll",
+      "sha256": "996481e88cf68e50c182bd89da1e490a19e8587a87c2e7f4f92a110b40416ef9",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.TypeExtensions.dll",
+      "sha256": "0918b2aef8c6d740d3f92772d2ce7584a1202963e8301913543c0e1e0b06fdf1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Reflection.dll",
+      "sha256": "87d796c61766483eda298e17a12ea591c65711f347853642292c6628dd55e98b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Resources.Reader.dll",
+      "sha256": "5670470b6c8b2036278a1b59172e04ba32270aaee92e047bd8d171e7beba3ce4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Resources.ResourceManager.dll",
+      "sha256": "ee01c6f19d731ed9ec07617603495debbd6f9cc4457b0ec1ba8a3dbac794e4ee",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Resources.Writer.dll",
+      "sha256": "799f6d9e0d887f00dc7c45f6d938581ef40af17a0dc92195669fa7041ad8ae7e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.CompilerServices.Unsafe.dll",
+      "sha256": "a32f2372e5250a57bba485d0dcba87dd7a0864d3c3ce7f8172e7e1bd6ce2a956",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.CompilerServices.VisualC.dll",
+      "sha256": "7d5ebae58c6e533c3aaaf18a8f428a732be556f6c9fbda53ef6202f7d24c2bb3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Extensions.dll",
+      "sha256": "f90005f24411a5936a3fbc9560894795524e44cb6066572448a7fb3dd28beb23",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Handles.dll",
+      "sha256": "b80a346b6949c556e2f4b587540dd076d5e3ae544da49faaa7c124eb20523d75",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.JavaScript.dll",
+      "sha256": "0f73165acbe39246bc83ee70706075a94274e5b1563c4ef0277c989d2c6771e7",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.RuntimeInformation.dll",
+      "sha256": "4145d1653d0357417dcc0eca2e38fffffbc886c035c7201bd721f77bac9d037b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.InteropServices.dll",
+      "sha256": "96370a9241de81b737f80a582a05baaf20a5d4746f3cbe5cbdb387ffc5094d75",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Intrinsics.dll",
+      "sha256": "3fce5f1e99be36817443704d29548a57b7e51364cf681e89fe477fdd1120a720",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Loader.dll",
+      "sha256": "66a4e3053c33488bb7b009716b9a729d625b095a5caca90f0acc892c57bbb52f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Numerics.dll",
+      "sha256": "d97b61299d9816c8c133eefc0acbddf516d8becc4750aedf9c6b873e38dddc02",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Formatters.dll",
+      "sha256": "06859184aefb580bfa4d1367259f8374c7cd845454b3af85a6994c0377a7f294",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Json.dll",
+      "sha256": "2fffd8fc83464cbbcd8f10a4f417c07d35eb933c9c267617081dada767e29ee4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Primitives.dll",
+      "sha256": "a6b432447a3c9516bfa595889923e5c82c65676eac996aeda88b57a1358d7e74",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Serialization.Xml.dll",
+      "sha256": "48700492e7b3bf8b9bb6240c42a31ee70b4c25d364302f7754c1cc8b44f24b40",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.Serialization.dll",
+      "sha256": "dabc0ea3a5b89da914d97d9b1627c71c4f0922e8f0690e0f36c29bed3ff8bd64",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Runtime.dll",
+      "sha256": "87f6a9a4133e1fb95b0430071ae73d232eb9cb24beb04aca4d7ae3a3d074f9ad",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.AccessControl.dll",
+      "sha256": "a10c0fa9fe9cd7eff8e305227de296bd449975aeb298cd28caed63ef475ac60b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Claims.dll",
+      "sha256": "84265624a4c6a31ad6bfc3da3c4f57ec3592d53d1906cf47bb1b8e0d62a223c7",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.Algorithms.dll",
+      "sha256": "459db23d26c80169c9993e641fddcbb8e82bbbc28c55cbff3d6783ee2c988f3f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.Cng.dll",
+      "sha256": "c927c883ff03b042a93ee6ae3816f38b4fca7efa72ba02d8c37781d41173537d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.Csp.dll",
+      "sha256": "ac489e29fd556e28e5c39c9694af51d2b096ec2b526b481cdfea1d2869c581b8",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.Encoding.dll",
+      "sha256": "b755bcccb17f378d940546ad7089205e29e95d4ef7bab140ec797155cb889582",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.OpenSsl.dll",
+      "sha256": "939c6a88964420c8a3a6527f8e5d10a8f769561b8eaf14d5b14e522500a64b88",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.Primitives.dll",
+      "sha256": "97cd2c5be283d98848344f5d08f30e9a073c4a1f532057cfa7e0448ce2d79865",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.X509Certificates.dll",
+      "sha256": "f9d803364bf3bd1ba764d17c6e1294224366bf74e9008c5369d2163053951be0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Cryptography.dll",
+      "sha256": "56e43c3e486d790c64eeac87a5537dd1510b97830c87f062bc14eabbe82f95be",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Principal.Windows.dll",
+      "sha256": "88faa49ce295e777767af6b44d9cf356d9a884e371ae48647e429079d57c5dc2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.Principal.dll",
+      "sha256": "39e6d7720d67af2f03707901a6d0e20496c51e83f848db3e8fd92b5fa72bb091",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.SecureString.dll",
+      "sha256": "9622d7e1433f77b0f237c183f06a145f35df484eece4a91ae9d723f40bea42be",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Security.dll",
+      "sha256": "b2c7b9a1b17bcc644229b0de7be98feda873306f60d895b4ed4fb3ee22b42548",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ServiceModel.Web.dll",
+      "sha256": "76b5b4eae5fc25590311652c7720e08c4008b59c785662609d092b7fb2eb496b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ServiceProcess.dll",
+      "sha256": "26a76069c2a8b77ef7aece50a8fa1d74654167d0a91bcdf0886794f28b770c8a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.Encoding.CodePages.dll",
+      "sha256": "14061806bcc21b8656c27437bd2c6ec4d82b4f08ff4b593a1bd5f36d94289d48",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.Encoding.Extensions.dll",
+      "sha256": "527cec08760564d37da41c123630d2107be80e0d8d289207cc9a184573fb2509",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.Encoding.dll",
+      "sha256": "019b7aae88661c619998f52bd28fa652068cf4710e4066576f4318ca57bd3de8",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.Encodings.Web.dll",
+      "sha256": "a4807681c163b2e62dec0f0ff1b288ae2392fec51a995bb479b16c29760ed023",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.Json.dll",
+      "sha256": "1d2e6b506ace3fd86cc9a914040fe309788d8210beec7bf8cbfb62cf67d5772d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Text.RegularExpressions.dll",
+      "sha256": "3ee5c77dbc64d3eb876ab6a86cb2c9c47395bba4c1ba5f9e92313ee0ba0d4905",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.AccessControl.dll",
+      "sha256": "04ca8ef1432bea00604f4b065196128819da96af04df6a74afa4ec807b414949",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Channels.dll",
+      "sha256": "02f646280c0e83b5a480e62e0894b5a220691c9aac0489c5bc1d767d4e7df3dd",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Overlapped.dll",
+      "sha256": "4d0348c305a1c6277982ab3f0ac1c47673fb7414d29c35b3bfef574e3554f02f",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Tasks.Dataflow.dll",
+      "sha256": "659f14b2576d2d34bf8c24e5d8f7238d190fe91d11d888a89b90b7bcd673b25b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Tasks.Extensions.dll",
+      "sha256": "569ef32c126b389651092497173bba1b86dce1365c81f8d48755cfc1ede6690a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Tasks.Parallel.dll",
+      "sha256": "d2d14c51694a018189e67ab4d1116982ba78e8d3418377d574713c2687194831",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Tasks.dll",
+      "sha256": "3d58c971ab9bb4e3b5de43f4706ad9f63b4aea04d1ca7a3762ce93168875a60d",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Thread.dll",
+      "sha256": "51b8ab47c92cae897b99f70a5ec9e3528708b0762ac7d552ccd3970fe4b072ed",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.ThreadPool.dll",
+      "sha256": "0f73cc058dfbd0704102ed999e79026312246dfda630fe2968f542a87ff7c116",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.Timer.dll",
+      "sha256": "b19b79ea8a9198e91117b918d80fc806e6c63deb5859a0d5793e5b14f985ee5e",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Threading.dll",
+      "sha256": "89a81656b39f93950f4ab2882b7ea350892edd7b6074ad67179ecc73ca01a190",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Transactions.Local.dll",
+      "sha256": "9b1fe23f9dcab3866f9e19bf1793eeee94b36219d848d302ab853090176d427c",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Transactions.dll",
+      "sha256": "4f03efe1d90d139f10e337cd0173a1a223016886b30e977c916bfffe96dac64a",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.ValueTuple.dll",
+      "sha256": "e60bcf3660409954a8d0d8b11570407fd973531f8ed2d9f65ff87ed216eb3dd0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Web.HttpUtility.dll",
+      "sha256": "09394846262f2d4dfca9def8826d916bd0fe298306ec0962bf87a85987be5cb3",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Web.dll",
+      "sha256": "eca8a27aa45b6a468b6894e0c479cd4c7fa07948fca4f809f98b36dcbabbfb43",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Windows.dll",
+      "sha256": "84bff30fe6d50354c1db5b43c8abd4325b63c93c9ffdceacf6741172f53f78a0",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.Linq.dll",
+      "sha256": "e3b2f21addb2174a05e3ae502e60c8c6293e6867e402616c601fc9eafae53b24",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.ReaderWriter.dll",
+      "sha256": "98e524ceadbdc13867472174989b94138164be1be7e3916b02e003da56d4c3c5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.Serialization.dll",
+      "sha256": "8d128e78cde86c6e8dc76a0114dda1fc6dfaad2c9b9d38126cfaf943d88dd6cd",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.XDocument.dll",
+      "sha256": "ec9f74fd02c3bc34e5d39c3956a1e994ca0ca35b76281596e160346f358c3425",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.XPath.XDocument.dll",
+      "sha256": "84411475a6a8f4dcb37435eeadf0cee23f89e643381616a4a785aec4e60c5c56",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.XPath.dll",
+      "sha256": "d182c2f23c3d9ca1d43a2d55fe2bfbc800f4a6fdd4a800e7bd438064dd8faa81",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.XmlDocument.dll",
+      "sha256": "0a7138dbc4afb4103ba2a60d0175195ea4a4d2b5202cc62bbb07520b460cc117",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.XmlSerializer.dll",
+      "sha256": "3a1f60ce44e157d9a0041d522decf3c27613e9793dba25a02eccd26b8ff8a6e1",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.Xml.dll",
+      "sha256": "4e08544e819c44bd34f6baedca5e4f3c965b2ad576e095c1f7f7d74f2ac22965",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/System.dll",
+      "sha256": "bf9b65fcaef5e79d6f8e07597ae964619e86843986b6785bbfa9c03c673189f6",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/WindowsBase.dll",
+      "sha256": "a00ce115a255c64eafc5fad640d7bd2a669e8c07556cfda27b4a3bb45a8f59af",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/clretwrc.dll",
+      "sha256": "a5be8e59c1a20c993771744bb36fb987ecd93766c0c6251c2716fff6d9bd70b2",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/clrgc.dll",
+      "sha256": "d497a976cc2f724abdb77b14b433ec684c07248a95c1b0331eafbb3703407b4b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/clrgcexp.dll",
+      "sha256": "f0a36bbbc46fa57d89c978afb43213782ffb8b3e8aa4641498d3f0770430ac12",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/clrjit.dll",
+      "sha256": "ea4c636599d8cd2df65d20120a30466ba276d08d00a0d083f815a7eb7e845f92",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/coreclr.dll",
+      "sha256": "331c37f79cce19b37e74ee1adf8a78d741484f8adc1ce46c45cd6ad94d8022b4",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/hostfxr.dll",
+      "sha256": "b41af3ca044a75a77f3bf7883ec586a63e8bd25e74106b21d08131488141581b",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/hostpolicy.dll",
+      "sha256": "26b4a61642b38f76ec91f545a97c08ac7bd6e7bbf4842cc245cadbfc8b36dee5",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/mscorlib.dll",
+      "sha256": "be4a0fa1ca6b7cea8980aa063ae070565c57488c104e7fc9efa116e1c68bffac",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/mscorrc.dll",
+      "sha256": "c0fcd2ceebf9885d9bdfe96d543618d5707918b30e908b630121b316c963fa66",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/msquic.dll",
+      "sha256": "99daf179ee2dfb5c36493543647b64fc58a24aba0b16d5e9232b06003fbc9054",
+      "role": "sidecar"
+    },
+    {
+      "path": "release/windows-x64/bepuphysics2/netstandard.dll",
+      "sha256": "41ba95895b61a4fe461333e2d401b5ecc2c0d57eca07a3f5287f906908d7f0fd",
+      "role": "sidecar"
+    }
+  ],
+  "license_id": "Apache-2.0",
+  "notice_license_reference": "SOURCES.md#bepuphysics2",
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

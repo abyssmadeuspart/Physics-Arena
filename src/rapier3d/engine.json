@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "engine_id": "rapier3d",
+  "route_status": "supported",
+  "supported_platforms": [
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/rapier3d",
+  "report_metadata": {
+    "physics_settings": "solver_iterations=4; sleep=disabled; ccd=default/off",
+    "build_settings": "Rust 1.89 Cargo release; Rapier3D 0.34.0 parallel"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "source_version",
+    "rapier_version",
+    "rust_version",
+    "cargo_version",
+    "toolchain_id",
+    "cargo_profile",
+    "cargo_features",
+    "cargo_lock_sha256",
+    "runner_manifest_sha256",
+    "host_route"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count",
+    "effective_worker_count": "thread_count",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "cargo_release",
+    "runner_source_dir": "src/rapier3d/bench",
+    "runner_manifest": "src/rapier3d/bench/Cargo.toml",
+    "cargo_lock": "src/rapier3d/bench/Cargo.lock",
+    "cargo_target_dir": ".build/rapier3d/cargo-release",
+    "build_metadata": ".build/rapier3d/build-metadata.json",
+    "package_dir_windows": "release/windows-x64/rapier3d",
+    "target": "rapier3d_polygon_runner",
+    "executable_name_windows": "rapier3d_polygon_runner.exe",
+    "toolchain_id": "rust_1_89_msvc_cargo_release",
+    "cargo_profile": "release",
+    "cargo_features": [
+      "parallel"
+    ],
+    "rapier_version": "0.34.0",
+    "public_build_label": "Rust 1.89 Cargo release; Rapier3D 0.34.0 parallel"
+  },
+  "run": {
+    "route": "rapier3d_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "RAPIER3D_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "rapier3d_polygon_runner",
+      "rapier3d_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "rapier3d_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "launcher": "direct",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/rapier3d/artifact-manifest.json"
+  }
+}

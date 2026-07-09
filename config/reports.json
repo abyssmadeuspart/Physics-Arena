@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "reports": [
+    {
+      "id": "box-container-pile-10k",
+      "title": "Box Container Pile 10k",
+      "report_status": "current_headless_api",
+      "status_label": "Headless, no-graphics run",
+      "status_note": "Generated from checked-in Windows x64 release files.",
+      "case_id": "box_container_pile_10k",
+      "result_source": "results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10",
+      "normalized_csv": "normalized.csv",
+      "summary_csv": "summary.csv",
+      "chart_metric": "median_ms_per_step",
+      "chart_label": "Physics ms/frame",
+      "chart_note": "lower is better",
+      "presentation": {
+        "logo_root": "assets/engine-icons",
+        "engine_order": [
+          "bepuphysics2",
+          "rapier3d",
+          "avian3d",
+          "box3d",
+          "unity_physics",
+          "unreal_chaos",
+          "joltphysics",
+          "physx34",
+          "nvidia_physx34",
+          "nvidia_physx5"
+        ],
+        "legend_rows": [
+          [
+            "bepuphysics2",
+            "rapier3d",
+            "avian3d",
+            "box3d"
+          ],
+          [
+            "unity_physics",
+            "unreal_chaos",
+            "joltphysics",
+            "physx34",
+            "nvidia_physx34",
+            "nvidia_physx5"
+          ]
+        ],
+        "logos": {
+          "avian3d": {
+            "file": "Avian-Logo.svg",
+            "media_type": "image/svg+xml",
+            "view_box": "0 0 497 182",
+            "source_width": 497,
+            "source_height": 182,
+            "use_width_ratio": 1.6
+          },
+          "bepuphysics2": {
+            "file": "BepuPhysics-2-Logo.png",
+            "media_type": "image/png",
+            "view_box": "5 46 248 162",
+            "source_width": 256,
+            "source_height": 256,
+            "use_width_ratio": 1.53
+          },
+          "box3d": {
+            "file": "Box3D-Logo.svg",
+            "media_type": "image/svg+xml",
+            "view_box": "0 0 23.160606 19.770294",
+            "source_width": 23.160606,
+            "source_height": 19.770294,
+            "use_width_ratio": 1.17
+          },
+          "joltphysics": {
+            "file": "Jolt-Physics-Logo.png",
+            "media_type": "image/png",
+            "view_box": "0 0 100 100",
+            "source_width": 100,
+            "source_height": 100,
+            "use_width_ratio": 1.0
+          },
+          "nvidia_physx34": {
+            "file": "PhysX-3.4-Logo.jpg",
+            "media_type": "image/jpeg",
+            "view_box": "0 0 450 427",
+            "source_width": 450,
+            "source_height": 427,
+            "use_width_ratio": 1.0
+          },
+          "nvidia_physx5": {
+            "file": "PhysX-5.6.1-Logo.png",
+            "media_type": "image/png",
+            "view_box": "0 0 960 339",
+            "source_width": 960,
+            "source_height": 339,
+            "use_width_ratio": 1.0
+          },
+          "physx34": {
+            "file": "Vite-Stuido-Logo.png",
+            "media_type": "image/png",
+            "view_box": "0 0 524 400",
+            "source_width": 524,
+            "source_height": 400,
+            "use_width_ratio": 1.31
+          },
+          "rapier3d": {
+            "file": "Rapier-Logo.jpg",
+            "media_type": "image/jpeg",
+            "view_box": "0 0 3656 3472",
+            "source_width": 3656,
+            "source_height": 3472,
+            "use_width_ratio": 1.05
+          },
+          "unity_physics": {
+            "file": "Unity-Logo.png",
+            "media_type": "image/png",
+            "view_box": "0 0 512 512",
+            "source_width": 512,
+            "source_height": 512,
+            "use_width_ratio": 1.0
+          },
+          "unreal_chaos": {
+            "file": "Unreal-Chaos-Logo.svg",
+            "media_type": "image/svg+xml",
+            "view_box": "16.51 8.48 642.82 525.02",
+            "source_width": 642.82,
+            "source_height": 525.02,
+            "use_width_ratio": 1.22
+          }
+        }
+      }
+    }
+  ]
+}

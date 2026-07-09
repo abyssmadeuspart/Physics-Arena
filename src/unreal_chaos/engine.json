@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "engine_id": "unreal_chaos",
+  "route_status": "experimental",
+  "supported_platforms": [
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/unreal_chaos",
+  "report_metadata": {
+    "physics_settings": "solver_iterations=4,1; projection_iterations=1; sleep=disabled",
+    "build_settings": "Unreal Engine release branch Chaos Program target; Win64 Shipping"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "experimental",
+      "visual": "experimental"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "route_unavailable"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "unreal_branch",
+    "unreal_ubt_path",
+    "unreal_ubt_version",
+    "compiler_detail",
+    "windows_sdk_detail",
+    "host_route",
+    "toolchain_id",
+    "build_configuration",
+    "thread_support_mode",
+    "supported_thread_counts",
+    "requested_worker_policy",
+    "effective_worker_policy",
+    "thread_policy_probe",
+    "main_thread_participates"
+  ],
+  "thread_support": {
+    "mode": "explicit_thread_counts",
+    "supported_thread_counts": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      8,
+      16,
+      24
+    ],
+    "requested_worker_count": "thread_count_minus_one",
+    "effective_worker_count": "thread_count_minus_one",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "unreal_chaos_ubt_program_win64_shipping",
+    "route_id": "unreal_chaos_ubt_program_win64_shipping",
+    "development_route": "unreal_chaos_ubt_program_win64_development",
+    "project": "src/unreal_chaos/BenchmarkPolygonChaos.uproject",
+    "target": "BenchmarkPolygonChaosRunner",
+    "runner_source_dir": "src/unreal_chaos/Source/BenchmarkPolygonChaosRunner",
+    "runner_build_dir_windows": ".build/unreal_chaos/ubt",
+    "package_dir_windows": "release/windows-x64/unreal_chaos",
+    "executable_name_windows": "unreal_chaos_polygon_runner.exe",
+    "toolchain_id_windows": "unreal_chaos_ubt_win64_shipping",
+    "development_toolchain_id_windows": "unreal_chaos_ubt_win64_development",
+    "build_configuration": "Shipping",
+    "development_configuration": "Development",
+    "cpu_isa_requirement": "x64"
+  },
+  "run": {
+    "route": "unreal_chaos_polygon_runner_cli",
+    "route_status": "experimental",
+    "executable_env": "UNREAL_CHAOS_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "unreal_chaos_polygon_runner.exe",
+      "BenchmarkPolygonChaosRunner.exe",
+      "BenchmarkPolygonChaosRunner-Win64-Shipping.exe",
+      "BenchmarkPolygonChaosRunner-Win64-Development.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "unreal_chaos_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "launcher": "direct",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output_path}"
+    ]
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/unreal_chaos/artifact-manifest.json"
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "experimental",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "experimental"
+    }
+  }
+}

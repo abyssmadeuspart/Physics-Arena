@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "artifact_role": "shared_visual_renderer",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_provenance": "repo shared visual renderer source; release artifact produced by private maintainer tooling",
+  "executable_path": "release/windows-x64/shared_visual_renderer/shared_visual_renderer_cli.exe",
+  "launcher": "direct",
+  "required_sidecars": [],
+  "compiler_runtime": {
+    "toolchain_id": "windows_clang_cl_release",
+    "compiler_detail": "clang-cl release shared_visual_renderer_cli",
+    "runtime_detail": "statically linked shared visual renderer executable"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/shared_visual_renderer/shared_visual_renderer_cli.exe",
+      "sha256": "32c0f69f1ee2b17cbcb9b9b39cdd83079bfdcd098375881c1907e57495bd9514",
+      "role": "executable"
+    }
+  ],
+  "license_id": "repo-owned-plus-source-references",
+  "notice_license_reference": "SOURCES.md"
+}

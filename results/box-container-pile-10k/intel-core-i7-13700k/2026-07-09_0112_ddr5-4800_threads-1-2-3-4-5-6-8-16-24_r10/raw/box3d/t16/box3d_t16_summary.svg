@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="520" viewBox="0 0 1280 520">
+<defs>
+<style><![CDATA[
+  text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#0f172a;dominant-baseline:middle}
+  .tab{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .title{font-size:22px;font-weight:760}
+  .subtitle{font-size:13px;fill:#475569}
+  .meta-label{font-size:13px;font-weight:760;fill:#0f172a}
+  .meta-value{font-size:13.5px;fill:#26364d}
+  .meta-key{font-weight:650;fill:#102033}
+  .legend{font-size:13px;font-weight:560}
+  .small{font-size:12px;fill:#475569}
+  .column{font-size:12px;fill:#334155;font-weight:620}
+  .group{font-size:15px;font-weight:760}
+  .row{font-size:13px}
+  .value{font-size:13px;font-weight:600}
+  .fast{}
+]]></style>
+<symbol id="engine-logo-box3d" viewBox="0 0 23.160606 19.770294">
+<image href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiCiAgIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB3aWR0aD0iMjMuMTYwNjA2bW0iCiAgIGhlaWdodD0iMTkuNzcwMjk0bW0iCiAgIHZpZXdCb3g9IjAgMCAyMy4xNjA2MDYgMTkuNzcwMjk0IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmc4IgogICBpbmtzY2FwZTp2ZXJzaW9uPSIwLjkyLjMgKDI0MDU1NDYsIDIwMTgtMDMtMTEpIgogICBzb2RpcG9kaTpkb2NuYW1lPSJMb2dvLnN2ZyI+CiAgPGRlZnMKICAgICBpZD0iZGVmczIiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIGlkPSJiYXNlIgogICAgIHBhZ2Vjb2xvcj0iI2ZmZmZmZiIKICAgICBib3JkZXJjb2xvcj0iIzY2NjY2NiIKICAgICBib3JkZXJvcGFjaXR5PSIxLjAiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOnpvb209IjIuOCIKICAgICBpbmtzY2FwZTpjeD0iOTEuMTY0MzEyIgogICAgIGlua3NjYXBlOmN5PSIyLjAxOTkwNDMiCiAgICAgaW5rc2NhcGU6ZG9jdW1lbnQtdW5pdHM9Im1tIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImxheWVyMSIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgaW5rc2NhcGU6c25hcC1ncmlkcz0iZmFsc2UiCiAgICAgaW5rc2NhcGU6c25hcC10by1ndWlkZXM9ImZhbHNlIgogICAgIGlua3NjYXBlOnNuYXAtb3RoZXJzPSJmYWxzZSIKICAgICBpbmtzY2FwZTpvYmplY3Qtbm9kZXM9ImZhbHNlIgogICAgIGlua3NjYXBlOnNuYXAtbm9kZXM9ImZhbHNlIgogICAgIGlua3NjYXBlOnNuYXAtZ2xvYmFsPSJmYWxzZSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjI1NjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTM3NyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iLTgiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9Ii04IgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjEiCiAgICAgZml0LW1hcmdpbi10b3A9IjAiCiAgICAgZml0LW1hcmdpbi1sZWZ0PSIwIgogICAgIGZpdC1tYXJnaW4tcmlnaHQ9IjAiCiAgICAgZml0LW1hcmdpbi1ib3R0b209IjAiIC8+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhNSI+CiAgICA8cmRmOlJERj4KICAgICAgPGNjOldvcmsKICAgICAgICAgcmRmOmFib3V0PSIiPgogICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgICAgIDxkYzp0eXBlCiAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4KICAgICAgICA8ZGM6dGl0bGU+PC9kYzp0aXRsZT4KICAgICAgPC9jYzpXb3JrPgogICAgPC9yZGY6UkRGPgogIDwvbWV0YWRhdGE+CiAgPGcKICAgICBpbmtzY2FwZTpsYWJlbD0iTGF5ZXIgMSIKICAgICBpbmtzY2FwZTpncm91cG1vZGU9ImxheWVyIgogICAgIGlkPSJsYXllcjEiCiAgICAgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTQuMzMzNjEzMiwtMi41NTU4MzgyKSI+CiAgICA8cmVjdAogICAgICAgaWQ9InJlY3QzNzI0IgogICAgICAgd2lkdGg9IjUuMzc0MDkwMiIKICAgICAgIGhlaWdodD0iNC45NTg2MDE1IgogICAgICAgeD0iMTIuMjYyNTgzIgogICAgICAgeT0iMTAuOTQzMjQiCiAgICAgICBzdHlsZT0iZmlsbDpub25lO3N0cm9rZTojMzBhZWJmO3N0cm9rZS13aWR0aDowLjYwMDAwMDAyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICBpbmtzY2FwZTpleHBvcnQteGRwaT0iMjA4LjM3IgogICAgICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9IjIwOC4zNyIgLz4KICAgIDxyZWN0CiAgICAgICBpZD0icmVjdDM3MjQtNSIKICAgICAgIHdpZHRoPSI1LjM3NDA5MDIiCiAgICAgICBoZWlnaHQ9IjQuOTU4NjAxNSIKICAgICAgIHg9IjE1LjE3ODc3OSIKICAgICAgIHk9IjE2LjQ0NzEwNSIKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiMzMGFlYmY7c3Ryb2tlLXdpZHRoOjAuNjAwMDAwMDI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIgLz4KICAgIDxyZWN0CiAgICAgICBpZD0icmVjdDM3MjQtNyIKICAgICAgIHdpZHRoPSI1LjM3NDA5MDIiCiAgICAgICBoZWlnaHQ9IjQuOTU4NjAxNSIKICAgICAgIHg9IjkuMjUxODkzIgogICAgICAgeT0iMTYuNDQ3MTA1IgogICAgICAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2U6IzMwYWViZjtzdHJva2Utd2lkdGg6MC42MDAwMDAwMjtzdHJva2UtbWl0ZXJsaW1pdDo0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIiAvPgogICAgPHBhdGgKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiM4Y2M5MjQ7c3Ryb2tlLXdpZHRoOjAuNjAwMDAwMDI7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIKICAgICAgIGQ9Im0gNC4zMzQ4NDExLDIyLjAyNjEzNCAyMS4xODIzMjY5LC0wLjA4NjciCiAgICAgICBpZD0icGF0aDQ1NTIiCiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIgogICAgICAgaW5rc2NhcGU6ZXhwb3J0LXhkcGk9IjIwOC4zNyIKICAgICAgIGlua3NjYXBlOmV4cG9ydC15ZHBpPSIyMDguMzciIC8+CiAgICA8Y2lyY2xlCiAgICAgICBzdHlsZT0iZmlsbDpub25lO3N0cm9rZTojZGMzMTMyO3N0cm9rZS13aWR0aDowLjYwMDAwMDAyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICBpZD0icGF0aDQ1NTQiCiAgICAgICBjeD0iMjEuODQ1NzY0IgogICAgICAgY3k9IjguMzA0NDU1OCIKICAgICAgIHI9IjIuNTcyNDY5MiIKICAgICAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSIyMDguMzciCiAgICAgICBpbmtzY2FwZTpleHBvcnQteWRwaT0iMjA4LjM3IiAvPgogICAgPHBhdGgKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiNlYjg3ODg7c3Ryb2tlLXdpZHRoOjAuNjAwMDAwMDI7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICBkPSJtIDIyLjU0NzM1OCw0LjkzMDE4NDIgMi4xMDQ3NDcsLTIuMDcxMzQiCiAgICAgICBpZD0icGF0aDQ1NTYiCiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIgogICAgICAgaW5rc2NhcGU6ZXhwb3J0LXhkcGk9IjIwOC4zNyIKICAgICAgIGlua3NjYXBlOmV4cG9ydC15ZHBpPSIyMDguMzciIC8+CiAgICA8cGF0aAogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlkPSJwYXRoNDU1OCIKICAgICAgIGQ9Im0gMjQuMTg0MzgzLDUuNzMxOTg0MiAyLjEwNDc0NywtMi4wNzEzNCIKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiNlYjg3ODg7c3Ryb2tlLXdpZHRoOjAuNjAwMDAwMDI7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICBpbmtzY2FwZTpleHBvcnQteGRwaT0iMjA4LjM3IgogICAgICAgaW5rc2NhcGU6ZXhwb3J0LXlkcGk9IjIwOC4zNyIgLz4KICAgIDxwYXRoCiAgICAgICBzdHlsZT0iZmlsbDpub25lO3N0cm9rZTojZWI4Nzg4O3N0cm9rZS13aWR0aDowLjYwMDAwMDAyO3N0cm9rZS1saW5lY2FwOnJvdW5kO3N0cm9rZS1saW5lam9pbjptaXRlcjtzdHJva2UtbWl0ZXJsaW1pdDo0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIgogICAgICAgZD0ibSAyNS4wODY0MTgsNy4xNjg1NTQyIDIuMTA0NzQ3LC0yLjA3MTM0IgogICAgICAgaWQ9InBhdGg0NTYyIgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlua3NjYXBlOmV4cG9ydC14ZHBpPSIyMDguMzciCiAgICAgICBpbmtzY2FwZTpleHBvcnQteWRwaT0iMjA4LjM3IiAvPgogIDwvZz4KPC9zdmc+Cg==" x="0" y="0" width="23.160606" height="19.770294" preserveAspectRatio="xMidYMid meet"/>
+</symbol>
+</defs>
+<rect width="100%" height="100%" fill="#f6f8fb"/>
+<rect x="24" y="24" width="1232" height="472" rx="14" fill="#ffffff" stroke="#d9e0ea"/>
+<text x="48" y="58" class="title">Box Container Pile 10k</text>
+<rect x="40" y="76" width="1192" height="250" rx="9" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="48" y="91.0" class="meta-label">Metric</text>
+<text x="150" y="91.0" class="meta-value"><tspan>Median Physics ms/frame; lower is better.</tspan></text>
+<line x1="40" y1="106.0" x2="1232" y2="106.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="121.0" class="meta-label">Case</text>
+<text x="150" y="121.0" class="meta-value"><tspan>Box Container Pile 10k; 10,005 bodies, 10,005 shapes.</tspan></text>
+<line x1="40" y1="136.0" x2="1232" y2="136.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="151.0" class="meta-label">Run</text>
+<text x="150" y="151.0" class="meta-value"><tspan>Headless, no-graphics run; Windows x64 release files; 10 repeats; threads 16; 300 measured steps + 30 warmup; 60 Hz.</tspan></text>
+<line x1="40" y1="166.0" x2="1232" y2="166.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="199.0" class="meta-label">Host</text>
+<text x="150" y="181.0" class="meta-value"><tspan>Intel Core i7-13700K (8P+8E / 24T); max 3.40 GHz</tspan></text>
+<text x="150" y="199.0" class="meta-value"><tspan>64 GB DDR5 4800 MHz</tspan></text>
+<text x="150" y="217.0" class="meta-value"><tspan>Micro-Star International Co., Ltd. PRO Z790-A WIFI (MS-7E07) BIOS A.E0; Microsoft Windows 11 Pro for Workstations 64-bit 10.0.26200</tspan></text>
+<line x1="40" y1="232.0" x2="1232" y2="232.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="249.0" class="meta-label">Engines</text>
+<use href="#engine-logo-box3d" x="150.0" y="240.0" width="21.1" height="18.0"/>
+<text x="180.1" y="249.0" class="meta-value">Box3D</text>
+<line x1="40" y1="266.0" x2="1232" y2="266.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="281.0" class="meta-label">Physics</text>
+<text x="150" y="281.0" class="meta-value"><tspan class="meta-key">Physics solver iterations</tspan><tspan>: 4; </tspan><tspan class="meta-key">rigid-body sleeping</tspan><tspan>: disabled.</tspan></text>
+<line x1="40" y1="296.0" x2="1232" y2="296.0" stroke="#edf2f7" stroke-width="1"/>
+<text x="48" y="311.0" class="meta-label">Builds</text>
+<text x="150" y="311.0" class="meta-value"><tspan class="meta-key">Box3D:</tspan><tspan> clang-cl 22 Release static runner.</tspan></text>
+<line x1="126" y1="80" x2="126" y2="321" stroke="#d9e2ee" stroke-width="1"/>
+<rect x="32.0" y="354.0" width="1216.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
+<text x="64.0" y="378.0" class="group">16 threads</text>
+<text x="330.0" y="378.0" class="small tab" text-anchor="middle">0</text>
+<text x="460.0" y="378.0" class="small tab" text-anchor="middle">2</text>
+<text x="590.0" y="378.0" class="small tab" text-anchor="middle">4</text>
+<text x="720.0" y="378.0" class="small tab" text-anchor="middle">6</text>
+<text x="850.0" y="378.0" class="small tab" text-anchor="middle">8</text>
+<text x="980.0" y="378.0" class="small tab" text-anchor="middle">10</text>
+<text x="1188.0" y="378.0" class="small" text-anchor="end">ms/frame</text>
+<line x1="330.0" y1="398.0" x2="980.0" y2="398.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="330.0" y1="392.0" x2="330.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="330.0" y1="398.0" x2="330.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="460.0" y1="392.0" x2="460.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="460.0" y1="398.0" x2="460.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="590.0" y1="392.0" x2="590.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="590.0" y1="398.0" x2="590.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="720.0" y1="392.0" x2="720.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="720.0" y1="398.0" x2="720.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="850.0" y1="392.0" x2="850.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="850.0" y1="398.0" x2="850.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<line x1="980.0" y1="392.0" x2="980.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
+<line x1="980.0" y1="398.0" x2="980.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
+<use href="#engine-logo-box3d" x="64.0" y="406.0" width="23.4" height="20.0"/>
+<text x="106.0" y="416.0" class="row">Box3D</text>
+<rect x="330.0" y="409.0" width="650.0" height="14" rx="4" fill="#edf2f7"/>
+<rect x="330.0" y="409.0" width="320.2" height="14" rx="4" fill="#2f68b7"/>
+<text x="1188.0" y="416.0" class="value tab" text-anchor="end">4.93 ms</text>
+</svg>

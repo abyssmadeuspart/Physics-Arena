@@ -1,0 +1,8 @@
+# Benchmark Results
+
+Results are grouped by benchmark case, CPU model, and run state. Each run folder contains the manifest, normalized CSV, summary CSV, and SVG chart for that run.
+
+| Case                   | CPU                  | Run                                                       | Chart                                                                                                                            | Report                                                                                                                    |
+| :--------------------- | :------------------- | :-------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ |
+| Box Container Pile 10k | Intel Core i7-13700K | 2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10 | [summary.svg](box-container-pile-10k/intel-core-i7-13700k/2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10/summary.svg) | [report](box-container-pile-10k/intel-core-i7-13700k/2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10/report.md) |
+| Box Container Pile 10k | Intel Core i7-13700K | 2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1    | [summary.svg](box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/summary.svg)    | [report](box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/report.md)    |

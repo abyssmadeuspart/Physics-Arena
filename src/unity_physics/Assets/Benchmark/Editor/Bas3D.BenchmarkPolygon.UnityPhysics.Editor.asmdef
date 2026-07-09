@@ -1,0 +1,19 @@
+{
+  "name": "Bas3D.BenchmarkPolygon.UnityPhysics.Editor",
+  "rootNamespace": "Bas3D.BenchmarkPolygon.UnityPhysics.Editor",
+  "references": [
+    "Unity.Burst",
+    "Bas3D.BenchmarkPolygon.UnityPhysics"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "manifest_role": "generated_package_index",
+  "source_owner": "config/engines.json engine_sets.default_release plus src/*/engine.json release.artifact_manifest",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "description": "Validated Windows x64 release artifact set for the Box Container Pile 10k benchmark.",
+  "engines": [
+    {
+      "engine_id": "box3d",
+      "artifact_manifest": "release/windows-x64/box3d/artifact-manifest.json"
+    },
+    {
+      "engine_id": "joltphysics",
+      "artifact_manifest": "release/windows-x64/joltphysics/artifact-manifest.json"
+    },
+    {
+      "engine_id": "bepuphysics2",
+      "artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json"
+    },
+    {
+      "engine_id": "rapier3d",
+      "artifact_manifest": "release/windows-x64/rapier3d/artifact-manifest.json"
+    },
+    {
+      "engine_id": "avian3d",
+      "artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json"
+    },
+    {
+      "engine_id": "unity_physics",
+      "artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json"
+    },
+    {
+      "engine_id": "physx34",
+      "artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json"
+    },
+    {
+      "engine_id": "nvidia_physx34",
+      "artifact_manifest": "release/windows-x64/nvidia-physx-3.4/artifact-manifest.json"
+    },
+    {
+      "engine_id": "nvidia_physx5",
+      "artifact_manifest": "release/windows-x64/nvidia-physx-5.6/artifact-manifest.json"
+    }
+  ],
+  "visual": {
+    "shared_renderer_artifact_manifest": "release/windows-x64/shared_visual_renderer/artifact-manifest.json"
+  }
+}

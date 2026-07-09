@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "engine_id": "box3d",
+  "platform": "windows-x64",
+  "host_route": "windows",
+  "source_version": "8441b4a06d6d09dcfb0b0f704df4d847d1437b92",
+  "source_provenance": "pinned upstream source; source is not vendored in the release package",
+  "executable_path": "release/windows-x64/box3d/box3d_polygon_runner.exe",
+  "launcher": "direct",
+  "required_sidecars": [],
+  "compiler_runtime": {
+    "toolchain_id": "windows_clang_cl_release",
+    "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
+    "runtime_detail": "statically linked runner executable"
+  },
+  "files": [
+    {
+      "path": "release/windows-x64/box3d/box3d_polygon_runner.exe",
+      "sha256": "a9a3a31ae89c720ddf98c50c1b501e5697e75b12903bee1b1a0418d8406665df",
+      "role": "executable"
+    }
+  ],
+  "license_id": "MIT",
+  "notice_license_reference": "SOURCES.md#box3d",
+  "visual": {
+    "route_status": "supported",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "producer_mode_arg": "--producer-mode=shared-visual"
+  }
+}

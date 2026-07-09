@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "engine_id": "joltphysics",
+  "route_status": "supported",
+  "supported_platforms": [
+    "linux",
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/joltphysics",
+  "report_metadata": {
+    "physics_settings": "solver=4 velocity,1 position; sleep=disabled",
+    "build_settings": "clang-cl 22 Distribution static runner"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "compiler_detail",
+    "cmake_version",
+    "ninja_version",
+    "host_route",
+    "toolchain_id"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count_minus_one",
+    "effective_worker_count": "thread_count_minus_one",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "clang_cmake_ninja_distribution",
+    "runner_source_dir": "src/joltphysics/bench",
+    "source_subdir": "polygon_bench",
+    "build_dir_linux": ".build/joltphysics/linux-clang",
+    "build_dir_windows": ".build/joltphysics/windows-clang",
+    "target": "jolt_polygon_runner",
+    "cmake_build_type": "Distribution",
+    "cmake_args": [
+      "-DTARGET_UNIT_TESTS=OFF",
+      "-DTARGET_HELLO_WORLD=OFF",
+      "-DTARGET_PERFORMANCE_TEST=OFF",
+      "-DTARGET_SAMPLES=OFF",
+      "-DTARGET_VIEWER=OFF",
+      "-DGENERATE_DEBUG_SYMBOLS=OFF",
+      "-DENABLE_ALL_WARNINGS=OFF"
+    ],
+    "toolchain_id_linux": "linux_clang_distribution",
+    "toolchain_id_windows": "windows_clang_cl_distribution",
+    "shared_source_dirs": [
+      {
+        "source": "src/joltphysics/cases",
+        "target": "cases"
+      }
+    ]
+  },
+  "run": {
+    "route": "jolt_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "JOLT_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "jolt_polygon_runner",
+      "jolt_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "jolt_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/joltphysics/artifact-manifest.json"
+  }
+}

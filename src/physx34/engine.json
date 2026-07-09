@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "engine_id": "physx34",
+  "route_status": "supported",
+  "supported_platforms": [
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/physx34/PhysX3",
+  "report_metadata": {
+    "physics_settings": "solver_iterations=4,1; sleep_threshold=0",
+    "build_settings": "clang-cl 22 Release runner; Vite PhysX 3.4 runtime DLLs"
+  },
+  "source_preparation_manifest": "src/physx34/source-preparation.json",
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "physx_version",
+    "sdk_compiler",
+    "sdk_compiler_detail",
+    "sdk_build_config",
+    "sdk_compile_flags",
+    "sdk_link_flags",
+    "sdk_output_sha256",
+    "runner_compiler",
+    "runner_compile_flags",
+    "runner_link_flags",
+    "host_route",
+    "toolchain_id"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count",
+    "effective_worker_count": "thread_count",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "physx34_clangcl_sdk_release",
+    "route_id": "physx34_clangcl_release",
+    "source_subdir": "Engine/Source/ThirdParty/PhysX3",
+    "generated_source_path": ".generated/engines/physx34/PhysX3",
+    "sdk_build_dir_windows": ".build/physx34/sdk/windows-clangcl-release",
+    "sdk_bin_dir_windows": ".build/physx34/sdk/windows-clangcl-release/bin",
+    "sdk_lib_dir_windows": ".build/physx34/sdk/windows-clangcl-release/lib",
+    "runner_source_dir": "src/physx34/bench",
+    "shared_source_dirs": [
+      {
+        "source": "src/physx34/cases",
+        "target": "cases"
+      }
+    ],
+    "runner_build_dir_windows": ".build/physx34/runner/windows-clangcl-release",
+    "package_dir_windows": ".build/physx34/package/windows-x64-clangcl-release",
+    "target": "physx34_polygon_runner",
+    "cmake_build_type": "release",
+    "sdk_targets": [
+      "PhysX",
+      "PhysXCommon",
+      "PhysXCooking",
+      "PhysXExtensions",
+      "PxFoundation",
+      "PxPvdSDK",
+      "PxTask",
+      "PsFastXml"
+    ],
+    "toolchain_id_windows": "windows_clang_cl_release",
+    "cpu_isa_requirement": "x64"
+  },
+  "run": {
+    "route": "physx34_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "PHYSX34_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "physx34_polygon_runner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "physx34_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "threshold_zero",
+    "repeat_mode": "per_repeat",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json"
+  }
+}

@@ -1,0 +1,11 @@
+body_count,shape_count,invalid_transform_count,below_floor_count,out_of_bounds_count,case_status,metric_status,effective_thread_count,effective_worker_count,physics_elapsed_ms
+10005,10005,0,0,0,ok,ok,4,3,2448.451600000
+10005,10005,0,0,0,ok,ok,4,3,2463.910900000
+10005,10005,0,0,0,ok,ok,4,3,2457.091100000
+10005,10005,0,0,0,ok,ok,4,3,2455.640700000
+10005,10005,0,0,0,ok,ok,4,3,2464.971500000
+10005,10005,0,0,0,ok,ok,4,3,2437.524900000
+10005,10005,0,0,0,ok,ok,4,3,2470.298900000
+10005,10005,0,0,0,ok,ok,4,3,2465.629500000
+10005,10005,0,0,0,ok,ok,4,3,2453.454300000
+10005,10005,0,0,0,ok,ok,4,3,2444.062400000

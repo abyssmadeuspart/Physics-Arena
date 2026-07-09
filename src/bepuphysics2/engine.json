@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "engine_id": "bepuphysics2",
+  "route_status": "supported",
+  "supported_platforms": [
+    "linux",
+    "windows"
+  ],
+  "prepared_path": ".generated/engines/bepuphysics2",
+  "report_metadata": {
+    "physics_settings": "SolveDescription(4,1); sleep=disabled",
+    "build_settings": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling"
+  },
+  "case_support": [
+    {
+      "case_id": "box_container_pile_10k",
+      "headless": "supported",
+      "visual": "supported"
+    },
+    {
+      "case_id": "box_drop_grid",
+      "headless": "unsupported",
+      "visual": "unsupported"
+    }
+  ],
+  "metadata_requirements": [
+    "engine_commit",
+    "dotnet_version",
+    "runner_configuration",
+    "bepu_physics_configuration",
+    "bepu_utilities_configuration",
+    "runtime_target_framework",
+    "host_route",
+    "toolchain_id"
+  ],
+  "thread_support": {
+    "mode": "host_bounded",
+    "requested_worker_count": "thread_count",
+    "effective_worker_count": "thread_count",
+    "main_thread_participates": "yes"
+  },
+  "build": {
+    "route": "dotnet10_release_no_profiling",
+    "runner_source_dir": "src/bepuphysics2/bench",
+    "source_subdir": "polygon_bench",
+    "project": "polygon_bench/BepuPhysics2.PolygonRunner.csproj",
+    "build_dir": ".build/bepuphysics2/dotnet10-release-no-profiling-self-contained/publish",
+    "obj_dir": ".build/bepuphysics2/dotnet10-release-no-profiling-self-contained/obj",
+    "package_dir_windows": "release/windows-x64/bepuphysics2",
+    "output_name": "BepuPhysics2.PolygonRunner.exe",
+    "executable_name_windows": "BepuPhysics2.PolygonRunner.exe",
+    "toolchain_id": "dotnet10_release_no_profiling_self_contained",
+    "runtime_identifier": "win-x64",
+    "target_framework": "net10.0",
+    "required_sdk_major_minor": "10.0",
+    "package_mode": "self_contained_apphost",
+    "runner_configuration": "Release",
+    "bepu_physics_configuration": "ReleaseNoProfiling",
+    "bepu_utilities_configuration": "Release",
+    "public_build_label": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling",
+    "shared_source_dirs": [
+      {
+        "source": "src/bepuphysics2/cases",
+        "target": "cases"
+      }
+    ]
+  },
+  "run": {
+    "route": "bepu_polygon_runner_cli",
+    "route_status": "supported",
+    "executable_env": "BEPU_POLYGON_RUNNER_EXE",
+    "executable_names": [
+      "BepuPhysics2.PolygonRunner.exe"
+    ],
+    "raw_output": "polygon_results.csv",
+    "runtime_route": "bepu_polygon_runner",
+    "timing_scope": "physics_step_loop",
+    "sleeping_status": "disabled",
+    "repeat_mode": "per_repeat",
+    "launcher": "direct",
+    "args": [
+      "--case={case_id}",
+      "--thread-count={thread_count}",
+      "--step-count={step_count}",
+      "--warmup-steps={warmup_steps}",
+      "--repeat-index={repeat_index}",
+      "--output={raw_output}"
+    ]
+  },
+  "visual": {
+    "route": "shared_visual_renderer_cli",
+    "route_status": "supported",
+    "launch_mode": "render_owned_visual_runner",
+    "supported_modes": [
+      "live"
+    ],
+    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
+    "transport": "shared_visual_transport",
+    "protocol_version": 1,
+    "connection_mode": "renderer_listens_loopback",
+    "producer_mode_arg": "--producer-mode=shared-visual",
+    "release": {
+      "platform": "windows-x64",
+      "route_status": "supported"
+    }
+  },
+  "release": {
+    "platform": "windows-x64",
+    "artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json"
+  }
+}
