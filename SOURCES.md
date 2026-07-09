@@ -28,7 +28,7 @@ The release packages contain the runner executable plus required runtime files. 
 | <a id="physx34"></a>`physx34` | `release/windows-x64/physx34/` | <https://github.com/GapingPixel/UnrealEngineVite-PhysX> | `2b13cae09734616d07d09ecf645326fa0bf43ef7`, PhysX `3.4.0` | BSD-3-Clause PhysX provenance | `src/physx34/engine.json` |
 | <a id="nvidia_physx34"></a>`nvidia_physx34` | `release/windows-x64/nvidia-physx-3.4/` | Official NVIDIA PhysX 3.4: <https://github.com/NVIDIAGameWorks/PhysX-3.4> | PhysX `3.4.2` | BSD-3-Clause | `src/nvidia_physx34/engine.json` |
 | <a id="nvidia_physx5"></a>`nvidia_physx5` | `release/windows-x64/nvidia-physx-5.6/` | Official NVIDIA PhysX 5.6: <https://github.com/NVIDIA-Omniverse/PhysX> | PhysX `5.6.1.51c1f783` | BSD-3-Clause | `src/nvidia_physx5/engine.json` |
-| <a id="unreal_chaos"></a>`unreal_chaos` | `release/windows-x64/unreal_chaos/` | `git@github.com:EpicGames/UnrealEngine.git` | `7deeb413d3dc1fc034f48d1aacc0861301829d32` | Unreal Engine EULA | `src/unreal_chaos/engine.json` |
+| <a id="unreal_chaos"></a>`unreal_chaos` | `release/windows-x64/unreal_chaos/` | Unreal Engine Chaos: `git@github.com:EpicGames/UnrealEngine.git` | `7deeb413d3dc1fc034f48d1aacc0861301829d32` | Unreal Engine EULA | `src/unreal_chaos/engine.json` |
 
 ## Release Tooling
 
@@ -43,6 +43,6 @@ The release packages contain the runner executable plus required runtime files. 
 | `physx34` | `clang-cl` / LLVM `22.1.8`; CMake `4.3.1-msvc1`; Ninja `1.13.2`; LLD `22.1.8`; Vite PhysX `3.4.0` runtime DLLs. |
 | `nvidia_physx34` | Visual Studio 2026 MSBuild release; PhysX `3.4.2`; SDK toolchain id `vs2026_msbuild_release`; package uses the `vc15win64` SDK layout. |
 | `nvidia_physx5` | Visual Studio 2026 MSBuild release; PhysX `5.6.1.51c1f783`; SDK toolchain id `vs2026_msbuild_release`; `vc17win64-cpu-only` preset. |
-| `unreal_chaos` | UnrealBuildTool Program target, Win64 Shipping; `cl.exe`; Windows SDK `rc.exe`; explicit-only public package. |
+| `unreal_chaos` | Unreal Engine Chaos; UnrealBuildTool Program target, Win64 Shipping; `cl.exe`; Windows SDK `rc.exe`; explicit-only public package. |
 
 `visual-run` uses `release/windows-x64/shared_visual_renderer/`, a checked-in shared renderer executable built by the repo release route.

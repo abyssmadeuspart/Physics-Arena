@@ -40,13 +40,13 @@
 <line x1="40" y1="232.0" x2="1232" y2="232.0" stroke="#edf2f7" stroke-width="1"/>
 <text x="48" y="249.0" class="meta-label">Engines</text>
 <use href="#engine-logo-unreal_chaos" x="150.0" y="240.0" width="22.0" height="18.0"/>
-<text x="181.0" y="249.0" class="meta-value">Unreal Chaos</text>
+<text x="181.0" y="249.0" class="meta-value">Unreal Engine Chaos</text>
 <line x1="40" y1="266.0" x2="1232" y2="266.0" stroke="#edf2f7" stroke-width="1"/>
 <text x="48" y="281.0" class="meta-label">Physics</text>
 <text x="150" y="281.0" class="meta-value"><tspan class="meta-key">Physics solver iterations</tspan><tspan>: 4; </tspan><tspan class="meta-key">rigid-body sleeping</tspan><tspan>: disabled.</tspan></text>
 <line x1="40" y1="296.0" x2="1232" y2="296.0" stroke="#edf2f7" stroke-width="1"/>
 <text x="48" y="311.0" class="meta-label">Builds</text>
-<text x="150" y="311.0" class="meta-value"><tspan class="meta-key">unreal_chaos:</tspan><tspan> Unreal Engine release branch Chaos Program target; Win64 Shipping.</tspan></text>
+<text x="150" y="311.0" class="meta-value"><tspan class="meta-key">Unreal Engine Chaos:</tspan><tspan> Unreal Engine release branch Chaos Program target; Win64 Shipping.</tspan></text>
 <line x1="126" y1="80" x2="126" y2="321" stroke="#d9e2ee" stroke-width="1"/>
 <rect x="32.0" y="354.0" width="1216.0" height="80" rx="10" fill="#fbfdff" stroke="#e2e8f0"/>
 <text x="64.0" y="378.0" class="group">4 threads</text>
@@ -71,7 +71,7 @@
 <line x1="980.0" y1="392.0" x2="980.0" y2="404.0" stroke="#cfd8e3" stroke-width="1"/>
 <line x1="980.0" y1="398.0" x2="980.0" y2="420.0" stroke="#e8edf4" stroke-width="1"/>
 <use href="#engine-logo-unreal_chaos" x="64.0" y="406.0" width="24.4" height="20.0"/>
-<text x="106.0" y="416.0" class="row">Unreal Chaos</text>
+<text x="106.0" y="416.0" class="row">Unreal Engine Chaos</text>
 <rect x="330.0" y="409.0" width="650.0" height="14" rx="4" fill="#edf2f7"/>
 <rect x="330.0" y="409.0" width="564.7" height="14" rx="4" fill="#555555"/>
 <text x="1188.0" y="416.0" class="value tab" text-anchor="end">951.36 ms</text>

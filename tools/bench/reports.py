@@ -416,6 +416,7 @@ def report_short_engine_name(engine_id):
         "physx34": "Vite PhysX 3.4",
         "rapier3d": "Rapier",
         "unity_physics": "Unity",
+        "unreal_chaos": "Unreal Engine Chaos",
     }
     return names.get(engine_id, engine_id)
 

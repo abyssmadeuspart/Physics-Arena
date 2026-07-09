@@ -126,9 +126,9 @@ This is the official Physics Arena 0.1.0 benchmark included with the current rel
 
 ![Physics Arena 0.1.0 official benchmark](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_0112_ddr5-4800_threads-1-2-3-4-5-6-8-16-24_r10/summary.svg)
 
-### Optional Unreal Chaos Benchmark
+### Optional Unreal Engine Chaos Benchmark
 
-`unreal_chaos` is packaged, but it is intentionally excluded from the official release benchmark. It is much slower than the default engines, so including it in the main run would dominate the total runtime and make the core comparison harder to use.
+`unreal_chaos` is packaged as Unreal Engine Chaos, but it is intentionally excluded from the official release benchmark. It is much slower than the default engines, so including it in the main run would dominate the total runtime and make the core comparison harder to use.
 
 The current Unreal package supports explicit thread counts `1,3,4,5,6,8,16,24`. Run it separately with one repeat when you want the extra datapoint:
 
@@ -136,14 +136,14 @@ The current Unreal package supports explicit thread counts `1,3,4,5,6,8,16,24`. 
 ./bench.sh run box-container-pile-10k --engine unreal_chaos --threads 1,3,4,5,6,8,16,24 --repeats 1
 ```
 
-Current optional Unreal Chaos result from the same Intel Core i7-13700K release machine:
+Current optional Unreal Engine Chaos result from the same Intel Core i7-13700K release machine:
 
 - [Report](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/report.md)
 - [Chart](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/summary.svg)
 - [Normalized CSV](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/normalized.csv)
 - [Summary CSV](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/summary.csv)
 
-![Optional Unreal Chaos benchmark](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/summary.svg)
+![Optional Unreal Engine Chaos benchmark](results/box-container-pile-10k/intel-core-i7-13700k/2026-07-09_1700_ddr5-4800_threads-1-3-4-5-6-8-16-24_r1/summary.svg)
 
 ## Notes
 

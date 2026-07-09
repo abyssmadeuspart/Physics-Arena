@@ -154,7 +154,7 @@
     },
     {
       "id": "unreal_chaos",
-      "display_name": "Unreal Chaos",
+      "display_name": "Unreal Engine Chaos",
       "repo_url": "git@github.com:EpicGames/UnrealEngine.git",
       "commit": "7deeb413d3dc1fc034f48d1aacc0861301829d32",
       "default_ref_path": ".external/engines/unreal",
