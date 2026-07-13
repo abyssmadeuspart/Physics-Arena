@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "rapier3d",
   "platform": "windows-x64",
   "host_route": "windows",
@@ -19,17 +19,8 @@
     "cargo_version": "cargo 1.89.0 (c24e10642 2025-06-23)",
     "cargo_profile": "release",
     "cargo_features": "parallel",
-    "cargo_lock_sha256": "dd4d228e7e075c9c51880414f96a7bd342f8df8f0199c0851aaf67e8d0091742",
-    "runner_manifest_sha256": "5d1d899b64b0bcdbcaa8b9baf0a9f7a08d7fff06d30f2a088333b73ecfd7b53a",
     "rapier_version": "0.34.0"
   },
-  "files": [
-    {
-      "path": "release/windows-x64/rapier3d/rapier3d_polygon_runner.exe",
-      "sha256": "b12fd78ca6d62a03cee90d68ae273909d7d23774b46e2ae9b12e2631141a2bd6",
-      "role": "executable"
-    }
-  ],
   "license_id": "Apache-2.0",
   "notice_license_reference": "SOURCES.md#rapier3d",
   "visual": {

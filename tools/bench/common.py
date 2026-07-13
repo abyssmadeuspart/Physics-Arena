@@ -1,5 +1,4 @@
 import csv
-import hashlib
 import io
 import json
 import os
@@ -131,7 +130,6 @@ OPTIONAL_NORMALIZED_COLUMNS = [
     "backend",
     "burst_enabled_state",
     "safety_check_state",
-    "package_lock_sha256",
     "completed_step_count",
     "physics_elapsed_ms",
     "render_elapsed_ms",
@@ -178,9 +176,6 @@ def validate_case_fixture_counts(row, case):
     if body_count != int(case["body_count"]) or shape_count != int(case["shape_count"]):
         return {"status": "invalid_result", "detail": f"fixture_counts engine={row.get('engine_id', '')}"}
     return {"status": "ok", "detail": row.get("engine_id", "")}
-
-def validate_box3d_open_container_fixture_row(row):
-    return validate_native_cpp_open_container_fixture_row(row, {}, "box3d")
 
 def validate_native_cpp_open_container_fixture_row(row, fixture_contract, expected_engine_id=None):
     engine_id = expected_engine_id or row.get("engine_id", "")
@@ -456,13 +451,6 @@ def platform_id():
     if os.name == "nt":
         return "windows"
     return "linux"
-
-def sha256_file(path):
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 def find_executable(build_dir, names):
     for path in sorted(build_dir.rglob("*")):

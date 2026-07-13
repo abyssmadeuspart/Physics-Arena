@@ -11,7 +11,7 @@ Pinned source, package, license, and toolchain details for the checked-in Window
 
 ## Release Packages
 
-Each public engine package lives under `release/windows-x64/<package>/` and has an `artifact-manifest.json` with hashes for the executable and required sidecars.
+Each public engine package lives under `release/windows-x64/<package>/` and has an `artifact-manifest.json` that identifies the executable and required sidecars.
 
 The release packages contain the runner executable plus required runtime files. They do not contain upstream source trees, sample projects, editor caches, Cargo caches, package caches, compiler intermediates, PDB files, map files, private machine paths, or downloaded dependency caches.
 

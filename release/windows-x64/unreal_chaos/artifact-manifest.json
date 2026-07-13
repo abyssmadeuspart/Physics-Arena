@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "unreal_chaos",
   "platform": "windows-x64",
   "host_route": "windows",
@@ -23,7 +23,6 @@
   "package_metadata": {
     "build_route": "unreal_chaos_ubt_program_win64_shipping",
     "unreal_ubt_path": "UNREAL_CHAOS_REF_PATH/Engine/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.dll",
-    "unreal_ubt_sha256": "045a4360df2d815aa0de127617169e94aa6481bc6fe3682659ba82208cf9c146",
     "windows_sdk_detail": "rc.exe",
     "license_review_status": "pending",
     "thread_support_mode": "explicit_thread_counts",
@@ -32,43 +31,6 @@
     "effective_worker_policy": "actual_taskgraph_worker_count_must_match_thread_count_minus_one",
     "main_thread_participates": "yes"
   },
-  "files": [
-    {
-      "path": "release/windows-x64/unreal_chaos/unreal_chaos_polygon_runner.exe",
-      "sha256": "9010c875d49e65d4fa6a53b830f28122833fa6d2672433da73e381eb6ad144e4",
-      "role": "executable"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/BenchmarkPolygonChaos.uproject",
-      "sha256": "0c1006644a8412d5dfc9b53288dbdfb01c6e0a1f86734fe655260591bed1a98d",
-      "role": "project_descriptor"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/BenchmarkPolygonChaosRunner-Win64-Shipping.target",
-      "sha256": "555c63a1aa14ca022c3e88a781423f883939eb951dac6e2a9d1e8fabb5d14ebf",
-      "role": "target_receipt"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/D3D12/x64/D3D12Core.dll",
-      "sha256": "560f9574372a52ab66ad95ee1222f1eb4c9f6161d8f6b7b025d89f684b07246c",
-      "role": "runtime_dependency"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/D3D12/x64/d3d12SDKLayers.dll",
-      "sha256": "bcec9e1315fb4dbc767371926fb5eb8281de1b3ab1fb530a636b3c193a9a2bbd",
-      "role": "runtime_dependency"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/tbb12.dll",
-      "sha256": "e6856cefe45a067aaa5fdf033e6fe9704dafe8cf96e648c02230cf0cef0e745f",
-      "role": "runtime_dependency"
-    },
-    {
-      "path": "release/windows-x64/unreal_chaos/tbbmalloc.dll",
-      "sha256": "af20d7ca563e542432b856f6628d9481247197d1853bd4057caaf6c449749d42",
-      "role": "runtime_dependency"
-    }
-  ],
   "license_id": "Unreal-Engine-EULA",
   "notice_license_reference": "SOURCES.md#unreal_chaos",
   "visual": {

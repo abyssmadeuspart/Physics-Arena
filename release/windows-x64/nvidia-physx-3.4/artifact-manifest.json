@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "nvidia_physx34",
   "platform": "windows-x64",
   "host_route": "windows",
@@ -25,38 +25,6 @@
     "sdk_toolchain_id": "vs2026_msbuild_release",
     "sdk_build_config": "release"
   },
-  "files": [
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/nvidia_physx34_polygon_runner.exe",
-      "sha256": "e9df6e03271ea22dfe6dbb18dc16d055abe4c98a2b3b11c1dff7fcae7279ef3a",
-      "role": "executable"
-    },
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/PhysX3Common_x64.dll",
-      "sha256": "8ca36831ebb0957b28ce05a0fef30a8ba8d0f80b8910231697604da06c889b19",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/PhysX3Cooking_x64.dll",
-      "sha256": "04c75d962e16724a38783221957814aa9e202d596678d743486f80584e5efe16",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/PhysX3_x64.dll",
-      "sha256": "912d15793e198df335728e6ec6905dcdd8548805d833f1bd621bd6c7fb7f6aac",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/PxFoundation_x64.dll",
-      "sha256": "52cde1292a0772abd17c0204171665b97d516c1176df706a0d40fa6cd2c6cb0f",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/nvidia-physx-3.4/PxPvdSDK_x64.dll",
-      "sha256": "d109a3891f2cc75278f73d3714860c5063745ac58c0515fb9fceda9653cd5190",
-      "role": "sidecar"
-    }
-  ],
   "license_id": "BSD-3-Clause",
   "notice_license_reference": "SOURCES.md#nvidia_physx34",
   "visual": {

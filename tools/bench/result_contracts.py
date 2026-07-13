@@ -4,13 +4,9 @@ import statistics
 from .common import (
     FIXTURE_VALIDATION_CURRENT_RUN,
     FIXTURE_VALIDATION_HISTORICAL_OR_CURRENT,
-    OPTIONAL_NORMALIZED_COLUMNS,
     REQUIRED_NORMALIZED_COLUMNS,
     apply_normalized_metadata,
     emit,
-    load_json,
-    metadata_path_text,
-    repo_path,
     validate_fixture_collection,
     validate_fixture_row,
 )
@@ -164,30 +160,10 @@ def validate_unreal_chaos_taskgraph_worker_count(row, thread_count):
 def normalized_row_key(row):
     return (row["engine_id"], int(row["thread_count"]), int(row["repeat_index"]))
 
-def write_summary(result_dir, engine_report_metadata_by_id, build_settings_rewrite_by_value):
-    normalized_path = result_dir / "normalized.csv"
-    summary_path = result_dir / "summary.csv"
-    rows_status = read_summary_source_rows(normalized_path, engine_report_metadata_by_id, build_settings_rewrite_by_value)
-    if rows_status["status"] != "ok":
-        emit("summary", rows_status["status"], rows_status["detail"])
-        return 2
-    return write_summary_rows(summary_path, result_dir.name, rows_status["rows"])
-
-def read_summary_source_rows(normalized_path, engine_report_metadata_by_id, build_settings_rewrite_by_value):
-    with normalized_path.open("r", encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        if reader.fieldnames is None:
-            return {"status": "invalid_result", "detail": f"missing_header={normalized_path}", "rows": []}
-        for column in ["run_id"] + REQUIRED_NORMALIZED_COLUMNS + ["raw_path"]:
-            if column not in reader.fieldnames:
-                return {"status": "invalid_result", "detail": f"missing_column={column} file={normalized_path}", "rows": []}
-        rows = [dict(row) for row in reader]
-    return {"status": "ok", "detail": str(normalized_path), "rows": rows}
-
 def write_summary_rows(summary_path, run_id, rows):
     if not rows:
         emit("summary", "invalid_result", f"empty_normalized={summary_path}")
-        return 2
+        return {"status": "invalid_result", "detail": f"empty_normalized={summary_path}", "rows": []}
     groups = {}
     for row in rows:
         key = (row["engine_id"], int(row["thread_count"]))
@@ -229,138 +205,21 @@ def write_summary_rows(summary_path, run_id, rows):
                 "below_floor_count": first["below_floor_count"],
                 "out_of_bounds_count": first["out_of_bounds_count"]
             })
-        for row in sorted(summary_records, key=lambda row: (
+        ordered_rows = sorted(summary_records, key=lambda row: (
             int(row["thread_count"]),
             float(row["median_ms_per_step"]),
             row["engine_id"]
-        )):
+        ))
+        for row in ordered_rows:
             writer.writerow(row)
-    return 0
-
-def collect_combined_result(contracts, result_dir, source_dirs):
-    source_records = []
-    expected_contract = None
-    engine_ids = []
-    source_run_ids = []
-    source_result_dirs = []
-    source_manifests = []
-    rows = []
-    fieldname_set = set(["run_id"] + REQUIRED_NORMALIZED_COLUMNS + OPTIONAL_NORMALIZED_COLUMNS + ["raw_path"])
-
-    for source_dir in source_dirs:
-        source_status = load_source_result_record(contracts, source_dir)
-        if source_status["status"] != "ok":
-            return source_status
-        source_record = source_status["record"]
-        source_contract = source_record["contract"]
-        if expected_contract is None:
-            expected_contract = source_contract
-        else:
-            mismatch = first_contract_mismatch(expected_contract, source_contract)
-            if mismatch:
-                return {"status": "invalid_result", "detail": f"source_contract_mismatch key={mismatch} source={source_dir}"}
-
-        for engine_entry in source_record["manifest"].get("engines", []):
-            engine_id = engine_entry.get("id", "")
-            if engine_id in engine_ids:
-                return {"status": "invalid_result", "detail": f"duplicate_engine_id={engine_id} source={source_dir}"}
-            engine_ids.append(engine_id)
-
-        source_run_id = source_record["manifest"]["run_id"]
-        if source_run_id in source_run_ids:
-            return {"status": "invalid_result", "detail": f"duplicate_source_run_id={source_run_id}"}
-        source_run_ids.append(source_run_id)
-        source_result_dirs.append(metadata_path_text(source_dir))
-        source_manifests.append(metadata_path_text(source_dir / "manifest.json"))
-        source_records.append(source_record)
-        for fieldname in source_record["fieldnames"]:
-            fieldname_set.add(fieldname)
-        rows.extend(source_record["rows"])
-
-    if expected_contract is None:
-        return {"status": "invalid_result", "detail": "missing_source_results"}
-
-    case = contracts["case_by_id"].get(expected_contract["case_id"])
-    if case is None:
-        return {"status": "invalid_result", "detail": f"case={expected_contract['case_id']}"}
-    combined_engines = [contracts["engine_by_id"][engine_id] for engine_id in engine_ids]
-    validate_status = validate_normalized_rows(
-        rows,
-        case,
-        combined_engines,
-        expected_contract["repeat_count"],
-        contracts["case_fixture_contract_by_id"],
-        FIXTURE_VALIDATION_HISTORICAL_OR_CURRENT,
-        contracts["engine_sources"])
-    if validate_status != 0:
-        return {"status": "invalid_result", "detail": "combined_rows_failed_validation"}
-
-    ordered_fieldnames = ["run_id"] + REQUIRED_NORMALIZED_COLUMNS + OPTIONAL_NORMALIZED_COLUMNS + ["raw_path"]
-    extra_fieldnames = sorted(fieldname_set.difference(ordered_fieldnames))
-    fieldnames = ordered_fieldnames + extra_fieldnames
-    normalized_rows = []
-    for row in sorted(rows, key=normalized_row_key):
-        apply_normalized_metadata(row, contracts["engine_report_metadata_by_id"], contracts["build_settings_rewrite_by_value"])
-        normalized_rows.append({fieldname: row.get(fieldname, "") for fieldname in fieldnames})
-
-    manifest = {
-        "schema_version": 1,
-        "run_id": result_dir.name,
-        "host_route": expected_contract["host_route"],
-        "host": expected_contract["host"],
-        "case_id": expected_contract["case_id"],
-        "benchmark_mode": expected_contract["benchmark_mode"],
-        "thread_counts": expected_contract["thread_counts"],
-        "step_count": expected_contract["step_count"],
-        "warmup_steps": expected_contract["warmup_steps"],
-        "repeat_count": expected_contract["repeat_count"],
-        "engines": [
-            engine_entry
-            for source_record in source_records
-            for engine_entry in source_record["manifest"].get("engines", [])
-        ],
-        "source_run_ids": source_run_ids,
-        "source_result_dirs": source_result_dirs,
-        "source_manifests": source_manifests
-    }
-    return {"status": "ok", "detail": result_dir.name, "manifest": manifest, "rows": normalized_rows, "fieldnames": fieldnames}
-
-def load_source_result_record(contracts, source_dir):
-    results_root = repo_path("results").resolve()
-    resolved_source = source_dir.resolve()
-    try:
-        resolved_source.relative_to(results_root)
-    except ValueError:
-        return {"status": "invalid_result", "detail": f"source_outside_results={source_dir}"}
-    if not source_dir.is_dir():
-        return {"status": "invalid_result", "detail": f"missing_source_dir={source_dir}"}
-
-    manifest_path = source_dir / "manifest.json"
-    normalized_path = source_dir / "normalized.csv"
-    if not manifest_path.is_file():
-        return {"status": "invalid_result", "detail": f"missing_manifest={manifest_path}"}
-    if not normalized_path.is_file():
-        return {"status": "invalid_result", "detail": f"missing_normalized={normalized_path}"}
-
-    manifest = load_json(manifest_path)
-    manifest_status = validate_source_manifest_contract(contracts, manifest, source_dir)
-    if manifest_status["status"] != "ok":
-        return manifest_status
-    row_status = load_and_validate_source_rows(contracts, manifest, normalized_path)
-    if row_status["status"] != "ok":
-        return row_status
-    return {
-        "status": "ok",
-        "detail": str(source_dir),
-        "record": {
-            "manifest": manifest,
-            "contract": manifest_status["contract"],
-            "rows": row_status["rows"],
-            "fieldnames": row_status["fieldnames"]
-        }
-    }
+    return {"status": "ok", "detail": str(summary_path), "rows": ordered_rows}
 
 def validate_source_manifest_contract(contracts, manifest, source_dir):
+    if not isinstance(manifest, dict):
+        return {"status": "invalid_result", "detail": f"manifest_type source={source_dir}"}
+    schema_version = manifest.get("schema_version", 1)
+    if type(schema_version) is not int or schema_version not in {1, 2}:
+        return {"status": "invalid_result", "detail": f"schema_version={schema_version} source={source_dir}"}
     required_keys = [
         "run_id",
         "host_route",
@@ -376,8 +235,38 @@ def validate_source_manifest_contract(contracts, manifest, source_dir):
     for key in required_keys:
         if key not in manifest:
             return {"status": "invalid_result", "detail": f"missing_manifest_key={key} source={source_dir}"}
-    if manifest["case_id"] not in contracts["case_by_id"]:
+    if not isinstance(manifest["case_id"], str) or manifest["case_id"] not in contracts["case_by_id"]:
         return {"status": "invalid_result", "detail": f"case={manifest['case_id']} source={source_dir}"}
+    case = contracts["case_by_id"][manifest["case_id"]]
+    for key in ["run_id", "host_route", "benchmark_mode"]:
+        value = manifest[key]
+        if not isinstance(value, str) or not value.strip():
+            return {"status": "invalid_result", "detail": f"manifest_{key}_type source={source_dir}"}
+    if manifest["host_route"] not in contracts["cases_doc"].get("host_routes", []):
+        return {"status": "invalid_result", "detail": f"host_route={manifest['host_route']} source={source_dir}"}
+    if manifest["benchmark_mode"] not in contracts["cases_doc"].get("benchmark_modes", []):
+        return {"status": "invalid_result", "detail": f"benchmark_mode={manifest['benchmark_mode']} source={source_dir}"}
+    allowed_case_modes = {
+        case.get("benchmark_mode", ""), "visualized_local", "visualized_release"}
+    if manifest["benchmark_mode"] not in allowed_case_modes:
+        return {"status": "invalid_result", "detail": f"benchmark_mode={manifest['benchmark_mode']} case={manifest['case_id']} source={source_dir}"}
+    thread_counts = manifest["thread_counts"]
+    if not isinstance(thread_counts, list) or not thread_counts:
+        return {"status": "invalid_result", "detail": f"thread_counts_type source={source_dir}"}
+    if any(type(thread_count) is not int or thread_count <= 0 for thread_count in thread_counts):
+        return {"status": "invalid_result", "detail": f"thread_count_value source={source_dir}"}
+    if len(set(thread_counts)) != len(thread_counts):
+        return {"status": "invalid_result", "detail": f"duplicate_thread_count source={source_dir}"}
+    for key, minimum in [("step_count", 1), ("warmup_steps", 0), ("repeat_count", 1)]:
+        value = manifest[key]
+        if type(value) is not int or value < minimum:
+            return {"status": "invalid_result", "detail": f"manifest_{key}_value={value} source={source_dir}"}
+    expected_step_count = case.get("step_count")
+    if type(expected_step_count) is int and manifest["step_count"] != expected_step_count:
+        return {"status": "invalid_result", "detail": f"step_count={manifest['step_count']} expected={expected_step_count} source={source_dir}"}
+    expected_warmup_steps = case.get("warmup_steps", 0)
+    if manifest["warmup_steps"] != expected_warmup_steps:
+        return {"status": "invalid_result", "detail": f"warmup_steps={manifest['warmup_steps']} expected={expected_warmup_steps} source={source_dir}"}
     host_status = validate_host_metadata(manifest["host"])
     if host_status["status"] != "ok":
         return {"status": host_status["status"], "detail": f"{host_status['detail']} source={source_dir}"}
@@ -385,12 +274,15 @@ def validate_source_manifest_contract(contracts, manifest, source_dir):
         return {"status": "invalid_result", "detail": f"missing_manifest_engines source={source_dir}"}
     engine_ids = []
     for engine_entry in manifest["engines"]:
+        if not isinstance(engine_entry, dict):
+            return {"status": "invalid_result", "detail": f"engine_entry_type source={source_dir}"}
         engine_id = engine_entry.get("id", "")
-        if engine_id not in contracts["engine_by_id"]:
+        if not isinstance(engine_id, str) or engine_id not in contracts["engine_by_id"]:
             return {"status": "invalid_result", "detail": f"engine={engine_id} source={source_dir}"}
         if engine_id in engine_ids:
             return {"status": "invalid_result", "detail": f"duplicate_manifest_engine={engine_id} source={source_dir}"}
-        artifact_status = validate_result_artifact_snapshot(contracts, engine_entry, source_dir)
+        artifact_status = validate_result_artifact_snapshot(
+            contracts, engine_entry, source_dir, schema_version)
         if artifact_status["status"] != "ok":
             return artifact_status
         engine_ids.append(engine_id)
@@ -398,11 +290,12 @@ def validate_source_manifest_contract(contracts, manifest, source_dir):
     if visual_artifact_status["status"] != "ok":
         return visual_artifact_status
     contract = {
+        "run_id": manifest["run_id"],
         "host_route": manifest["host_route"],
         "host": manifest["host"],
         "case_id": manifest["case_id"],
         "benchmark_mode": manifest["benchmark_mode"],
-        "thread_counts": manifest["thread_counts"],
+        "thread_counts": list(manifest["thread_counts"]),
         "step_count": manifest["step_count"],
         "warmup_steps": manifest["warmup_steps"],
         "repeat_count": manifest["repeat_count"]
@@ -426,8 +319,8 @@ def load_and_validate_source_rows(contracts, manifest, normalized_path):
 
     case = contracts["case_by_id"][manifest["case_id"]]
     engine_ids = [engine_entry["id"] for engine_entry in manifest["engines"]]
-    thread_counts = [int(thread_count) for thread_count in manifest["thread_counts"]]
-    repeat_count = int(manifest["repeat_count"])
+    thread_counts = list(manifest["thread_counts"])
+    repeat_count = manifest["repeat_count"]
     expected_keys = {
         (engine_id, thread_count, repeat_index)
         for engine_id in engine_ids
@@ -456,21 +349,27 @@ def validate_combined_source_row(row, manifest, case, engine_ids, thread_counts,
         return {"status": "invalid_result", "detail": f"case_id={row['case_id']} file={normalized_path}"}
     if row["benchmark_mode"] != manifest["benchmark_mode"]:
         return {"status": "invalid_result", "detail": f"benchmark_mode={row['benchmark_mode']} file={normalized_path}"}
-    int_status = parse_row_ints(row, ["thread_count", "step_count", "warmup_steps", "repeat_index", "body_count", "shape_count"] + case["stability_counters"])
+    stability_counters = case.get("stability_counters", [])
+    int_status = parse_row_ints(row, [
+        "thread_count", "step_count", "warmup_steps", "repeat_index", "body_count", "shape_count",
+    ] + stability_counters)
     if int_status["status"] != "ok":
         return {"status": "invalid_result", "detail": f"{int_status['detail']} file={normalized_path}"}
     if int(row["thread_count"]) not in thread_counts:
         return {"status": "invalid_result", "detail": f"thread_count={row['thread_count']} file={normalized_path}"}
-    if int(row["step_count"]) != int(manifest["step_count"]) or int(row["step_count"]) != int(case["step_count"]):
+    if int(row["step_count"]) != manifest["step_count"]:
         return {"status": "invalid_result", "detail": f"step_count={row['step_count']} file={normalized_path}"}
-    if int(row["warmup_steps"]) != int(manifest["warmup_steps"]) or int(row["warmup_steps"]) != int(case.get("warmup_steps", 0)):
+    case_step_count = case.get("step_count")
+    if type(case_step_count) is int and int(row["step_count"]) != case_step_count:
+        return {"status": "invalid_result", "detail": f"step_count={row['step_count']} file={normalized_path}"}
+    if int(row["warmup_steps"]) != manifest["warmup_steps"] or int(row["warmup_steps"]) != case.get("warmup_steps", 0):
         return {"status": "invalid_result", "detail": f"warmup_steps={row['warmup_steps']} file={normalized_path}"}
     if int(row["repeat_index"]) < 0 or int(row["repeat_index"]) >= repeat_count:
         return {"status": "invalid_result", "detail": f"repeat_index={row['repeat_index']} file={normalized_path}"}
     fixture_status = validate_fixture_row(row, case, FIXTURE_VALIDATION_HISTORICAL_OR_CURRENT, fixture_contract)
     if fixture_status["status"] != "ok":
         return {"status": fixture_status["status"], "detail": f"{fixture_status['detail']} file={normalized_path}"}
-    for counter in case["stability_counters"]:
+    for counter in stability_counters:
         if int(row[counter]) != 0:
             return {"status": "invalid_result", "detail": f"{counter}={row[counter]} engine={row['engine_id']} file={normalized_path}"}
     if row["case_status"] != "ok" or row["metric_status"] != "ok":
@@ -484,9 +383,3 @@ def parse_row_ints(row, columns):
         except ValueError:
             return {"status": "invalid_result", "detail": f"invalid_int column={column} value={row[column]}"}
     return {"status": "ok", "detail": "parsed"}
-
-def first_contract_mismatch(expected_contract, source_contract):
-    for key in ["host_route", "case_id", "benchmark_mode", "thread_counts", "step_count", "warmup_steps", "repeat_count"]:
-        if expected_contract[key] != source_contract[key]:
-            return key
-    return ""

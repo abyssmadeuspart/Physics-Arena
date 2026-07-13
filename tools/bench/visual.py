@@ -11,7 +11,6 @@ from .common import (
     process_diagnostic_detail,
     repo_path,
     run_process,
-    sha256_file,
     write_process_logs,
     write_text_lf,
 )
@@ -19,18 +18,14 @@ from .contracts import load_contracts, selected_engines, validate_case_route_sup
 from .host import collect_host_metadata, run_state_slug
 from .options import parse_positive_int, parse_value_options, single_option_value
 from .release_files import (
-    load_runtime_records,
     load_visual_runtime_records,
-    release_artifacts_status,
     release_run_environment,
-    visual_release_artifacts_status,
 )
-from .reports import command_report
-from .result_contracts import write_summary
 from .runner import (
     case_with_thread_counts,
     default_repeat_count,
     dotnet_launcher_status,
+    finalize_fresh_result,
     normalize_results,
     parse_engine_ids,
     parse_thread_selection_request,
@@ -39,7 +34,6 @@ from .runner import (
     resolve_thread_selection,
     thread_selection_diagnostic,
     validate_engine_thread_support,
-    write_raw_slice_summaries,
 )
 
 VISUAL_RELEASE_MODE = "visualized_release"
@@ -102,12 +96,12 @@ def command_visual_run(args):
         emit("visual_arguments", "invalid_result", f"repeats={repeats_status['detail']}")
         return 2
     repeats = repeats_status["value"]
-    artifact_status = release_artifacts_status(contracts, release_platform, engines)
-    if artifact_status["status"] != "ok":
-        for failure in artifact_status["failures"]:
+    visual_records = load_visual_runtime_records(contracts, release_platform, engines)
+    if visual_records["status"] != "ok":
+        for failure in visual_records["failures"]:
             emit(failure["component"], failure["status"], failure["detail"])
-        failed_components = "/".join(failure["component"] for failure in artifact_status["failures"])
-        emit("visual_gate", artifact_status["status"], f"release_artifacts_failed platform={release_platform} failure_count={artifact_status['failure_count']} components={failed_components}")
+        failed_components = "/".join(failure["component"] for failure in visual_records["failures"])
+        emit("visual_gate", visual_records["status"], f"release_artifacts_failed platform={release_platform} failure_count={visual_records['failure_count']} components={failed_components}")
         emit("visual_action", "required", "restore the matching checked-in release/windows-x64 package and rerun")
         return 2
     host_status = collect_host_metadata()
@@ -128,28 +122,16 @@ def command_visual_run(args):
     if run_slug_status["status"] != "ok":
         emit("visual_arguments", run_slug_status["status"], run_slug_status["detail"])
         return 2
-    visual_artifact_status = visual_release_artifacts_status(contracts, release_platform, engines)
-    if visual_artifact_status["status"] != "ok":
-        emit("visual_gate", visual_artifact_status["status"], visual_artifact_status["detail"])
-        return 2
-    runtime_records = load_runtime_records(contracts, engines, release_platform)
-    if runtime_records["status"] != "ok":
-        emit("visual_gate", runtime_records["status"], runtime_records["detail"])
-        return 2
-    visual_records = load_visual_runtime_records(contracts, release_platform, engines)
-    if visual_records["status"] != "ok":
-        emit("visual_gate", visual_records["status"], visual_records["detail"])
-        return 2
     result_dir = run_slug_status["result_dir"]
     raw_dir = result_dir / "raw"
     raw_dir.mkdir(parents=True)
     emit("visual_component", "status", "detail")
-    manifest = write_visual_run_manifest(
+    manifest_record = write_visual_run_manifest(
         result_dir,
         engines,
         visual_case,
         repeats,
-        runtime_records["records"],
+        visual_records["records"],
         visual_records,
         host_status["host"],
         thread_counts_status["selection"],
@@ -180,28 +162,22 @@ def command_visual_run(args):
         contracts["engine_report_metadata_by_id"],
         contracts["build_settings_rewrite_by_value"],
         contracts["case_fixture_contract_by_id"],
-        contracts["engine_sources"])
-    if normalize_status != 0:
+        contracts["engine_sources"],
+        manifest_record["document"],
+        visual_records["records"])
+    if normalize_status["status"] != "ok":
         emit("visual_gate", "invalid_result", str((result_dir / "normalized.csv").relative_to(REPO_ROOT)))
         return 2
-    summary_status = write_summary(
-        result_dir,
-        contracts["engine_report_metadata_by_id"],
-        contracts["build_settings_rewrite_by_value"])
-    if summary_status != 0:
-        return 2
-    slice_summary_status = write_raw_slice_summaries(result_dir, contracts, load_json(manifest))
-    if slice_summary_status != 0:
-        return 2
-    report_status = command_report([str(result_dir.relative_to(REPO_ROOT))])
-    if report_status != 0:
+    finalization_status = finalize_fresh_result(
+        result_dir, contracts, manifest_record["document"], normalize_status["rows"])
+    if finalization_status["status"] != "ok":
         emit("visual_report", "invalid_result", str(result_dir.relative_to(REPO_ROOT)))
         return 2
     emit("visual_gate", "ok", str((result_dir / "normalized.csv").relative_to(REPO_ROOT)))
     emit("visual_summary", "ok", str((result_dir / "summary.csv").relative_to(REPO_ROOT)))
     emit("visual_svg", "ok", str((result_dir / "summary.svg").relative_to(REPO_ROOT)))
     emit("visual_report", "ok", str((result_dir / "report.md").relative_to(REPO_ROOT)))
-    emit("visual_manifest", "ok", str(manifest.relative_to(REPO_ROOT)))
+    emit("visual_manifest", "ok", str(manifest_record["path"].relative_to(REPO_ROOT)))
     emit("visual_result", "ok", str(result_dir.relative_to(REPO_ROOT)))
     return 0
 
@@ -252,7 +228,7 @@ def write_visual_run_manifest(result_dir, engines, case, repeats, runtime_record
     manifest_path = result_dir / "manifest.json"
     renderer_path = visual_records["renderer"]["path"]
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "run_id": result_dir.name,
         "host_route": "windows",
         "case_id": case["id"],
@@ -265,20 +241,20 @@ def write_visual_run_manifest(result_dir, engines, case, repeats, runtime_record
         "run_slug_metadata": run_slug_metadata,
         "host": host,
         "visual_shared_renderer_artifact_manifest": metadata_path_text(renderer_path),
-        "visual_shared_renderer_artifact_manifest_sha256": sha256_file(renderer_path),
         "engines": [
             visual_manifest_engine_entry(engine, runtime_records.get(engine["id"]), visual_records["engines"].get(engine["id"]))
             for engine in engines
         ]
     }
     write_text_lf(manifest_path, json.dumps(payload, indent=2) + "\n")
-    return manifest_path
+    return {"path": manifest_path, "document": payload}
 
 def visual_manifest_engine_entry(engine, runtime_record, visual_engine_record):
     entry = {"id": engine["id"]}
     if runtime_record is not None:
         entry["release_artifact_manifest"] = metadata_path_text(runtime_record["path"])
-        entry["artifact_manifest_sha256"] = sha256_file(runtime_record["path"])
+        entry["source_version"] = runtime_record["manifest"]["source_version"]
+        entry["toolchain_id"] = runtime_record["manifest"]["compiler_runtime"]["toolchain_id"]
     if visual_engine_record is not None:
         entry["visual_release_mode"] = visual_engine_record["manifest"].get("visual", {}).get("producer_mode_arg", "")
     return entry

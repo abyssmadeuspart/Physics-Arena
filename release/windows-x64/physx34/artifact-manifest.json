@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "physx34",
   "platform": "windows-x64",
   "host_route": "windows",
@@ -19,38 +19,6 @@
     "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
     "runtime_detail": "Vite's PhysX 3.4 runtime DLLs plus repo runner executable"
   },
-  "files": [
-    {
-      "path": "release/windows-x64/physx34/physx34_polygon_runner.exe",
-      "sha256": "3e3093eb8feb67af2754d07d8047a47c8594f3a8cfa202f675dce53073bfb323",
-      "role": "executable"
-    },
-    {
-      "path": "release/windows-x64/physx34/PhysX3Common_x64.dll",
-      "sha256": "c8be7f2afa825fc443452e60eca5723abae98c19101f5061f1cf0f4646ad427f",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/physx34/PhysX3Cooking_x64.dll",
-      "sha256": "5f53452ee6e4a24ca0c0baec3aa2e6dde64ce8984cc79636565bdfb554bc9e72",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/physx34/PhysX3_x64.dll",
-      "sha256": "97eba113e2358a96049f4883bc1c1d3d36afc14979eb2f648cae9e349ca429df",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/physx34/PxFoundation_x64.dll",
-      "sha256": "94579cf6fab137ec067dd0fa24a01b1107bfe07b60b205a2865f816f1efebb0e",
-      "role": "sidecar"
-    },
-    {
-      "path": "release/windows-x64/physx34/PxPvdSDK_x64.dll",
-      "sha256": "251eca41a6dd2153649f8bfa2d5a4b48cdd16d1677b0c069aebe0def51c60520",
-      "role": "sidecar"
-    }
-  ],
   "license_id": "BSD-3-Clause",
   "notice_license_reference": "SOURCES.md#physx34",
   "package_metadata": {

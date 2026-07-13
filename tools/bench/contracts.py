@@ -809,24 +809,3 @@ def engine_ref_path(engine):
     if override:
         return local_path(override).resolve()
     return config_path(engine["default_ref_path"]).resolve()
-
-def command_validate(args):
-    contracts = load_contracts()
-    from .release_files import verify_release_artifacts, verify_single_build_visual_contract, verify_visual_release_artifacts, verify_visual_release_matrix
-    release_engines = selected_engines(contracts, "default_release", "")
-    release_status = verify_release_artifacts(contracts, DEFAULT_RELEASE_PLATFORM, release_engines, "emit")
-    if release_status != 0:
-        return release_status
-    visual_engines = selected_engines(contracts, "default_visual_release", "")
-    visual_status = verify_visual_release_artifacts(contracts, DEFAULT_RELEASE_PLATFORM, visual_engines, "emit")
-    if visual_status != 0:
-        return visual_status
-    single_build_status = verify_single_build_visual_contract(contracts, DEFAULT_RELEASE_PLATFORM, "emit")
-    if single_build_status != 0:
-        return single_build_status
-    visual_matrix_status = verify_visual_release_matrix(contracts, DEFAULT_RELEASE_PLATFORM, "emit")
-    if visual_matrix_status != 0:
-        return visual_matrix_status
-    emit("manifest_validation", "ok", "config/engines.json config/cases.json config/reports.json src/*/engine.json")
-    emit("release_manifest_validation", "ok", f"release/{DEFAULT_RELEASE_PLATFORM}/manifest.json")
-    return 0

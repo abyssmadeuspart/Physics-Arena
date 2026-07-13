@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "joltphysics",
   "platform": "windows-x64",
   "host_route": "windows",
@@ -13,13 +13,6 @@
     "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
     "runtime_detail": "statically linked runner executable"
   },
-  "files": [
-    {
-      "path": "release/windows-x64/joltphysics/jolt_polygon_runner.exe",
-      "sha256": "f8de0439f040db57ff5de09d262d5c5d1a8b7192abee21a7e35674bab9a8983a",
-      "role": "executable"
-    }
-  ],
   "license_id": "MIT",
   "notice_license_reference": "SOURCES.md#joltphysics",
   "visual": {

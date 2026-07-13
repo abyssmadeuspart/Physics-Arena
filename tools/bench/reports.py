@@ -1,5 +1,4 @@
 import base64
-import csv
 import math
 import os
 import re
@@ -18,7 +17,7 @@ from .contracts import load_contracts
 from .result_contracts import (
     load_and_validate_source_rows,
     validate_source_manifest_contract,
-    write_summary,
+    write_summary_rows,
 )
 from .host import (
     host_label,
@@ -45,30 +44,32 @@ def command_report(args):
     if result_status["status"] != "ok":
         emit("report", result_status["status"], result_status["detail"])
         return 2
-    manifest = load_json(result_dir / "manifest.json")
-    summary_status = write_summary(
-        result_dir,
-        contracts["engine_report_metadata_by_id"],
-        contracts["build_settings_rewrite_by_value"])
-    if summary_status != 0:
+    manifest = result_status["manifest"]
+    summary_status = write_summary_rows(
+        result_dir / "summary.csv", result_dir.name, result_status["rows"])
+    if summary_status["status"] != "ok":
         return 2
-    summary_rows = read_summary(result_dir / "summary.csv")
+    report_status = write_report_artifacts(
+        result_dir, contracts, report, manifest, summary_status["rows"])
+    return 0 if report_status["status"] == "ok" else 2
+
+def write_report_artifacts(result_dir, contracts, report, manifest, summary_rows):
     host_source_status = validate_publishable_host_metadata(manifest["host"])
     if host_source_status["status"] != "ok":
         emit("report_host_sources", host_source_status["status"], host_source_status["detail"])
-        return 2
+        return host_source_status
     emit("report_host_sources", "ok", host_source_coverage(manifest["host"]))
     logo_status = validate_report_logo_assets(report_current_engine_ids(summary_rows, manifest), report_presentation(contracts, report))
     if logo_status["status"] != "ok":
         emit("report", logo_status["status"], logo_status["detail"])
-        return 2
+        return logo_status
     write_summary_svg(result_dir / "summary.svg", summary_rows, contracts, report, manifest)
     markdown_path = result_dir / "report.md"
     write_markdown_report(markdown_path, result_dir, summary_rows, contracts, report, manifest)
     emit("report_summary", "ok", metadata_path_text(result_dir / "summary.csv"))
     emit("report_svg", "ok", metadata_path_text(result_dir / "summary.svg"))
     emit("report_markdown", "ok", metadata_path_text(markdown_path))
-    return 0
+    return {"status": "ok", "detail": metadata_path_text(markdown_path)}
 
 def command_index(args):
     if args:
@@ -106,11 +107,12 @@ def validate_result_for_report(contracts, result_dir):
     row_status = load_and_validate_source_rows(contracts, manifest, result_dir / "normalized.csv")
     if row_status["status"] != "ok":
         return row_status
-    return {"status": "ok", "detail": str(manifest_json)}
-
-def read_summary(summary_path):
-    with summary_path.open("r", encoding="utf-8", newline="") as handle:
-        return list(csv.DictReader(handle))
+    return {
+        "status": "ok",
+        "detail": str(manifest_json),
+        "manifest": manifest,
+        "rows": row_status["rows"],
+    }
 
 def engine_display_name(contracts, engine_id):
     engine = contracts["engine_by_id"].get(engine_id)
@@ -147,12 +149,6 @@ def markdown_table(headers, rows, alignments):
             separators.append(":" + "-" * (marker_width - 1))
 
     return [padded_row(escaped_headers), "| " + " | ".join(separators) + " |"] + [padded_row(row) for row in escaped_rows]
-
-def report_status_label(report):
-    return report.get("status_label", report["report_status"].replace("_", " "))
-
-def report_title(report):
-    return report["title"]
 
 def report_benchmark_modes(rows):
     modes = sorted({row.get("benchmark_mode", "") for row in rows if row.get("benchmark_mode", "")})
@@ -206,10 +202,10 @@ def report_metric_label(report):
     chart_note = report.get("chart_note", "lower is better")
     return f"Median {chart_label}; {chart_note}."
 
-def report_run_label(rows, case, manifest, repeat_label, warmup_label, timestep_label):
+def report_run_label(rows, manifest, repeat_label, warmup_label, timestep_label):
     repeat_word = "repeat" if repeat_label == "1" else "repeats"
     thread_label = report_thread_selection_label(rows)
-    return f"{report_mode_label(manifest)}; {report_release_source_label(manifest)}; {repeat_label} {repeat_word}; {thread_label}; {case['step_count']} measured steps + {warmup_label} warmup; {timestep_label}."
+    return f"{report_mode_label(manifest)}; {report_release_source_label(manifest)}; {repeat_label} {repeat_word}; {thread_label}; {manifest['step_count']} measured steps + {warmup_label} warmup; {timestep_label}."
 
 def report_mode_label(manifest):
     mode = manifest.get("benchmark_mode", "")
@@ -508,7 +504,7 @@ def write_markdown_report(path, result_dir, rows, contracts, report, manifest):
         ["Case id", f"`{case['id']}`"],
         ["Benchmark mode", f"`{report_benchmark_modes(rows)}`"],
         ["Thread counts", f"`{report_thread_counts(rows)}`"],
-        ["Step count", f"`{case['step_count']}`"],
+        ["Step count", f"`{manifest['step_count']}`"],
         ["Warmup steps", f"`{report_warmup_steps(rows, case)}`"],
         ["Host", host_label(manifest["host"])],
         ["Physics settings", report_physics_settings_label(rows, contracts, manifest)],
@@ -621,7 +617,8 @@ def write_summary_svg(path, rows, contracts, report, manifest):
     repeat_label = report_repeat_count(rows)
     warmup_label = report_warmup_steps(rows, case)
     timestep_label = f"{int(case['timestep_hz'])} Hz" if "timestep_hz" in case else "configured timestep"
-    run_label = report_run_label(rows, case, manifest, repeat_label, warmup_label, timestep_label)
+    run_label = report_run_label(
+        rows, manifest, repeat_label, warmup_label, timestep_label)
     host_lines = [[("", line)] for line in host_label_lines(manifest["host"])]
     physics_lines = report_physics_settings_lines(rows, contracts, manifest)
     build_lines = report_build_settings_lines(rows, contracts, manifest)

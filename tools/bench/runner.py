@@ -15,43 +15,29 @@ from .common import (
     REPO_ROOT,
     RUNNABLE_ROUTE_STATUSES,
     apply_normalized_metadata,
-    command_path,
     emit,
-    load_json,
     metadata_path_text,
     platform_id,
     process_diagnostic_detail,
     repo_path,
     run_process,
-    sha256_file,
     write_process_logs,
     write_text_lf,
 )
 from .options import parse_positive_int, parse_value_options, single_option_value
-from .reports import command_report, read_summary, write_summary_svg
+from .reports import write_report_artifacts, write_summary_svg
 from .release_files import (
     artifact_run_metadata,
     load_runtime_records,
-    release_artifacts_status,
     release_run_environment,
 )
 from .result_contracts import (
-    collect_combined_result,
     expected_worker_count_for_policy,
-    read_summary_source_rows,
     validate_normalized_rows,
-    write_summary,
     write_summary_rows,
 )
 from .contracts import load_contracts, selected_engines, validate_case_route_support
 from .host import collect_host_metadata, int_value, run_state_slug
-
-def tool_or_emit(component, env_name, command_names):
-    path = command_path(env_name, command_names)
-    if path:
-        return path
-    emit(component, "tool_missing", f"set {env_name} or add {command_names[0]} to PATH")
-    return ""
 
 def command_run(args):
     contracts = load_contracts()
@@ -112,12 +98,12 @@ def command_run(args):
         emit("run_arguments", "invalid_result", f"repeats={repeats_status['detail']}")
         return 2
     repeats = repeats_status["value"]
-    artifact_status = release_artifacts_status(contracts, release_platform, engines)
-    if artifact_status["status"] != "ok":
-        for failure in artifact_status["failures"]:
+    runtime_records = load_runtime_records(contracts, engines, release_platform)
+    if runtime_records["status"] != "ok":
+        for failure in runtime_records["failures"]:
             emit(failure["component"], failure["status"], failure["detail"])
-        failed_components = "/".join(failure["component"] for failure in artifact_status["failures"])
-        emit("run_gate", artifact_status["status"], f"release_artifacts_failed platform={release_platform} failure_count={artifact_status['failure_count']} components={failed_components}")
+        failed_components = "/".join(failure["component"] for failure in runtime_records["failures"])
+        emit("run_gate", runtime_records["status"], f"release_artifacts_failed platform={release_platform} failure_count={runtime_records['failure_count']} components={failed_components}")
         emit("run_action", "required", "restore the matching checked-in release/windows-x64 package and rerun")
         return 2
     host_status = collect_host_metadata()
@@ -139,14 +125,10 @@ def command_run(args):
         emit("run_arguments", run_slug_status["status"], run_slug_status["detail"])
         return 2
     result_dir = run_slug_status["result_dir"]
-    runtime_records = load_runtime_records(contracts, engines, release_platform)
-    if runtime_records["status"] != "ok":
-        emit("run_gate", runtime_records["status"], runtime_records["detail"])
-        return 2
     raw_dir = result_dir / "raw"
     raw_dir.mkdir(parents=True)
     emit("run_component", "status", "detail")
-    manifest = write_run_manifest(
+    manifest_record = write_run_manifest(
         result_dir,
         contracts,
         engines,
@@ -179,30 +161,72 @@ def command_run(args):
         contracts["engine_report_metadata_by_id"],
         contracts["build_settings_rewrite_by_value"],
         contracts["case_fixture_contract_by_id"],
-        contracts["engine_sources"])
-    if normalize_status != 0:
+        contracts["engine_sources"],
+        manifest_record["document"],
+        runtime_records["records"])
+    if normalize_status["status"] != "ok":
         emit("run_gate", "invalid_result", str((result_dir / "normalized.csv").relative_to(REPO_ROOT)))
         return 2
-    summary_status = write_summary(
-        result_dir,
-        contracts["engine_report_metadata_by_id"],
-        contracts["build_settings_rewrite_by_value"])
-    if summary_status != 0:
-        return 2
-    slice_summary_status = write_raw_slice_summaries(result_dir, contracts, load_json(manifest))
-    if slice_summary_status != 0:
-        return 2
-    report_status = command_report([str(result_dir.relative_to(REPO_ROOT))])
-    if report_status != 0:
+    finalization_status = finalize_fresh_result(
+        result_dir, contracts, manifest_record["document"], normalize_status["rows"])
+    if finalization_status["status"] != "ok":
         emit("run_report", "invalid_result", str(result_dir.relative_to(REPO_ROOT)))
         return 2
     emit("run_gate", "ok", str((result_dir / "normalized.csv").relative_to(REPO_ROOT)))
     emit("run_summary", "ok", str((result_dir / "summary.csv").relative_to(REPO_ROOT)))
     emit("run_svg", "ok", str((result_dir / "summary.svg").relative_to(REPO_ROOT)))
     emit("run_report", "ok", str((result_dir / "report.md").relative_to(REPO_ROOT)))
-    emit("run_manifest", "ok", str(manifest.relative_to(REPO_ROOT)))
+    emit("run_manifest", "ok", str(manifest_record["path"].relative_to(REPO_ROOT)))
     emit("run_result", "ok", str(result_dir.relative_to(REPO_ROOT)))
     return 0
+
+def finalize_fresh_result(result_dir, contracts, manifest, normalized_rows):
+    summary_status = write_summary_rows(result_dir / "summary.csv", result_dir.name, normalized_rows)
+    if summary_status["status"] != "ok":
+        return summary_status
+    report = next((
+        report
+        for report in contracts["reports_doc"]["reports"]
+        if report["case_id"] == manifest["case_id"]
+    ), None)
+    if report is None:
+        status = {
+            "status": "invalid_result",
+            "detail": f"case_id={manifest['case_id']}",
+        }
+        emit("slice_summary", status["status"], status["detail"])
+        return status
+    slice_status = write_raw_slice_summaries(
+        result_dir, contracts, manifest, normalized_rows, report)
+    if slice_status["status"] != "ok":
+        return slice_status
+    return write_report_artifacts(
+        result_dir, contracts, report, manifest, summary_status["rows"])
+
+def write_raw_slice_summaries(result_dir, contracts, manifest, normalized_rows, report):
+    grouped_rows = {}
+    for row in normalized_rows:
+        key = (row["engine_id"], int(row["thread_count"]))
+        grouped_rows.setdefault(key, []).append(row)
+    for engine_id, thread_count in sorted(grouped_rows):
+        slice_dir = result_dir / "raw" / engine_id / f"t{thread_count}"
+        slice_dir.mkdir(parents=True, exist_ok=True)
+        summary_csv = slice_dir / f"{engine_id}_t{thread_count}_summary.csv"
+        summary_svg = slice_dir / f"{engine_id}_t{thread_count}_summary.svg"
+        summary_status = write_summary_rows(
+            summary_csv, result_dir.name, grouped_rows[(engine_id, thread_count)])
+        if summary_status["status"] != "ok":
+            emit("run_slice_summary", summary_status["status"], summary_status["detail"])
+            return summary_status
+        write_summary_svg(
+            summary_svg, summary_status["rows"], contracts, report, manifest)
+        emit("run_slice_summary", "ok", metadata_path_text(summary_csv))
+        emit("run_slice_svg", "ok", metadata_path_text(summary_svg))
+    return {
+        "status": "ok",
+        "detail": f"slice_count={len(grouped_rows)}",
+        "slice_count": len(grouped_rows),
+    }
 
 def parse_engine_ids(options):
     items = []
@@ -487,7 +511,7 @@ def result_dir_for_run(case, cpu_slug, run_slug):
 def write_run_manifest(result_dir, contracts, engines, case, repeats, runtime_records, host, thread_selection, run_slug_metadata):
     manifest_path = result_dir / "manifest.json"
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "run_id": result_dir.name,
         "host_route": run_host_route(runtime_records),
         "case_id": case["id"],
@@ -505,7 +529,7 @@ def write_run_manifest(result_dir, contracts, engines, case, repeats, runtime_re
         ]
     }
     write_text_lf(manifest_path, json.dumps(payload, indent=2) + "\n")
-    return manifest_path
+    return {"path": manifest_path, "document": payload}
 
 def run_host_route(runtime_records):
     host_routes = sorted({
@@ -521,7 +545,8 @@ def manifest_engine_entry(engine, runtime_record):
     entry = {"id": engine["id"]}
     if runtime_record is not None:
         entry["release_artifact_manifest"] = metadata_path_text(runtime_record["path"])
-        entry["artifact_manifest_sha256"] = sha256_file(runtime_record["path"])
+        entry["source_version"] = runtime_record["manifest"]["source_version"]
+        entry["toolchain_id"] = runtime_record["manifest"]["compiler_runtime"]["toolchain_id"]
     return entry
 
 def run_engine(result_dir, raw_dir, engine, adapter, case, repeats, runtime_record):
@@ -673,7 +698,7 @@ def unity_metadata_missing_fields(metadata):
     for package_id, field_name in required_package_ids.items():
         if not package_versions.get(package_id, "").strip():
             missing.append(field_name)
-    for field_name in ["engine_ref", "build_target", "backend", "burst_enabled_state", "safety_check_state", "package_lock_sha256"]:
+    for field_name in ["engine_ref", "build_target", "backend", "burst_enabled_state", "safety_check_state"]:
         if not metadata.get(field_name, "").strip():
             missing.append(field_name)
     return missing
@@ -704,29 +729,27 @@ def run_one(engine, cwd, command, log_stem, env=None):
         emit(f"{engine['id']}_process_log", "ok", detail)
     return 0
 
-def normalize_results(result_dir, case, engines, repeats, engine_report_metadata_by_id, build_settings_rewrite_by_value, case_fixture_contract_by_id, engine_sources=None):
-    if engine_sources is None:
-        engine_sources = {}
+def normalize_results(result_dir, case, engines, repeats, engine_report_metadata_by_id, build_settings_rewrite_by_value, case_fixture_contract_by_id, engine_sources, manifest, runtime_records):
     output_path = result_dir / "normalized.csv"
     rows = []
-    manifest = load_normalization_manifest(result_dir)
-    context_by_engine_id = normalization_context_by_engine_id(engines, engine_sources, manifest)
+    context_by_engine_id = normalization_context_by_engine_id(
+        engines, engine_sources, manifest, runtime_records)
     for raw_file in sorted((result_dir / "raw").rglob("*_raw.csv")):
         raw_context_status = raw_file_context(raw_file, result_dir)
         if raw_context_status["status"] != "ok":
             emit("normalize", raw_context_status["status"], raw_context_status["detail"])
-            return 2
+            return {"status": raw_context_status["status"], "detail": raw_context_status["detail"], "rows": []}
         raw_context = raw_context_status["context"]
         engine_context = context_by_engine_id.get(raw_context["engine_id"])
         if engine_context is None:
             emit("normalize", "invalid_result", f"raw_engine={raw_context['engine_id']} file={raw_file}")
-            return 2
+            return {"status": "invalid_result", "detail": f"raw_engine={raw_context['engine_id']} file={raw_file}", "rows": []}
         with raw_file.open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
             header_status = validate_raw_result_header(reader.fieldnames, raw_file)
             if header_status["status"] != "ok":
                 emit("normalize", header_status["status"], header_status["detail"])
-                return 2
+                return {"status": header_status["status"], "detail": header_status["detail"], "rows": []}
             for row_index, row in enumerate(reader):
                 normalized_status = normalize_raw_result_row(
                     row,
@@ -742,22 +765,20 @@ def normalize_results(result_dir, case, engines, repeats, engine_report_metadata
                     case_fixture_contract_by_id)
                 if normalized_status["status"] != "ok":
                     emit("normalize", normalized_status["status"], normalized_status["detail"])
-                    return 2
+                    return {"status": normalized_status["status"], "detail": normalized_status["detail"], "rows": []}
                 rows.append(normalized_status["row"])
     output_columns = ["run_id"] + REQUIRED_NORMALIZED_COLUMNS + OPTIONAL_NORMALIZED_COLUMNS + ["raw_path"]
     with output_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=output_columns, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-    return validate_normalized_rows(rows, case, engines, repeats, case_fixture_contract_by_id, engine_sources=engine_sources)
+    validation_status = validate_normalized_rows(
+        rows, case, engines, repeats, case_fixture_contract_by_id, engine_sources=engine_sources)
+    if validation_status != 0:
+        return {"status": "invalid_result", "detail": str(output_path), "rows": []}
+    return {"status": "ok", "detail": str(output_path), "rows": rows}
 
-def load_normalization_manifest(result_dir):
-    manifest_path = result_dir / "manifest.json"
-    if not manifest_path.is_file():
-        return {}
-    return load_json(manifest_path)
-
-def normalization_context_by_engine_id(engines, engine_sources, manifest):
+def normalization_context_by_engine_id(engines, engine_sources, manifest, runtime_records):
     manifest_engines = {
         entry.get("id", ""): entry
         for entry in manifest.get("engines", [])
@@ -768,7 +789,11 @@ def normalization_context_by_engine_id(engines, engine_sources, manifest):
         engine_id = engine["id"]
         adapter = engine_sources.get(engine_id, {})
         manifest_entry = manifest_engines.get(engine_id, {})
-        artifact_metadata = artifact_metadata_for_manifest_entry(engine, manifest_entry)
+        runtime_record = runtime_records.get(engine_id)
+        artifact_metadata = {}
+        if runtime_record is not None:
+            artifact_metadata = artifact_run_metadata(
+                engine, runtime_record["manifest"], runtime_record["path"])
         contexts[engine_id] = {
             "engine": engine,
             "adapter": adapter,
@@ -777,16 +802,6 @@ def normalization_context_by_engine_id(engines, engine_sources, manifest):
             "artifact_metadata": artifact_metadata,
         }
     return contexts
-
-def artifact_metadata_for_manifest_entry(engine, manifest_entry):
-    manifest_path_text = manifest_entry.get("release_artifact_manifest", "")
-    if not manifest_path_text:
-        return {}
-    manifest_path = repo_path(manifest_path_text)
-    if not manifest_path.is_file():
-        return {}
-    artifact = load_json(manifest_path)
-    return artifact_run_metadata(engine, artifact, manifest_path)
 
 def raw_file_context(raw_file, result_dir):
     try:
@@ -991,7 +1006,6 @@ def unity_normalized_metadata(artifact_metadata):
         "backend": artifact_metadata.get("backend", ""),
         "burst_enabled_state": artifact_metadata.get("burst_enabled_state", ""),
         "safety_check_state": artifact_metadata.get("safety_check_state", ""),
-        "package_lock_sha256": artifact_metadata.get("package_lock_sha256", ""),
     }
 
 def unity_editor_version(engine_ref, compiler_detail):
@@ -1056,105 +1070,3 @@ def normalized_metrics(physics_elapsed_text, case, raw_file):
             "steps_per_second": f"{steps_per_second:.9f}",
         },
     }
-
-def write_raw_slice_summaries(result_dir, contracts, manifest):
-    rows_status = read_summary_source_rows(
-        result_dir / "normalized.csv",
-        contracts["engine_report_metadata_by_id"],
-        contracts["build_settings_rewrite_by_value"])
-    if rows_status["status"] != "ok":
-        emit("slice_summary", rows_status["status"], rows_status["detail"])
-        return 2
-    report_status = slice_report(contracts, manifest)
-    if report_status["status"] != "ok":
-        emit("slice_summary", report_status["status"], report_status["detail"])
-        return 2
-    grouped_rows = {}
-    for row in rows_status["rows"]:
-        key = (row["engine_id"], int(row["thread_count"]))
-        grouped_rows.setdefault(key, []).append(row)
-    for key in sorted(grouped_rows):
-        engine_id, thread_count = key
-        slice_dir = result_dir / "raw" / engine_id / f"t{thread_count}"
-        summary_csv = slice_dir / f"{engine_id}_t{thread_count}_summary.csv"
-        summary_svg = slice_dir / f"{engine_id}_t{thread_count}_summary.svg"
-        summary_status = write_summary_rows(summary_csv, result_dir.name, grouped_rows[key])
-        if summary_status != 0:
-            return 2
-        summary_rows = read_summary(summary_csv)
-        write_summary_svg(summary_svg, summary_rows, contracts, report_status["report"], manifest)
-        emit("run_slice_summary", "ok", str(summary_csv.relative_to(REPO_ROOT)))
-        emit("run_slice_svg", "ok", str(summary_svg.relative_to(REPO_ROOT)))
-    return 0
-
-def slice_report(contracts, manifest):
-    for report in contracts["reports_doc"]["reports"]:
-        if report["case_id"] == manifest["case_id"]:
-            return {"status": "ok", "detail": report["id"], "report": report}
-    return {"status": "invalid_result", "detail": f"case_id={manifest['case_id']}", "report": {}}
-
-def command_combine_results(args):
-    contracts = load_contracts()
-    parse_status = parse_combine_results_args(args)
-    if parse_status["status"] != "ok":
-        emit("combine_arguments", parse_status["status"], parse_status["detail"])
-        return 2
-
-    result_dir = repo_path(f"results/{parse_status['run_id']}")
-    if result_dir.exists():
-        emit("combine_arguments", "invalid_result", f"result_dir_exists={result_dir}")
-        return 2
-
-    source_dirs = [
-        repo_path(source_arg) if not Path(source_arg).is_absolute() else Path(source_arg)
-        for source_arg in parse_status["source_args"]
-    ]
-    combine_status = collect_combined_result(contracts, result_dir, source_dirs)
-    if combine_status["status"] != "ok":
-        emit("combine_results", combine_status["status"], combine_status["detail"])
-        return 2
-
-    result_dir.mkdir(parents=True)
-    manifest_path = result_dir / "manifest.json"
-    normalized_path = result_dir / "normalized.csv"
-    write_text_lf(manifest_path, json.dumps(combine_status["manifest"], indent=2) + "\n")
-    with normalized_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=combine_status["fieldnames"], lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(combine_status["rows"])
-
-    summary_status = write_summary(
-        result_dir,
-        contracts["engine_report_metadata_by_id"],
-        contracts["build_settings_rewrite_by_value"])
-    if summary_status != 0:
-        return 2
-    emit("combine_normalized", "ok", str(normalized_path.relative_to(REPO_ROOT)))
-    emit("combine_summary", "ok", str((result_dir / "summary.csv").relative_to(REPO_ROOT)))
-    emit("combine_manifest", "ok", str(manifest_path.relative_to(REPO_ROOT)))
-    return 0
-
-def parse_combine_results_args(args):
-    run_id = ""
-    source_args = []
-    index = 0
-    while index < len(args):
-        arg = args[index]
-        if arg == "--run-id":
-            if index + 1 >= len(args):
-                return {"status": "invalid_result", "detail": "missing_run_id", "run_id": "", "source_args": []}
-            run_id = args[index + 1]
-            index += 2
-            continue
-        if arg.startswith("--"):
-            return {"status": "invalid_result", "detail": f"unknown_arg={arg}", "run_id": "", "source_args": []}
-        source_args.append(arg)
-        index += 1
-
-    if not run_id:
-        return {"status": "invalid_result", "detail": "missing_run_id", "run_id": "", "source_args": []}
-    if not re.fullmatch(r"[A-Za-z0-9._-]+", run_id):
-        return {"status": "invalid_result", "detail": f"invalid_run_id={run_id}", "run_id": "", "source_args": []}
-    if not source_args:
-        return {"status": "invalid_result", "detail": "missing_source_results", "run_id": "", "source_args": []}
-    return {"status": "ok", "detail": run_id, "run_id": run_id, "source_args": source_args}

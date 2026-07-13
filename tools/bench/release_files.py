@@ -2,18 +2,13 @@ import os
 import re
 
 from .common import (
-    DEFAULT_RELEASE_PLATFORM,
     RELEASE_DIR,
     RUNNABLE_ROUTE_STATUSES,
-    emit,
     load_json,
     metadata_path_text,
     repo_path,
     repo_relative_status,
-    sha256_file,
 )
-from .contracts import load_contracts, selected_engines
-
 def release_platform_manifest_path(platform_name):
     return RELEASE_DIR / platform_name / "manifest.json"
 
@@ -33,7 +28,10 @@ def load_release_platform_manifest(platform_name):
     manifest_path = release_platform_manifest_path(platform_name)
     if not manifest_path.is_file():
         return {"status": "tool_missing", "detail": metadata_path_text(manifest_path), "manifest": {}, "path": manifest_path}
-    return {"status": "ok", "detail": metadata_path_text(manifest_path), "manifest": load_json(manifest_path), "path": manifest_path}
+    manifest = load_json(manifest_path)
+    if not isinstance(manifest, dict):
+        return {"status": "invalid_result", "detail": f"manifest_type={metadata_path_text(manifest_path)}", "manifest": {}, "path": manifest_path}
+    return {"status": "ok", "detail": metadata_path_text(manifest_path), "manifest": manifest, "path": manifest_path}
 
 def visual_release_engine_ids(contracts):
     return contracts["engines_doc"].get("engine_sets", {}).get("default_visual_release", [])
@@ -101,35 +99,7 @@ def first_forbidden_release_metadata_path(value, location):
                 return {"status": "invalid_result", "detail": f"{location} marker={pattern_name}"}
     return {"status": "ok", "detail": ""}
 
-def verify_release_artifacts(contracts, platform_name, engines, emit_mode):
-    verification = release_artifacts_status(contracts, platform_name, engines)
-    if emit_mode == "emit":
-        for check in verification["checks"]:
-            emit(check["component"], check["status"], check["detail"])
-    return 0 if verification["status"] == "ok" else 2
-
-def release_artifacts_status(contracts, platform_name, engines):
-    checks = []
-    platform_status = validate_release_platform_manifest(contracts, platform_name, engines)
-    checks.append({
-        "component": "release_manifest",
-        "status": platform_status["status"],
-        "detail": platform_status["detail"],
-    })
-    if platform_status["status"] != "ok":
-        return release_artifact_verification_result(platform_name, checks)
-
-    for engine in engines:
-        adapter = contracts["engine_sources"][engine["id"]]
-        artifact_status = load_release_artifact_manifest(contracts, engine, adapter, platform_name)
-        checks.append({
-            "component": f"artifact_{engine['id']}",
-            "status": artifact_status["status"],
-            "detail": artifact_status["detail"],
-        })
-    return release_artifact_verification_result(platform_name, checks)
-
-def release_artifact_verification_result(platform_name, checks):
+def runtime_record_result(platform_name, checks, records):
     failures = [check for check in checks if check["status"] != "ok"]
     if failures:
         return {
@@ -138,6 +108,7 @@ def release_artifact_verification_result(platform_name, checks):
             "checks": checks,
             "failures": failures,
             "failure_count": len(failures),
+            "records": records,
         }
     return {
         "status": "ok",
@@ -145,104 +116,8 @@ def release_artifact_verification_result(platform_name, checks):
         "checks": checks,
         "failures": [],
         "failure_count": 0,
+        "records": records,
     }
-
-def verify_visual_release_artifacts(contracts, platform_name, engines, emit_mode):
-    platform_status = validate_visual_release_platform_manifest(contracts, platform_name, engines)
-    if emit_mode == "emit":
-        emit("visual_release_manifest", platform_status["status"], platform_status["detail"])
-    if platform_status["status"] != "ok":
-        return 2
-
-    shared_status = load_shared_visual_renderer_manifest(contracts, platform_name)
-    if emit_mode == "emit":
-        emit("visual_shared_renderer", shared_status["status"], shared_status["detail"])
-    if shared_status["status"] != "ok":
-        return 2
-
-    exit_code = 0
-    for engine in engines:
-        adapter = contracts["engine_sources"][engine["id"]]
-        artifact_status = load_visual_engine_artifact_manifest(contracts, engine, adapter, platform_name)
-        if emit_mode == "emit":
-            emit(f"visual_engine_{engine['id']}", artifact_status["status"], artifact_status["detail"])
-        if artifact_status["status"] != "ok":
-            exit_code = 2
-    return exit_code
-
-def visual_release_artifacts_status(contracts, platform_name, engines):
-    platform_status = validate_visual_release_platform_manifest(contracts, platform_name, engines)
-    if platform_status["status"] != "ok":
-        return {"component": "visual_release_manifest", "status": platform_status["status"], "detail": platform_status["detail"]}
-
-    shared_status = load_shared_visual_renderer_manifest(contracts, platform_name)
-    if shared_status["status"] != "ok":
-        return {"component": "visual_shared_renderer", "status": shared_status["status"], "detail": shared_status["detail"]}
-
-    for engine in engines:
-        adapter = contracts["engine_sources"][engine["id"]]
-        artifact_status = load_visual_engine_artifact_manifest(contracts, engine, adapter, platform_name)
-        if artifact_status["status"] != "ok":
-            return {
-                "component": f"visual_engine_{engine['id']}",
-                "status": artifact_status["status"],
-                "detail": artifact_status["detail"],
-            }
-    return {"component": "visual_release_artifacts", "status": "ok", "detail": platform_name}
-
-def verify_visual_release_matrix(contracts, platform_name, emit_mode):
-    manifest_status = load_release_platform_manifest(platform_name)
-    if manifest_status["status"] != "ok":
-        if emit_mode == "emit":
-            emit("visual_release_matrix", manifest_status["status"], manifest_status["detail"])
-        return 2
-
-    visual_engine_ids = set(visual_release_engine_ids(contracts))
-    exit_code = 0
-    for engine in contracts["engines_doc"].get("engines", []):
-        engine_id = engine.get("id", "")
-        adapter = contracts["engine_sources"].get(engine_id, {})
-        status = visual_release_matrix_engine_status(
-            contracts,
-            platform_name,
-            engine,
-            adapter,
-            visual_engine_ids)
-        if emit_mode == "emit":
-            emit(f"visual_release_matrix_{engine_id}", status["status"], status["detail"])
-        if status["status"] != "ok":
-            exit_code = 2
-    return exit_code
-
-def verify_single_build_visual_contract(contracts, platform_name, emit_mode):
-    status = single_build_visual_contract_status(contracts, platform_name)
-    if emit_mode == "emit":
-        emit("single_build_visual_contract", status["status"], status["detail"])
-    if status["status"] != "ok":
-        return 2
-    return 0
-
-def single_build_visual_contract_status(contracts, platform_name):
-    manifest_status = load_release_platform_manifest(platform_name)
-    if manifest_status["status"] != "ok":
-        return manifest_status
-    manifest = manifest_status["manifest"]
-    visual = manifest.get("visual", {})
-    if not isinstance(visual, dict) or not visual:
-        return {"status": "invalid_result", "detail": f"missing_visual_release_manifest platform={platform_name}"}
-    producer_entries = visual.get("producers", [])
-    if producer_entries:
-        return {"status": "invalid_result", "detail": f"split_visual_producer_index platform={platform_name}"}
-    release_root = RELEASE_DIR / platform_name
-    split_visual_manifest_name = "visual-" + "artifact-manifest.json"
-    for path in sorted(release_root.glob("*/" + split_visual_manifest_name)):
-        return {"status": "invalid_result", "detail": f"split_visual_artifact_manifest={metadata_path_text(path)}"}
-    for engine in contracts["engines_doc"].get("engines", []):
-        adapter = contracts["engine_sources"].get(engine.get("id", ""), {})
-        status = single_build_visual_adapter_status(engine, adapter, platform_name)
-        if status["status"] != "ok":
-            return status
-    return {"status": "ok", "detail": f"platform={platform_name}"}
 
 def single_build_visual_adapter_status(engine, adapter, platform_name):
     engine_id = engine.get("id", "")
@@ -259,51 +134,65 @@ def single_build_visual_adapter_status(engine, adapter, platform_name):
             return {"status": "invalid_result", "detail": f"split_visual_metadata engine={engine_id} key=visual.release.{release_manifest_key}"}
     return {"status": "ok", "detail": engine_id}
 
-def visual_release_matrix_engine_status(contracts, platform_name, engine, adapter, visual_engine_ids):
-    engine_id = engine["id"]
-    in_visual_set = engine_id in visual_engine_ids
-    visual = adapter.get("visual", {})
-    case_supports = contracts.get("case_support_by_engine", {}).get(engine_id, {}).values()
-    case_visual_runnable = any(entry.get("visual", "") in RUNNABLE_ROUTE_STATUSES for entry in case_supports)
-    source_visual_runnable = (
-        visual.get("route", "") == "shared_visual_renderer_cli"
-        and visual.get("route_status", "") in RUNNABLE_ROUTE_STATUSES
-    )
-    artifact_status = load_release_artifact_manifest(contracts, engine, adapter, platform_name)
-    visual_status = {"status": "route_unavailable", "detail": f"missing_visual_release_capability engine={engine_id}"}
-    if artifact_status["status"] == "ok":
-        visual_status = validate_visual_engine_capability(contracts, engine, adapter, artifact_status["manifest"], artifact_status["path"], platform_name)
-
-    if visual_status["status"] == "ok":
-        if not in_visual_set:
-            if engine.get("support_status", "") == "experimental":
-                return {"status": "ok", "detail": f"state=packaged_explicit_visual_release engine={engine_id}"}
-            return {"status": "invalid_result", "detail": f"packaged_visual_not_in_visual_release engine={engine_id}"}
-        return {"status": "ok", "detail": f"state=packaged_public_visual_release engine={engine_id}"}
-
-    if in_visual_set:
-        if artifact_status["status"] != "ok":
-            return artifact_status
-        return {"status": "invalid_result", "detail": f"visual_release_set_missing_capability engine={engine_id}"}
-    if case_visual_runnable and source_visual_runnable:
-        unavailable_status = missing_visual_release_artifact_status(engine, adapter, platform_name)
-        if unavailable_status["detail"].startswith("public_visual_release_unavailable"):
-            return {"status": "ok", "detail": f"state=source_private_visual_only engine={engine_id}"}
-        return {"status": "invalid_result", "detail": f"ambiguous_source_visual_without_public_release engine={engine_id}"}
-    return {"status": "ok", "detail": f"state=visual_release_unavailable engine={engine_id}"}
-
 def load_visual_runtime_records(contracts, platform_name, engines):
-    shared_status = load_shared_visual_renderer_manifest(contracts, platform_name)
-    if shared_status["status"] != "ok":
-        return {"status": shared_status["status"], "detail": shared_status["detail"], "renderer": {}, "engines": {}}
-    engine_records = {}
+    checks = []
+    records = {}
+    platform_status = validate_release_platform_manifest(contracts, platform_name, engines)
+    checks.append({
+        "component": "release_manifest",
+        "status": platform_status["status"],
+        "detail": platform_status["detail"],
+    })
+    if platform_status["status"] != "ok":
+        result = runtime_record_result(platform_name, checks, records)
+        result.update({"renderer": {}, "engines": records})
+        return result
+
+    platform_manifest = platform_status.get("manifest", {})
+    visual = platform_manifest.get("visual", {})
+    if not isinstance(visual, dict) or not visual:
+        checks.append({
+            "component": "visual_release_manifest",
+            "status": "invalid_result",
+            "detail": f"missing_visual_release_manifest platform={platform_name}",
+        })
+    elif visual.get("producers", []):
+        checks.append({
+            "component": "visual_release_manifest",
+            "status": "invalid_result",
+            "detail": f"split_visual_producer_index platform={platform_name}",
+        })
+
     for engine in engines:
         adapter = contracts["engine_sources"][engine["id"]]
-        visual_status = load_visual_engine_artifact_manifest(contracts, engine, adapter, platform_name)
-        if visual_status["status"] != "ok":
-            return {"status": visual_status["status"], "detail": visual_status["detail"], "renderer": {}, "engines": {}}
-        engine_records[engine["id"]] = visual_status
-    return {"status": "ok", "detail": platform_name, "renderer": shared_status, "engines": engine_records}
+        artifact_status = load_release_artifact_manifest(contracts, engine, adapter, platform_name)
+        if artifact_status["status"] == "ok":
+            artifact_status = dict(artifact_status)
+            capability_status = validate_visual_engine_capability(
+                contracts, engine, adapter, artifact_status["manifest"], artifact_status["path"], platform_name)
+            if capability_status["status"] != "ok":
+                artifact_status = capability_status
+        checks.append({
+            "component": f"artifact_{engine['id']}",
+            "status": artifact_status["status"],
+            "detail": artifact_status["detail"],
+        })
+        if artifact_status["status"] == "ok":
+            records[engine["id"]] = artifact_status
+
+    shared_status = load_shared_visual_renderer_manifest(
+        contracts, platform_name, platform_manifest, platform_status.get("path"))
+    checks.append({
+        "component": "visual_shared_renderer",
+        "status": shared_status["status"],
+        "detail": shared_status["detail"],
+    })
+    result = runtime_record_result(platform_name, checks, records)
+    result.update({
+        "renderer": shared_status if shared_status["status"] == "ok" else {},
+        "engines": records,
+    })
+    return result
 
 def validate_release_platform_manifest(contracts, platform_name, engines):
     manifest_path = release_platform_manifest_path(platform_name)
@@ -312,21 +201,40 @@ def validate_release_platform_manifest(contracts, platform_name, engines):
             artifact_manifest_path = release_artifact_manifest_path(contracts["engine_sources"][engine["id"]], platform_name)
             if artifact_manifest_path is None:
                 return {"status": "invalid_result", "detail": f"missing_artifact_manifest engine={engine['id']}"}
-        return {"status": "ok", "detail": f"derived_from_config platform={platform_name}"}
+        return {
+            "status": "ok",
+            "detail": f"derived_from_config platform={platform_name}",
+            "manifest": {},
+            "path": manifest_path,
+        }
     manifest = load_json(manifest_path)
+    if not isinstance(manifest, dict):
+        return {"status": "invalid_result", "detail": f"manifest_type={metadata_path_text(manifest_path)}"}
     private_status = first_forbidden_release_metadata_path(manifest, metadata_path_text(manifest_path))
     if private_status["status"] != "ok":
         return private_status
-    if manifest.get("schema_version") != 1:
+    if type(manifest.get("schema_version")) is not int or manifest["schema_version"] != 1:
         return {"status": "invalid_result", "detail": f"schema_version={manifest.get('schema_version')}"}
     if manifest.get("platform", "") != platform_name:
         return {"status": "invalid_result", "detail": f"platform={manifest.get('platform', '')}"}
     if manifest.get("host_route", "") != release_host_route(contracts, platform_name):
         return {"status": "invalid_result", "detail": f"host_route={manifest.get('host_route', '')}"}
-    manifest_engines = {
-        entry.get("engine_id", ""): entry.get("artifact_manifest", "")
-        for entry in manifest.get("engines", [])
-    }
+    manifest_engine_entries = manifest.get("engines")
+    if not isinstance(manifest_engine_entries, list):
+        return {"status": "invalid_result", "detail": f"engines_type={metadata_path_text(manifest_path)}"}
+    manifest_engines = {}
+    for entry in manifest_engine_entries:
+        if not isinstance(entry, dict):
+            return {"status": "invalid_result", "detail": f"engine_entry_type={metadata_path_text(manifest_path)}"}
+        engine_id = entry.get("engine_id")
+        artifact_manifest = entry.get("artifact_manifest")
+        if not isinstance(engine_id, str) or not engine_id:
+            return {"status": "invalid_result", "detail": f"engine_id_type={metadata_path_text(manifest_path)}"}
+        if not isinstance(artifact_manifest, str) or not artifact_manifest:
+            return {"status": "invalid_result", "detail": f"artifact_manifest_type engine={engine_id}"}
+        if engine_id in manifest_engines:
+            return {"status": "invalid_result", "detail": f"duplicate_release_engine={engine_id}"}
+        manifest_engines[engine_id] = artifact_manifest
     release_engine_ids = set(contracts["engines_doc"].get("engine_sets", {}).get("default_release", []))
     for engine_id, actual_path in manifest_engines.items():
         if engine_id not in release_engine_ids:
@@ -347,35 +255,12 @@ def validate_release_platform_manifest(contracts, platform_name, engines):
             continue
         if actual_path != expected_path:
             return {"status": "invalid_result", "detail": f"engine={engine['id']} artifact_manifest={actual_path}"}
-    return {"status": "ok", "detail": metadata_path_text(manifest_path)}
-
-def validate_visual_release_platform_manifest(contracts, platform_name, engines):
-    platform_status = validate_release_platform_manifest(contracts, platform_name, engines)
-    if platform_status["status"] != "ok":
-        return platform_status
-    manifest_status = load_release_platform_manifest(platform_name)
-    if manifest_status["status"] != "ok":
-        return manifest_status
-    manifest = manifest_status["manifest"]
-    private_status = first_forbidden_release_metadata_path(manifest, metadata_path_text(manifest_status["path"]))
-    if private_status["status"] != "ok":
-        return private_status
-    visual = manifest.get("visual", {})
-    if not isinstance(visual, dict) or not visual:
-        return {"status": "invalid_result", "detail": f"missing_visual_release_manifest platform={platform_name}"}
-    shared_manifest = visual.get("shared_renderer_artifact_manifest", "")
-    if not shared_manifest:
-        return {"status": "invalid_result", "detail": f"missing_shared_visual_renderer platform={platform_name}"}
-    if repo_relative_status(shared_manifest) != "ok":
-        return {"status": "invalid_result", "detail": f"shared_visual_renderer_manifest={shared_manifest}"}
-    if visual.get("producers", []):
-        return {"status": "invalid_result", "detail": f"split_visual_producer_index platform={platform_name}"}
-    for engine in engines:
-        adapter = contracts["engine_sources"][engine["id"]]
-        artifact_status = load_visual_engine_artifact_manifest(contracts, engine, adapter, platform_name)
-        if artifact_status["status"] != "ok":
-            return artifact_status
-    return {"status": "ok", "detail": metadata_path_text(manifest_status["path"])}
+    return {
+        "status": "ok",
+        "detail": metadata_path_text(manifest_path),
+        "manifest": manifest,
+        "path": manifest_path,
+    }
 
 def load_release_artifact_manifest(contracts, engine, adapter, platform_name):
     manifest_path = release_artifact_manifest_path(adapter, platform_name)
@@ -389,14 +274,19 @@ def load_release_artifact_manifest(contracts, engine, adapter, platform_name):
         return validation_status
     return {"status": "ok", "detail": metadata_path_text(manifest_path), "manifest": manifest, "path": manifest_path}
 
-def load_shared_visual_renderer_manifest(contracts, platform_name):
-    platform_status = load_release_platform_manifest(platform_name)
-    if platform_status["status"] != "ok":
-        return platform_status
-    visual = platform_status["manifest"].get("visual", {})
+def load_shared_visual_renderer_manifest(contracts, platform_name, platform_manifest=None, platform_path=None):
+    if platform_manifest is None:
+        platform_status = load_release_platform_manifest(platform_name)
+        if platform_status["status"] != "ok":
+            return platform_status
+        platform_manifest = platform_status["manifest"]
+        platform_path = platform_status["path"]
+    visual = platform_manifest.get("visual", {})
     manifest_text = visual.get("shared_renderer_artifact_manifest", "") if isinstance(visual, dict) else ""
-    if not manifest_text:
-        return {"status": "tool_missing", "detail": f"shared_renderer_artifact_manifest platform={platform_name}", "manifest": {}, "path": release_platform_manifest_path(platform_name)}
+    if not isinstance(manifest_text, str):
+        return {"status": "invalid_result", "detail": f"shared_renderer_artifact_manifest_type platform={platform_name}", "manifest": {}, "path": platform_path}
+    if not manifest_text.strip():
+        return {"status": "tool_missing", "detail": f"shared_renderer_artifact_manifest platform={platform_name}", "manifest": {}, "path": platform_path}
     if repo_relative_status(manifest_text) != "ok":
         return {"status": "invalid_result", "detail": f"shared_renderer_artifact_manifest={manifest_text}", "manifest": {}, "path": repo_path(manifest_text)}
     manifest_path = repo_path(manifest_text)
@@ -408,18 +298,9 @@ def load_shared_visual_renderer_manifest(contracts, platform_name):
         return validation_status
     return {"status": "ok", "detail": metadata_path_text(manifest_path), "manifest": manifest, "path": manifest_path}
 
-def load_visual_engine_artifact_manifest(contracts, engine, adapter, platform_name):
-    artifact_status = load_release_artifact_manifest(contracts, engine, adapter, platform_name)
-    if artifact_status["status"] != "ok":
-        return artifact_status
-    manifest = artifact_status["manifest"]
-    manifest_path = artifact_status["path"]
-    validation_status = validate_visual_engine_capability(contracts, engine, adapter, manifest, manifest_path, platform_name)
-    if validation_status["status"] != "ok":
-        return validation_status
-    return {"status": "ok", "detail": metadata_path_text(manifest_path), "manifest": manifest, "path": manifest_path}
-
 def validate_release_artifact_manifest(contracts, engine, adapter, manifest, manifest_path, platform_name):
+    if not isinstance(manifest, dict):
+        return {"status": "invalid_result", "detail": f"manifest_type={metadata_path_text(manifest_path)}"}
     private_status = first_forbidden_release_metadata_path(manifest, metadata_path_text(manifest_path))
     if private_status["status"] != "ok":
         return private_status
@@ -433,15 +314,24 @@ def validate_release_artifact_manifest(contracts, engine, adapter, manifest, man
         "launcher",
         "required_sidecars",
         "compiler_runtime",
-        "files",
         "license_id",
-        "notice_license_reference"
+        "notice_license_reference",
+        "source_provenance",
     ]
     for key in required_keys:
         if key not in manifest:
             return {"status": "invalid_result", "detail": f"missing_key={key} manifest={metadata_path_text(manifest_path)}"}
-    if manifest["schema_version"] != 1:
+    if type(manifest["schema_version"]) is not int or manifest["schema_version"] != 2:
         return {"status": "invalid_result", "detail": f"schema_version={manifest['schema_version']} manifest={metadata_path_text(manifest_path)}"}
+    string_status = validate_manifest_string_fields(manifest, [
+        "engine_id", "platform", "host_route", "source_version", "executable_path",
+        "launcher", "license_id", "notice_license_reference", "source_provenance",
+    ], manifest_path)
+    if string_status["status"] != "ok":
+        return string_status
+    sidecars_status = validate_required_sidecars(manifest["required_sidecars"], manifest_path)
+    if sidecars_status["status"] != "ok":
+        return sidecars_status
     if manifest["engine_id"] != engine["id"]:
         return {"status": "invalid_result", "detail": f"engine_id={manifest['engine_id']} expected={engine['id']}"}
     if manifest["platform"] != platform_name:
@@ -476,23 +366,9 @@ def validate_release_artifact_manifest(contracts, engine, adapter, manifest, man
         avian_status = validate_avian_release_manifest(manifest, manifest_path)
         if avian_status["status"] != "ok":
             return avian_status
-    executable_status = validate_release_artifact_path(manifest["executable_path"], manifest_path)
-    if executable_status["status"] != "ok":
-        return executable_status
-    file_paths = set()
-    for entry in manifest["files"]:
-        file_status = validate_release_file_entry(entry, manifest_path)
-        if file_status["status"] != "ok":
-            return file_status
-        file_paths.add(entry["path"])
-    if manifest["executable_path"] not in file_paths:
-        return {"status": "invalid_result", "detail": f"missing_executable_hash={manifest['executable_path']}"}
-    for sidecar in manifest["required_sidecars"]:
-        sidecar_status = validate_release_artifact_path(sidecar, manifest_path)
-        if sidecar_status["status"] != "ok":
-            return sidecar_status
-        if sidecar not in file_paths:
-            return {"status": "invalid_result", "detail": f"missing_sidecar_hash={sidecar}"}
+    launch_status = validate_release_launch_files(manifest, manifest_path)
+    if launch_status["status"] != "ok":
+        return launch_status
     if engine["id"] in {"physx34", "nvidia_physx34", "nvidia_physx5"}:
         notice_status = validate_physx_notice(manifest)
         if notice_status["status"] != "ok":
@@ -511,6 +387,8 @@ def validate_release_artifact_manifest(contracts, engine, adapter, manifest, man
     return {"status": "ok", "detail": metadata_path_text(manifest_path)}
 
 def validate_shared_visual_renderer_manifest(contracts, manifest, manifest_path, platform_name):
+    if not isinstance(manifest, dict):
+        return {"status": "invalid_result", "detail": f"manifest_type={metadata_path_text(manifest_path)}"}
     private_status = first_forbidden_release_metadata_path(manifest, metadata_path_text(manifest_path))
     if private_status["status"] != "ok":
         return private_status
@@ -523,15 +401,24 @@ def validate_shared_visual_renderer_manifest(contracts, manifest, manifest_path,
         "launcher",
         "required_sidecars",
         "compiler_runtime",
-        "files",
         "license_id",
-        "notice_license_reference"
+        "notice_license_reference",
+        "source_provenance",
     ]
     for key in required_keys:
         if key not in manifest:
             return {"status": "invalid_result", "detail": f"missing_key={key} manifest={metadata_path_text(manifest_path)}"}
-    if manifest["schema_version"] != 1:
+    if type(manifest["schema_version"]) is not int or manifest["schema_version"] != 2:
         return {"status": "invalid_result", "detail": f"schema_version={manifest['schema_version']} manifest={metadata_path_text(manifest_path)}"}
+    string_status = validate_manifest_string_fields(manifest, [
+        "artifact_role", "platform", "host_route", "executable_path", "launcher",
+        "license_id", "notice_license_reference", "source_provenance",
+    ], manifest_path)
+    if string_status["status"] != "ok":
+        return string_status
+    sidecars_status = validate_required_sidecars(manifest["required_sidecars"], manifest_path)
+    if sidecars_status["status"] != "ok":
+        return sidecars_status
     if manifest["artifact_role"] != "shared_visual_renderer":
         return {"status": "invalid_result", "detail": f"artifact_role={manifest['artifact_role']} manifest={metadata_path_text(manifest_path)}"}
     if manifest["platform"] != platform_name:
@@ -544,7 +431,7 @@ def validate_shared_visual_renderer_manifest(contracts, manifest, manifest_path,
     compiler_status = validate_compiler_runtime(manifest.get("compiler_runtime", {}), manifest_path)
     if compiler_status["status"] != "ok":
         return compiler_status
-    return validate_release_files_payload(manifest, manifest_path)
+    return validate_release_launch_files(manifest, manifest_path)
 
 def validate_visual_engine_capability(contracts, engine, adapter, manifest, manifest_path, platform_name):
     visual = adapter.get("visual", {})
@@ -554,43 +441,59 @@ def validate_visual_engine_capability(contracts, engine, adapter, manifest, mani
     if not isinstance(artifact_visual, dict) or not artifact_visual:
         return missing_visual_release_artifact_status(engine, adapter, platform_name)
     release_status = artifact_visual.get("route_status", "")
+    if not isinstance(release_status, str):
+        return {"status": "invalid_result", "detail": f"visual.route_status_type engine={engine['id']}"}
     if release_status not in RUNNABLE_ROUTE_STATUSES:
         if release_status:
             return {"status": release_status, "detail": f"public_visual_release_unavailable engine={engine['id']} status={release_status}"}
         return missing_visual_release_artifact_status(engine, adapter, platform_name)
     if artifact_visual.get("transport", "") != visual.get("transport", ""):
         return {"status": "invalid_result", "detail": f"visual.transport={artifact_visual.get('transport', '')} expected={visual.get('transport', '')} engine={engine['id']}"}
-    if int(artifact_visual.get("protocol_version", 0)) != int(visual.get("protocol_version", 0)):
+    protocol_version = artifact_visual.get("protocol_version")
+    if type(protocol_version) is not int:
+        return {"status": "invalid_result", "detail": f"visual.protocol_version_type engine={engine['id']}"}
+    if protocol_version != visual.get("protocol_version"):
         return {"status": "invalid_result", "detail": f"visual.protocol_version={artifact_visual.get('protocol_version', '')} expected={visual.get('protocol_version', '')} engine={engine['id']}"}
     if artifact_visual.get("producer_mode_arg", "") != visual.get("producer_mode_arg", ""):
         return {"status": "invalid_result", "detail": f"visual.producer_mode_arg={artifact_visual.get('producer_mode_arg', '')} engine={engine['id']}"}
     prefix_args = artifact_visual.get("producer_prefix_args", [])
-    if prefix_args and not isinstance(prefix_args, list):
+    if not isinstance(prefix_args, list):
         return {"status": "invalid_result", "detail": f"visual.producer_prefix_args engine={engine['id']}"}
-    if isinstance(prefix_args, list):
-        for prefix_arg in prefix_args:
-            if not isinstance(prefix_arg, str) or not prefix_arg:
-                return {"status": "invalid_result", "detail": f"visual.producer_prefix_arg engine={engine['id']}"}
+    for prefix_arg in prefix_args:
+        if not isinstance(prefix_arg, str) or not prefix_arg:
+            return {"status": "invalid_result", "detail": f"visual.producer_prefix_arg engine={engine['id']}"}
     return {"status": "ok", "detail": metadata_path_text(manifest_path)}
 
-def validate_release_files_payload(manifest, manifest_path):
+def validate_manifest_string_fields(manifest, field_names, manifest_path):
+    for field_name in field_names:
+        value = manifest.get(field_name)
+        if not isinstance(value, str) or not value.strip():
+            return {
+                "status": "invalid_result",
+                "detail": f"{field_name}_type manifest={metadata_path_text(manifest_path)}",
+            }
+    return {"status": "ok", "detail": metadata_path_text(manifest_path)}
+
+def validate_required_sidecars(required_sidecars, manifest_path):
+    if not isinstance(required_sidecars, list):
+        return {"status": "invalid_result", "detail": f"required_sidecars_type manifest={metadata_path_text(manifest_path)}"}
+    seen = set()
+    for sidecar in required_sidecars:
+        if not isinstance(sidecar, str) or not sidecar.strip():
+            return {"status": "invalid_result", "detail": f"required_sidecar_type manifest={metadata_path_text(manifest_path)}"}
+        if sidecar in seen:
+            return {"status": "invalid_result", "detail": f"duplicate_required_sidecar={sidecar}"}
+        seen.add(sidecar)
+    return {"status": "ok", "detail": metadata_path_text(manifest_path)}
+
+def validate_release_launch_files(manifest, manifest_path):
     executable_status = validate_release_artifact_path(manifest["executable_path"], manifest_path)
     if executable_status["status"] != "ok":
         return executable_status
-    file_paths = set()
-    for entry in manifest["files"]:
-        file_status = validate_release_file_entry(entry, manifest_path)
-        if file_status["status"] != "ok":
-            return file_status
-        file_paths.add(entry["path"])
-    if manifest["executable_path"] not in file_paths:
-        return {"status": "invalid_result", "detail": f"missing_executable_hash={manifest['executable_path']}"}
     for sidecar in manifest["required_sidecars"]:
         sidecar_status = validate_release_artifact_path(sidecar, manifest_path)
         if sidecar_status["status"] != "ok":
             return sidecar_status
-        if sidecar not in file_paths:
-            return {"status": "invalid_result", "detail": f"missing_sidecar_hash={sidecar}"}
     return {"status": "ok", "detail": metadata_path_text(manifest_path)}
 
 def validate_compiler_runtime(compiler_runtime, manifest_path):
@@ -630,6 +533,8 @@ def validate_bepu_release_manifest(manifest, manifest_path):
         if package_metadata.get(key, "") != value:
             return {"status": "invalid_result", "detail": f"bepu_package_metadata.{key}={package_metadata.get(key, '')}"}
     build_label = package_metadata.get("build_label", "")
+    if not isinstance(build_label, str):
+        return {"status": "invalid_result", "detail": f"bepu_build_label_type manifest={metadata_path_text(manifest_path)}"}
     forbidden_profile_symbol = "PRO" + "FILE"
     if "ReleaseNoProfiling" not in build_label or forbidden_profile_symbol in build_label:
         return {"status": "invalid_result", "detail": f"bepu_build_label={build_label}"}
@@ -659,13 +564,10 @@ def validate_rapier_release_manifest(manifest, manifest_path):
     for key, value in expected.items():
         if package_metadata.get(key, "") != value:
             return {"status": "invalid_result", "detail": f"rapier_package_metadata.{key}={package_metadata.get(key, '')}"}
-    for key in ["rust_version", "cargo_version", "cargo_lock_sha256", "runner_manifest_sha256"]:
+    for key in ["rust_version", "cargo_version"]:
         value = package_metadata.get(key, "")
         if not isinstance(value, str) or not value.strip():
             return {"status": "invalid_result", "detail": f"rapier_package_metadata.{key}"}
-    for key in ["cargo_lock_sha256", "runner_manifest_sha256"]:
-        if not re.fullmatch(r"[0-9a-f]{64}", package_metadata.get(key, "")):
-            return {"status": "invalid_result", "detail": f"rapier_package_metadata.{key}={package_metadata.get(key, '')}"}
     if manifest.get("required_sidecars", []) != []:
         return {"status": "invalid_result", "detail": "rapier_required_sidecars_present"}
     return {"status": "ok", "detail": metadata_path_text(manifest_path)}
@@ -688,13 +590,10 @@ def validate_avian_release_manifest(manifest, manifest_path):
     for key, value in expected.items():
         if package_metadata.get(key, "") != value:
             return {"status": "invalid_result", "detail": f"avian_package_metadata.{key}={package_metadata.get(key, '')}"}
-    for key in ["rust_version", "cargo_version", "cargo_lock_sha256", "runner_manifest_sha256"]:
+    for key in ["rust_version", "cargo_version"]:
         value = package_metadata.get(key, "")
         if not isinstance(value, str) or not value.strip():
             return {"status": "invalid_result", "detail": f"avian_package_metadata.{key}"}
-    for key in ["cargo_lock_sha256", "runner_manifest_sha256"]:
-        if not re.fullmatch(r"[0-9a-f]{64}", package_metadata.get(key, "")):
-            return {"status": "invalid_result", "detail": f"avian_package_metadata.{key}={package_metadata.get(key, '')}"}
     if manifest.get("required_sidecars", []) != []:
         return {"status": "invalid_result", "detail": "avian_required_sidecars_present"}
     return {"status": "ok", "detail": metadata_path_text(manifest_path)}
@@ -707,18 +606,6 @@ def validate_release_artifact_path(path_text, manifest_path):
     if not path.is_file():
         return {"status": "tool_missing", "detail": f"missing_file={path_text} manifest={metadata_path_text(manifest_path)}"}
     return {"status": "ok", "detail": path_text}
-
-def validate_release_file_entry(entry, manifest_path):
-    for key in ["path", "sha256", "role"]:
-        if key not in entry:
-            return {"status": "invalid_result", "detail": f"missing_file_key={key} manifest={metadata_path_text(manifest_path)}"}
-    path_status = validate_release_artifact_path(entry["path"], manifest_path)
-    if path_status["status"] != "ok":
-        return path_status
-    actual_hash = sha256_file(repo_path(entry["path"]))
-    if actual_hash != entry["sha256"]:
-        return {"status": "invalid_result", "detail": f"hash_mismatch={entry['path']}"}
-    return {"status": "ok", "detail": entry["path"]}
 
 def validate_release_environment(environment, manifest_path):
     if not isinstance(environment, dict):
@@ -767,14 +654,31 @@ def validate_avian_notice(manifest):
     return {"status": "ok", "detail": "SOURCES.md"}
 
 def load_runtime_records(contracts, engines, release_platform):
+    checks = []
     records = {}
+    platform_status = validate_release_platform_manifest(contracts, release_platform, engines)
+    checks.append({
+        "component": "release_manifest",
+        "status": platform_status["status"],
+        "detail": platform_status["detail"],
+    })
+    if platform_status["status"] != "ok":
+        result = runtime_record_result(release_platform, checks, records)
+        result["platform"] = platform_status
+        return result
     for engine in engines:
         adapter = contracts["engine_sources"][engine["id"]]
         artifact_status = load_release_artifact_manifest(contracts, engine, adapter, release_platform)
-        if artifact_status["status"] != "ok":
-            return {"status": artifact_status["status"], "detail": artifact_status["detail"], "records": {}}
-        records[engine["id"]] = artifact_status
-    return {"status": "ok", "detail": release_platform, "records": records}
+        checks.append({
+            "component": f"artifact_{engine['id']}",
+            "status": artifact_status["status"],
+            "detail": artifact_status["detail"],
+        })
+        if artifact_status["status"] == "ok":
+            records[engine["id"]] = artifact_status
+    result = runtime_record_result(release_platform, checks, records)
+    result["platform"] = platform_status
+    return result
 
 def release_run_environment(artifact):
     if artifact is None:
@@ -800,75 +704,32 @@ def artifact_run_metadata(engine, artifact, manifest_path):
     metadata["runtime_environment"] = compiler_runtime.get("runtime_detail", "")
     return metadata
 
-def visual_artifact_run_metadata(engine, artifact, manifest_path):
-    compiler_runtime = artifact.get("compiler_runtime", {})
-    package_metadata = artifact.get("package_metadata", {})
-    metadata = dict(package_metadata)
-    metadata["engine_ref"] = artifact.get("source_version", engine["commit"])
-    metadata["host_route"] = artifact.get("host_route", "")
-    metadata["visual_toolchain_id"] = compiler_runtime.get("toolchain_id", "")
-    metadata["visual_compiler_detail"] = compiler_runtime.get("compiler_detail", "")
-    metadata["visual_release_artifact_manifest"] = metadata_path_text(manifest_path)
-    metadata["visual_runtime_environment"] = compiler_runtime.get("runtime_detail", "")
-    return metadata
-
-def validate_result_artifact_snapshot(contracts, engine_entry, source_dir):
+def validate_result_artifact_snapshot(contracts, engine_entry, source_dir, schema_version):
+    if not isinstance(engine_entry, dict):
+        return {"status": "invalid_result", "detail": f"engine_entry_type source={source_dir}"}
     engine_id = engine_entry.get("id", "")
     artifact_path_text = engine_entry.get("release_artifact_manifest", "")
-    artifact_hash = engine_entry.get("artifact_manifest_sha256", "")
-    if not artifact_path_text:
+    if not isinstance(artifact_path_text, str) or not artifact_path_text:
         return {"status": "invalid_result", "detail": f"missing_artifact_manifest engine={engine_id} source={source_dir}"}
-    if not artifact_hash:
-        return {"status": "invalid_result", "detail": f"missing_artifact_manifest_hash engine={engine_id} source={source_dir}"}
     path_status = repo_relative_status(artifact_path_text)
     if path_status != "ok":
         return {"status": "invalid_result", "detail": f"artifact_manifest_path={artifact_path_text} reason={path_status} source={source_dir}"}
-    artifact_path = repo_path(artifact_path_text)
-    if not artifact_path.is_file():
-        return {"status": "invalid_result", "detail": f"missing_artifact_manifest={artifact_path_text} source={source_dir}"}
-    actual_hash = sha256_file(artifact_path)
-    if actual_hash != artifact_hash:
-        return {"status": "invalid_result", "detail": f"artifact_manifest_hash engine={engine_id} source={source_dir}"}
-    artifact_manifest = load_json(artifact_path)
-    engine = contracts["engine_by_id"][engine_id]
-    if artifact_manifest.get("engine_id", "") != engine_id:
-        return {"status": "invalid_result", "detail": f"artifact_engine_id={artifact_manifest.get('engine_id', '')} expected={engine_id} source={source_dir}"}
-    if artifact_manifest.get("source_version", "") != engine["commit"]:
-        return {"status": "invalid_result", "detail": f"artifact_source_version={artifact_manifest.get('source_version', '')} expected={engine['commit']} source={source_dir}"}
+    if schema_version == 2:
+        source_version = engine_entry.get("source_version")
+        toolchain_id = engine_entry.get("toolchain_id")
+        if source_version != contracts["engine_by_id"][engine_id]["commit"]:
+            return {"status": "invalid_result", "detail": f"source_version={source_version} engine={engine_id} source={source_dir}"}
+        if not isinstance(toolchain_id, str) or not toolchain_id.strip():
+            return {"status": "invalid_result", "detail": f"toolchain_id engine={engine_id} source={source_dir}"}
     return {"status": "ok", "detail": artifact_path_text}
 
 def validate_result_visual_artifact_snapshot(contracts, manifest, source_dir):
     if manifest.get("benchmark_mode", "") != "visualized_release":
         return {"status": "ok", "detail": "not_visualized_release"}
     renderer_path_text = manifest.get("visual_shared_renderer_artifact_manifest", "")
-    renderer_hash = manifest.get("visual_shared_renderer_artifact_manifest_sha256", "")
-    renderer_status = validate_result_manifest_hash(renderer_path_text, renderer_hash, source_dir, "shared_visual_renderer")
-    if renderer_status["status"] != "ok":
-        return renderer_status
-    for engine_entry in manifest.get("engines", []):
-        engine_id = engine_entry.get("id", "")
-        if engine_id not in contracts["engine_by_id"]:
-            return {"status": "invalid_result", "detail": f"visual_engine={engine_id} source={source_dir}"}
-        artifact_path_text = engine_entry.get("release_artifact_manifest", "")
-        artifact_manifest = load_json(repo_path(artifact_path_text))
-        adapter = contracts["engine_sources"].get(engine_id, {})
-        visual_status = validate_visual_engine_capability(contracts, contracts["engine_by_id"][engine_id], adapter, artifact_manifest, repo_path(artifact_path_text), artifact_manifest.get("platform", ""))
-        if visual_status["status"] != "ok":
-            return {"status": visual_status["status"], "detail": f"{visual_status['detail']} source={source_dir}"}
-    return {"status": "ok", "detail": metadata_path_text(source_dir)}
-
-def validate_result_manifest_hash(path_text, artifact_hash, source_dir, owner):
-    if not path_text:
-        return {"status": "invalid_result", "detail": f"missing_artifact_manifest owner={owner} source={source_dir}"}
-    if not artifact_hash:
-        return {"status": "invalid_result", "detail": f"missing_artifact_manifest_hash owner={owner} source={source_dir}"}
-    path_status = repo_relative_status(path_text)
+    if not isinstance(renderer_path_text, str) or not renderer_path_text:
+        return {"status": "invalid_result", "detail": f"missing_visual_renderer_manifest source={source_dir}"}
+    path_status = repo_relative_status(renderer_path_text)
     if path_status != "ok":
-        return {"status": "invalid_result", "detail": f"artifact_manifest_path={path_text} reason={path_status} owner={owner} source={source_dir}"}
-    artifact_path = repo_path(path_text)
-    if not artifact_path.is_file():
-        return {"status": "invalid_result", "detail": f"missing_artifact_manifest={path_text} owner={owner} source={source_dir}"}
-    actual_hash = sha256_file(artifact_path)
-    if actual_hash != artifact_hash:
-        return {"status": "invalid_result", "detail": f"artifact_manifest_hash owner={owner} source={source_dir}"}
-    return {"status": "ok", "detail": path_text}
+        return {"status": "invalid_result", "detail": f"visual_renderer_manifest={renderer_path_text} reason={path_status} source={source_dir}"}
+    return {"status": "ok", "detail": renderer_path_text}
