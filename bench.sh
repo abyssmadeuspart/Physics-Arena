@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
+
+if [ -z "${BASH_VERSION:-}" ]; then
+  printf 'bench_component,status,detail\n'
+  printf 'tool_bash,tool_missing,run this script with Git Bash or WSL Bash\n'
+  if [ -t 0 ] && [ -t 1 ]; then
+    printf 'bench_wait,required,press Enter to close\n'
+    read -r _ || true
+  fi
+  exit 2
+fi
+
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 default_case_slug="box-container-pile-10k"
+bench_log_path=""
+bench_log_relative=""
 
 print_help() {
   cat <<'EOF'
@@ -45,10 +58,90 @@ EOF
 }
 
 public_error() {
-  printf 'bench_component,status,detail\n'
-  printf 'public_command,invalid_result,%s\n' "$1"
+  bench_printf 'bench_component,status,detail\n'
+  bench_printf 'public_command,invalid_result,%s\n' "$1"
   exit 2
 }
+
+bench_printf() {
+  if [[ -n "$bench_log_path" ]]; then
+    printf "$@" | tee -a "$bench_log_path"
+    return
+  fi
+  printf "$@"
+}
+
+hold_terminal_on_error() {
+  local exit_code="$1"
+  case "$exit_code" in
+    0|130|143)
+      return
+      ;;
+  esac
+  if [[ -t 0 && -t 1 ]]; then
+    bench_printf 'bench_wait,required,press Enter to close\n'
+    read -r _ || true
+  fi
+}
+
+finalize_shell_exit() {
+  local exit_code=$?
+  set +e
+  trap - EXIT INT TERM
+  hold_terminal_on_error "$exit_code"
+  exit "$exit_code"
+}
+
+finalize_bench_log() {
+  local exit_code=$?
+  local exit_status="ok"
+  set +e
+  trap - EXIT INT TERM
+  if [[ "$exit_code" -ne 0 ]]; then
+    exit_status="run_failed"
+  fi
+  bench_printf 'bench_exit,%s,exit_code=%s log=%s\n' "$exit_status" "$exit_code" "$bench_log_relative"
+  hold_terminal_on_error "$exit_code"
+  exit "$exit_code"
+}
+
+initialize_bench_log() {
+  local invocation_id
+  local log_dir
+  local python_log_dir
+  if ! command -v tee >/dev/null 2>&1; then
+    printf 'bench_component,status,detail\n'
+    printf 'tool_tee,tool_missing,add tee to PATH and rerun\n'
+    exit 2
+  fi
+  invocation_id="$(date '+%Y-%m-%d_%H%M%S')-${BASHPID:-$$}"
+  log_dir="$repo_root/logs/$invocation_id"
+  if ! mkdir -p "$log_dir"; then
+    printf 'bench_component,status,detail\n'
+    printf 'bench_log,write_failed,path=%s\n' "$log_dir/bench.log"
+    exit 2
+  fi
+  bench_log_path="$log_dir/bench.log"
+  bench_log_relative="logs/$invocation_id/bench.log"
+  if ! : > "$bench_log_path"; then
+    printf 'bench_component,status,detail\n'
+    printf 'bench_log,write_failed,path=%s\n' "$bench_log_path"
+    exit 2
+  fi
+  python_log_dir="$(python_runtime_path "$log_dir")"
+  export BENCH_LOG_DIR="$python_log_dir"
+  trap finalize_bench_log EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  bench_printf 'bench_log,ok,%s\n' "$bench_log_relative"
+}
+
+run_logged_python() {
+  "${python_command[@]}" "$bench_py" "$@" 2>&1 | tee -a "$bench_log_path"
+  return "${PIPESTATUS[0]}"
+}
+
+trap finalize_shell_exit EXIT
 
 python_command=()
 if [[ -n "${PYTHON_EXE:-}" ]]; then
@@ -77,9 +170,30 @@ python_script_path() {
         wslpath -w "$script_path"
         return
       fi
+      if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$script_path"
+        return
+      fi
       ;;
   esac
   printf '%s\n' "$script_path"
+}
+
+python_runtime_path() {
+  local runtime_path="$1"
+  case "${python_command[0]}" in
+    *.exe|*.EXE)
+      if command -v wslpath >/dev/null 2>&1; then
+        wslpath -w "$runtime_path"
+        return
+      fi
+      if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$runtime_path"
+        return
+      fi
+      ;;
+  esac
+  printf '%s\n' "$runtime_path"
 }
 
 bench_py="$(python_script_path "$repo_root/tools/bench.py")"
@@ -93,6 +207,7 @@ if [[ "$#" -gt 0 ]]; then
       exit 0
       ;;
     run|visual-run)
+      initialize_bench_log
       if [[ "$#" -lt 1 ]]; then
         public_error "${command_name}_case=<case-slug> required"
       fi
@@ -113,7 +228,11 @@ if [[ "$#" -gt 0 ]]; then
             ;;
         esac
       done
-      exec "${python_command[@]}" "$bench_py" "$command_name" "$case_slug" "${run_args[@]}"
+      set +e
+      run_logged_python "$command_name" "$case_slug" "${run_args[@]}"
+      command_status=$?
+      set -e
+      exit "$command_status"
       ;;
     report)
       if [[ "$#" -ne 1 ]]; then
@@ -121,7 +240,11 @@ if [[ "$#" -gt 0 ]]; then
       fi
       case "$1" in
         results/*)
-          exec "${python_command[@]}" "$bench_py" report "$1"
+          set +e
+          "${python_command[@]}" "$bench_py" report "$1"
+          command_status=$?
+          set -e
+          exit "$command_status"
           ;;
         *)
           public_error "report_path=results/<run-id> required"
@@ -132,7 +255,11 @@ if [[ "$#" -gt 0 ]]; then
       if [[ "$#" -ne 0 ]]; then
         public_error "index_args=none"
       fi
-      exec "${python_command[@]}" "$bench_py" index
+      set +e
+      "${python_command[@]}" "$bench_py" index
+      command_status=$?
+      set -e
+      exit "$command_status"
       ;;
     *)
       printf 'bench_component,status,detail\n'
@@ -144,11 +271,11 @@ fi
 
 run_args=(run "$default_case_slug" --engine-set default_release)
 
+initialize_bench_log
 set +e
-run_output="$("${python_command[@]}" "$bench_py" "${run_args[@]}" 2>&1)"
+run_logged_python "${run_args[@]}"
 run_status=$?
 set -e
-printf '%s\n' "$run_output"
 if [[ "$run_status" -ne 0 ]]; then
   exit "$run_status"
 fi
@@ -156,12 +283,13 @@ fi
 result_path=""
 while IFS=, read -r component status detail; do
   if [[ "$component" == "run_result" && "$status" == "ok" ]]; then
+    detail="${detail%$'\r'}"
     result_path="$detail"
   fi
-done <<< "$run_output"
+done < "$bench_log_path"
 
 if [[ -z "$result_path" ]]; then
   public_error "missing_run_result"
 fi
 
-printf 'bench_default,ok,%s\n' "$result_path"
+bench_printf 'bench_default,ok,%s\n' "$result_path"

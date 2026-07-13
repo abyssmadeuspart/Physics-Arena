@@ -22,6 +22,7 @@ REPORTS_PATH = CONFIG_DIR / "reports.json"
 RELEASE_DIR = REPO_ROOT / "release"
 DEFAULT_RELEASE_PLATFORM = "windows-x64"
 PLACEHOLDER_PATTERN = re.compile(r"{([a-z_]+)}")
+PROCESS_LOG_STEM_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
 ALLOWED_PLACEHOLDERS = {
     "case_id",
     "repeat_index",
@@ -310,6 +311,76 @@ def run_process(args, cwd=None, stdout_path=None, stderr_path=None, input_bytes=
             stdout_handle.close()
         if stderr_handle is not None:
             stderr_handle.close()
+
+def write_process_logs(result, log_stem):
+    configured_log_dir = os.environ.get("BENCH_LOG_DIR", "")
+    if not configured_log_dir:
+        return {
+            "status": "not_configured",
+            "detail": "BENCH_LOG_DIR",
+            "stdout_log": "",
+            "stderr_log": ""
+        }
+    if PROCESS_LOG_STEM_PATTERN.fullmatch(log_stem) is None:
+        return {
+            "status": "invalid_result",
+            "detail": f"log_stem={log_stem}",
+            "stdout_log": "",
+            "stderr_log": ""
+        }
+    logs_root = (REPO_ROOT / "logs").resolve()
+    invocation_log_dir = Path(configured_log_dir).resolve()
+    try:
+        invocation_log_dir.relative_to(logs_root)
+    except ValueError:
+        return {
+            "status": "invalid_result",
+            "detail": f"BENCH_LOG_DIR={normalized_path_text(invocation_log_dir)} allowed_root={normalized_path_text(logs_root)}",
+            "stdout_log": "",
+            "stderr_log": ""
+        }
+    process_log_dir = invocation_log_dir / "process"
+    retained_paths = {"stdout_log": "", "stderr_log": ""}
+    retained_streams = [
+        (stream_name, result.get(stream_name, b"") or b"")
+        for stream_name in ["stdout", "stderr"]
+        if result.get(stream_name, b"")
+    ]
+    if not retained_streams:
+        return {
+            "status": "ok",
+            "detail": f"path={metadata_path_text(process_log_dir)}",
+            **retained_paths
+        }
+    try:
+        process_log_dir.mkdir(parents=True, exist_ok=True)
+        for stream_name, stream_data in retained_streams:
+            stream_path = process_log_dir / f"{log_stem}.{stream_name}.log"
+            stream_path.write_bytes(stream_data)
+            retained_paths[f"{stream_name}_log"] = metadata_path_text(stream_path)
+    except OSError as exc:
+        return {
+            "status": "write_failed",
+            "detail": f"path={metadata_path_text(process_log_dir)} error={exc}",
+            **retained_paths
+        }
+    return {
+        "status": "ok",
+        "detail": f"path={metadata_path_text(process_log_dir)}",
+        **retained_paths
+    }
+
+def process_diagnostic_detail(result, command, cwd, log_status):
+    detail_parts = [
+        f"exit_code={result['code']}",
+        f"executable={metadata_path_text(command[0])}",
+        f"cwd={metadata_path_text(cwd)}"
+    ]
+    if log_status["stdout_log"]:
+        detail_parts.append(f"stdout_log={log_status['stdout_log']}")
+    if log_status["stderr_log"]:
+        detail_parts.append(f"stderr_log={log_status['stderr_log']}")
+    return " ".join(detail_parts)
 
 def load_json(path):
     try:

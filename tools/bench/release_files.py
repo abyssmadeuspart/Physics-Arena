@@ -102,21 +102,50 @@ def first_forbidden_release_metadata_path(value, location):
     return {"status": "ok", "detail": ""}
 
 def verify_release_artifacts(contracts, platform_name, engines, emit_mode):
-    platform_status = validate_release_platform_manifest(contracts, platform_name, engines)
+    verification = release_artifacts_status(contracts, platform_name, engines)
     if emit_mode == "emit":
-        emit("release_manifest", platform_status["status"], platform_status["detail"])
-    if platform_status["status"] != "ok":
-        return 2
+        for check in verification["checks"]:
+            emit(check["component"], check["status"], check["detail"])
+    return 0 if verification["status"] == "ok" else 2
 
-    exit_code = 0
+def release_artifacts_status(contracts, platform_name, engines):
+    checks = []
+    platform_status = validate_release_platform_manifest(contracts, platform_name, engines)
+    checks.append({
+        "component": "release_manifest",
+        "status": platform_status["status"],
+        "detail": platform_status["detail"],
+    })
+    if platform_status["status"] != "ok":
+        return release_artifact_verification_result(platform_name, checks)
+
     for engine in engines:
         adapter = contracts["engine_sources"][engine["id"]]
         artifact_status = load_release_artifact_manifest(contracts, engine, adapter, platform_name)
-        if emit_mode == "emit":
-            emit(f"artifact_{engine['id']}", artifact_status["status"], artifact_status["detail"])
-        if artifact_status["status"] != "ok":
-            exit_code = 2
-    return exit_code
+        checks.append({
+            "component": f"artifact_{engine['id']}",
+            "status": artifact_status["status"],
+            "detail": artifact_status["detail"],
+        })
+    return release_artifact_verification_result(platform_name, checks)
+
+def release_artifact_verification_result(platform_name, checks):
+    failures = [check for check in checks if check["status"] != "ok"]
+    if failures:
+        return {
+            "status": failures[0]["status"],
+            "detail": f"platform={platform_name} failure_count={len(failures)}",
+            "checks": checks,
+            "failures": failures,
+            "failure_count": len(failures),
+        }
+    return {
+        "status": "ok",
+        "detail": f"platform={platform_name} failure_count=0",
+        "checks": checks,
+        "failures": [],
+        "failure_count": 0,
+    }
 
 def verify_visual_release_artifacts(contracts, platform_name, engines, emit_mode):
     platform_status = validate_visual_release_platform_manifest(contracts, platform_name, engines)

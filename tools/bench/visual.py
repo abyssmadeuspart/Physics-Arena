@@ -8,9 +8,11 @@ from .common import (
     emit,
     load_json,
     metadata_path_text,
+    process_diagnostic_detail,
     repo_path,
     run_process,
     sha256_file,
+    write_process_logs,
     write_text_lf,
 )
 from .contracts import load_contracts, selected_engines, validate_case_route_support
@@ -19,9 +21,9 @@ from .options import parse_positive_int, parse_value_options, single_option_valu
 from .release_files import (
     load_runtime_records,
     load_visual_runtime_records,
+    release_artifacts_status,
     release_run_environment,
     visual_release_artifacts_status,
-    verify_release_artifacts,
 )
 from .reports import command_report
 from .result_contracts import write_summary
@@ -100,6 +102,14 @@ def command_visual_run(args):
         emit("visual_arguments", "invalid_result", f"repeats={repeats_status['detail']}")
         return 2
     repeats = repeats_status["value"]
+    artifact_status = release_artifacts_status(contracts, release_platform, engines)
+    if artifact_status["status"] != "ok":
+        for failure in artifact_status["failures"]:
+            emit(failure["component"], failure["status"], failure["detail"])
+        failed_components = "/".join(failure["component"] for failure in artifact_status["failures"])
+        emit("visual_gate", artifact_status["status"], f"release_artifacts_failed platform={release_platform} failure_count={artifact_status['failure_count']} components={failed_components}")
+        emit("visual_action", "required", "restore the matching checked-in release/windows-x64 package and rerun")
+        return 2
     host_status = collect_host_metadata()
     if host_status["status"] != "ok":
         emit("visual_host", host_status["status"], host_status["detail"])
@@ -117,10 +127,6 @@ def command_visual_run(args):
     run_slug_status = select_visual_run_slug(visual_case, host_status["cpu_slug"], host_status["host"], thread_counts_status["selection"], repeats)
     if run_slug_status["status"] != "ok":
         emit("visual_arguments", run_slug_status["status"], run_slug_status["detail"])
-        return 2
-    artifact_status = verify_release_artifacts(contracts, release_platform, engines, "silent")
-    if artifact_status != 0:
-        emit("visual_gate", "invalid_result", f"release_artifacts_failed platform={release_platform}")
         return 2
     visual_artifact_status = visual_release_artifacts_status(contracts, release_platform, engines)
     if visual_artifact_status["status"] != "ok":
@@ -320,9 +326,17 @@ def run_visual_engine(result_dir, raw_dir, engine, adapter, case, repeats, rende
                 command,
                 cwd=renderer_executable.parent,
                 env=run_env)
-            if result["status"] != "ok":
-                emit(f"{engine['id']}_visual_t{thread_count}_r{repeat_index}", "run_failed", f"exit_code={result['code']}")
+            log_stem = f"{engine['id']}_t{thread_count}_r{repeat_index}_visual"
+            log_status = write_process_logs(result, log_stem)
+            process_detail = process_diagnostic_detail(result, command, renderer_executable.parent, log_status)
+            if log_status["status"] not in {"ok", "not_configured"}:
+                emit(f"{engine['id']}_visual_process_log", log_status["status"], f"{process_detail} {log_status['detail']}")
                 return 2
+            if result["status"] != "ok":
+                emit(f"{engine['id']}_visual_t{thread_count}_r{repeat_index}", "run_failed", process_detail)
+                return 2
+            if log_status["stdout_log"] or log_status["stderr_log"]:
+                emit(f"{engine['id']}_visual_process_log", "ok", process_detail)
             proof_status = validate_visual_outputs(repeat_raw_path, proof_path, result_dir)
             if proof_status["status"] != "ok":
                 emit(f"{engine['id']}_visual_t{thread_count}_r{repeat_index}", proof_status["status"], proof_status["detail"])

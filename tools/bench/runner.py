@@ -20,9 +20,11 @@ from .common import (
     load_json,
     metadata_path_text,
     platform_id,
+    process_diagnostic_detail,
     repo_path,
     run_process,
     sha256_file,
+    write_process_logs,
     write_text_lf,
 )
 from .options import parse_positive_int, parse_value_options, single_option_value
@@ -30,8 +32,8 @@ from .reports import command_report, read_summary, write_summary_svg
 from .release_files import (
     artifact_run_metadata,
     load_runtime_records,
+    release_artifacts_status,
     release_run_environment,
-    verify_release_artifacts,
 )
 from .result_contracts import (
     collect_combined_result,
@@ -110,6 +112,14 @@ def command_run(args):
         emit("run_arguments", "invalid_result", f"repeats={repeats_status['detail']}")
         return 2
     repeats = repeats_status["value"]
+    artifact_status = release_artifacts_status(contracts, release_platform, engines)
+    if artifact_status["status"] != "ok":
+        for failure in artifact_status["failures"]:
+            emit(failure["component"], failure["status"], failure["detail"])
+        failed_components = "/".join(failure["component"] for failure in artifact_status["failures"])
+        emit("run_gate", artifact_status["status"], f"release_artifacts_failed platform={release_platform} failure_count={artifact_status['failure_count']} components={failed_components}")
+        emit("run_action", "required", "restore the matching checked-in release/windows-x64 package and rerun")
+        return 2
     host_status = collect_host_metadata()
     if host_status["status"] != "ok":
         emit("run_host", host_status["status"], host_status["detail"])
@@ -129,10 +139,6 @@ def command_run(args):
         emit("run_arguments", run_slug_status["status"], run_slug_status["detail"])
         return 2
     result_dir = run_slug_status["result_dir"]
-    artifact_status = verify_release_artifacts(contracts, release_platform, engines, "silent")
-    if artifact_status != 0:
-        emit("run_gate", "invalid_result", f"release_artifacts_failed platform={release_platform}")
-        return 2
     runtime_records = load_runtime_records(contracts, engines, release_platform)
     if runtime_records["status"] != "ok":
         emit("run_gate", runtime_records["status"], runtime_records["detail"])
@@ -562,13 +568,15 @@ def run_engine(result_dir, raw_dir, engine, adapter, case, repeats, runtime_reco
         path_command = launcher[0] if launcher else executable_arg
         if adapter["run"]["repeat_mode"] == "bulk":
             args = render_args(adapter["run"]["args"], case, thread_count, repeats, 0, raw_output, raw_output_path, path_command, metadata)
-            status = run_one(engine, engine_raw_dir, launcher + [executable_arg] + args, run_env)
+            log_stem = f"{engine['id']}_t{thread_count}_bulk"
+            status = run_one(engine, engine_raw_dir, launcher + [executable_arg] + args, log_stem, run_env)
             if status != 0:
                 return 2
         else:
             for repeat_index in range(repeats):
                 args = render_args(adapter["run"]["args"], case, thread_count, repeats, repeat_index, raw_output, raw_output_path, path_command, metadata)
-                status = run_one(engine, engine_raw_dir, launcher + [executable_arg] + args, run_env)
+                log_stem = f"{engine['id']}_t{thread_count}_r{repeat_index}"
+                status = run_one(engine, engine_raw_dir, launcher + [executable_arg] + args, log_stem, run_env)
                 if status != 0:
                     return 2
         raw_file = raw_output_path
@@ -682,11 +690,18 @@ def render_args(tokens, case, thread_count, repeat_count, repeat_index, raw_outp
     }
     return [token.format(**values) for token in tokens]
 
-def run_one(engine, cwd, command, env=None):
+def run_one(engine, cwd, command, log_stem, env=None):
     result = run_process(command, cwd=cwd, env=env)
-    if result["status"] != "ok":
-        emit(f"{engine['id']}_run", "run_failed", f"exit_code={result['code']}")
+    log_status = write_process_logs(result, log_stem)
+    detail = process_diagnostic_detail(result, command, cwd, log_status)
+    if log_status["status"] not in {"ok", "not_configured"}:
+        emit(f"{engine['id']}_process_log", log_status["status"], f"{detail} {log_status['detail']}")
         return 2
+    if result["status"] != "ok":
+        emit(f"{engine['id']}_run", "run_failed", detail)
+        return 2
+    if log_status["stdout_log"] or log_status["stderr_log"]:
+        emit(f"{engine['id']}_process_log", "ok", detail)
     return 0
 
 def normalize_results(result_dir, case, engines, repeats, engine_report_metadata_by_id, build_settings_rewrite_by_value, case_fixture_contract_by_id, engine_sources=None):
