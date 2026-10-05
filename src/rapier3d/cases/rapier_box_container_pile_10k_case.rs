@@ -1,25 +1,52 @@
+use crate::case_execution_wire::{CaseExecutionSpec, CaseExecutionToggle};
+use crate::{case_registry, result_writer, runner_args};
 use rapier3d::prelude::*;
+use std::time::{Duration, Instant};
 
-pub const ENGINE_ID: &str = "rapier3d";
-pub const CASE_ID: &str = "box_container_pile_10k";
-pub const PILE_X_COUNT: usize = 25;
-pub const PILE_Y_COUNT: usize = 16;
-pub const PILE_Z_COUNT: usize = 25;
-pub const DYNAMIC_BODY_COUNT: usize = PILE_X_COUNT * PILE_Y_COUNT * PILE_Z_COUNT;
-pub const STATIC_BODY_COUNT: usize = 5;
-pub const BODY_COUNT: usize = DYNAMIC_BODY_COUNT + STATIC_BODY_COUNT;
-pub const HALF_EXTENT: f32 = 0.5;
-pub const SPACING: f32 = 1.02;
-pub const INITIAL_Y: f32 = 24.51;
-pub const TIMESTEP: f32 = 1.0 / 60.0;
-pub const INNER_HALF_WIDTH: f32 = 15.5;
-pub const CEILING_Y: f32 = 96.0;
-pub const FIXTURE_SEMANTIC: &str = "open_container_falling_pile";
-pub const FIXTURE_VERSION: &str = "rapier3d_open_container_v1";
-pub const TOOLCHAIN_ID: &str = "rust_1_89_msvc_cargo_release";
-pub const ENGINE_REF: &str = "a1ef31035613154dfb97a9e1d480c6a5eb9d0010";
+pub const DESCRIPTOR: case_registry::RapierCaseDescriptor = case_registry::RapierCaseDescriptor
+{
+    engine_id: case_registry::ENGINE_ID,
+};
 
-pub struct RapierWorld {
+pub const REGISTRATION: case_registry::CaseRegistration = case_registry::CaseRegistration
+{
+    descriptor: DESCRIPTOR,
+    run_headless,
+    build_visual_scene,
+    sample_visual_transforms,
+    build_visual_debug_primitives: build_no_visual_debug_primitives,
+};
+
+pub fn build_no_visual_debug_primitives(
+    _state: &case_registry::CaseView,
+    primitives: &mut [case_registry::VisualDebugPrimitive],
+) -> Result<(), i32>
+{
+    if primitives.is_empty()
+    {
+        Ok(())
+    }
+    else
+    {
+        Err(2)
+    }
+}
+
+pub fn sample_visual_transforms(
+    state: &case_registry::CaseView,
+    transforms: &mut [case_registry::VisualStableTransform],
+) -> Result<(), i32>
+{
+    let case_registry::CaseView::ContainerPile(world) = state else
+    {
+        return Err(2);
+    };
+    sample_transforms(world, transforms)
+}
+
+pub struct RapierWorld
+{
+    pub execution: CaseExecutionSpec,
     pub rigid_body_set: RigidBodySet,
     pub collider_set: ColliderSet,
     pub physics_pipeline: PhysicsPipeline,
@@ -28,69 +55,49 @@ pub struct RapierWorld {
     pub narrow_phase: NarrowPhase,
     pub impulse_joint_set: ImpulseJointSet,
     pub multibody_joint_set: MultibodyJointSet,
+    pub soft_body_set: SoftBodySet,
     pub ccd_solver: CCDSolver,
     pub dynamic_handles: Vec<RigidBodyHandle>,
 }
 
-#[derive(Clone, Copy)]
-pub struct RapierTransform {
-    pub position_x: f32,
-    pub position_y: f32,
-    pub position_z: f32,
-    pub rotation_x: f32,
-    pub rotation_y: f32,
-    pub rotation_z: f32,
-    pub rotation_w: f32,
-}
+pub fn create_world(execution: &CaseExecutionSpec) -> Result<RapierWorld, i32>
+{
+    let fixture: crate::case_execution_wire::CaseExecutionOpenContainer = execution.open_container;
+    let mut rigid_body_set: RigidBodySet = RigidBodySet::with_capacity(execution.body_count as usize);
+    let mut collider_set: ColliderSet = ColliderSet::with_capacity(execution.shape_count as usize);
+    let mut dynamic_handles: Vec<RigidBodyHandle> = Vec::with_capacity(execution.dynamic_body_count as usize);
 
-#[derive(Clone, Copy)]
-pub struct RapierStaticBox {
-    pub position_x: f32,
-    pub position_y: f32,
-    pub position_z: f32,
-    pub half_extent_x: f32,
-    pub half_extent_y: f32,
-    pub half_extent_z: f32,
-}
+    for static_box in fixture.static_boxes.iter().take(fixture.static_box_count as usize)
+    {
+        add_static_box(&mut rigid_body_set, &mut collider_set, static_box, execution);
+    }
 
-#[derive(Clone, Copy)]
-pub struct StabilityCounters {
-    pub invalid_transform_count: usize,
-    pub below_floor_count: usize,
-    pub out_of_bounds_count: usize,
-}
+    let origin_x: f32 = -0.5 * (fixture.dynamic_grid[0] as f32 - 1.0) * fixture.dynamic_spacing.x;
 
-pub fn create_world() -> Result<RapierWorld, i32> {
-    let mut rigid_body_set = RigidBodySet::with_capacity(BODY_COUNT);
-    let mut collider_set = ColliderSet::with_capacity(BODY_COUNT);
-    let mut dynamic_handles = Vec::with_capacity(DYNAMIC_BODY_COUNT);
-
-    add_static_box(&mut rigid_body_set, &mut collider_set, 0.0, -0.5, 0.0, 14.5, 0.5, 14.5);
-    add_static_box(&mut rigid_body_set, &mut collider_set, -14.5, 11.75, 0.0, 0.5, 12.25, 14.5);
-    add_static_box(&mut rigid_body_set, &mut collider_set, 14.5, 11.75, 0.0, 0.5, 12.25, 14.5);
-    add_static_box(&mut rigid_body_set, &mut collider_set, 0.0, 11.75, -14.5, 14.5, 12.25, 0.5);
-    add_static_box(&mut rigid_body_set, &mut collider_set, 0.0, 11.75, 14.5, 14.5, 12.25, 0.5);
-
-    let origin_x = -0.5 * (PILE_X_COUNT as f32 - 1.0) * SPACING;
-    let origin_z = -0.5 * (PILE_Z_COUNT as f32 - 1.0) * SPACING;
-    for y in 0..PILE_Y_COUNT {
-        for z in 0..PILE_Z_COUNT {
-            for x in 0..PILE_X_COUNT {
-                let translation = Vector::new(
-                    origin_x + x as f32 * SPACING,
-                    INITIAL_Y + y as f32 * SPACING,
-                    origin_z + z as f32 * SPACING,
+    let shape: SharedShape = crate::case_registry::create_resolved_shape(execution.selected_geometry, execution)?;
+    let rotation: Rotation = crate::case_registry::shape_rotation(execution.selected_geometry.axis);
+    let origin_z: f32 = -0.5 * (fixture.dynamic_grid[2] as f32 - 1.0) * fixture.dynamic_spacing.z;
+    for y in 0..fixture.dynamic_grid[1]
+    {
+        for z in 0..fixture.dynamic_grid[2]
+        {
+            for x in 0..fixture.dynamic_grid[0]
+            {
+                let translation: Vector = Vector::new(
+                    origin_x + x as f32 * fixture.dynamic_spacing.x,
+                    fixture.dynamic_initial_y + y as f32 * fixture.dynamic_spacing.y,
+                    origin_z + z as f32 * fixture.dynamic_spacing.z,
                 );
-                let body = RigidBodyBuilder::dynamic()
-                    .translation(translation)
-                    .can_sleep(false)
-                    .ccd_enabled(false)
+                let body: RigidBody = RigidBodyBuilder::dynamic()
+                    .pose(Pose::from_parts(translation, rotation))
+                    .can_sleep(execution.sleep_mode == CaseExecutionToggle::Enabled)
+                    .ccd_enabled(execution.continuous_collision_mode == CaseExecutionToggle::Enabled)
                     .build();
-                let body_handle = rigid_body_set.insert(body);
-                let collider = ColliderBuilder::cuboid(HALF_EXTENT, HALF_EXTENT, HALF_EXTENT)
-                    .friction(0.5)
-                    .restitution(0.0)
-                    .density(1.0)
+                let body_handle: RigidBodyHandle = rigid_body_set.insert(body);
+                let collider: Collider = ColliderBuilder::new(shape.clone())
+                    .friction(execution.friction)
+                    .restitution(execution.restitution)
+                    .density(fixture.density)
                     .build();
                 collider_set.insert_with_parent(collider, body_handle, &mut rigid_body_set);
                 dynamic_handles.push(body_handle);
@@ -98,7 +105,10 @@ pub fn create_world() -> Result<RapierWorld, i32> {
         }
     }
 
-    if rigid_body_set.len() != BODY_COUNT || collider_set.len() != BODY_COUNT || dynamic_handles.len() != DYNAMIC_BODY_COUNT {
+    if rigid_body_set.len() != execution.body_count as usize ||
+        collider_set.len() != execution.shape_count as usize ||
+        dynamic_handles.len() != execution.dynamic_body_count as usize
+    {
         eprintln!(
             "invalid_result body_count={} shape_count={} dynamic_body_count={}",
             rigid_body_set.len(),
@@ -108,7 +118,9 @@ pub fn create_world() -> Result<RapierWorld, i32> {
         return Err(2);
     }
 
-    Ok(RapierWorld {
+    Ok(RapierWorld
+    {
+        execution: *execution,
         rigid_body_set,
         collider_set,
         physics_pipeline: PhysicsPipeline::new(),
@@ -117,6 +129,7 @@ pub fn create_world() -> Result<RapierWorld, i32> {
         narrow_phase: NarrowPhase::new(),
         impulse_joint_set: ImpulseJointSet::new(),
         multibody_joint_set: MultibodyJointSet::new(),
+        soft_body_set: SoftBodySet::new(),
         ccd_solver: CCDSolver::new(),
         dynamic_handles,
     })
@@ -125,32 +138,38 @@ pub fn create_world() -> Result<RapierWorld, i32> {
 pub fn add_static_box(
     rigid_body_set: &mut RigidBodySet,
     collider_set: &mut ColliderSet,
-    x: f32,
-    y: f32,
-    z: f32,
-    hx: f32,
-    hy: f32,
-    hz: f32,
-) {
-    let body = RigidBodyBuilder::fixed()
-        .translation(Vector::new(x, y, z))
+    static_box: &crate::case_execution_wire::CaseExecutionBox,
+    execution: &CaseExecutionSpec,
+)
+{
+    let body: RigidBody = RigidBodyBuilder::fixed()
+        .translation(Vector::new(static_box.center.x, static_box.center.y, static_box.center.z))
         .build();
-    let body_handle = rigid_body_set.insert(body);
-    let collider = ColliderBuilder::cuboid(hx, hy, hz)
-        .friction(0.5)
-        .restitution(0.0)
+    let body_handle: RigidBodyHandle = rigid_body_set.insert(body);
+    let collider: Collider = ColliderBuilder::cuboid(static_box.half_extents.x,
+            static_box.half_extents.y, static_box.half_extents.z)
+        .friction(execution.friction)
+        .restitution(execution.restitution)
         .build();
     collider_set.insert_with_parent(collider, body_handle, rigid_body_set);
 }
 
-pub fn step_world(world: &mut RapierWorld, step_count: usize) {
-    let gravity = Vector::new(0.0, -10.0, 0.0);
-    let mut integration_parameters = IntegrationParameters::default();
-    integration_parameters.dt = TIMESTEP;
-    integration_parameters.num_solver_iterations = 4;
-    let physics_hooks = ();
-    let event_handler = ();
-    for _ in 0..step_count {
+pub fn step_world(world: &mut RapierWorld, step_count: usize)
+{
+    let execution: CaseExecutionSpec = world.execution;
+    let gravity: Vector = Vector::new(execution.gravity.x, execution.gravity.y, execution.gravity.z);
+    let mut integration_parameters: IntegrationParameters = IntegrationParameters::default();
+    integration_parameters.dt = 1.0 / execution.timestep_hz as f32;
+    integration_parameters.num_solver_iterations = execution.solver_values[crate::case_execution_wire::CaseSolverField::SolverIterations as usize] as usize;
+    integration_parameters.max_ccd_substeps = match execution.continuous_collision_mode
+    {
+        CaseExecutionToggle::Disabled => 0,
+        CaseExecutionToggle::Enabled => 1,
+    };
+    let physics_hooks: () = ();
+    let event_handler: () = ();
+    for _ in 0..step_count
+    {
         world.physics_pipeline.step(
             gravity,
             &integration_parameters,
@@ -161,6 +180,7 @@ pub fn step_world(world: &mut RapierWorld, step_count: usize) {
             &mut world.collider_set,
             &mut world.impulse_joint_set,
             &mut world.multibody_joint_set,
+            &mut world.soft_body_set,
             &mut world.ccd_solver,
             &physics_hooks,
             &event_handler,
@@ -168,48 +188,151 @@ pub fn step_world(world: &mut RapierWorld, step_count: usize) {
     }
 }
 
-pub fn sample_transforms(world: &RapierWorld, transforms: &mut [RapierTransform]) -> Result<(), i32> {
-    if transforms.len() < DYNAMIC_BODY_COUNT {
+pub fn step_world_timed(world: &mut RapierWorld, step_durations: &mut [Duration])
+{
+    let execution: CaseExecutionSpec = world.execution;
+    let gravity: Vector = Vector::new(execution.gravity.x, execution.gravity.y, execution.gravity.z);
+    let mut integration_parameters: IntegrationParameters = IntegrationParameters::default();
+    integration_parameters.dt = 1.0 / execution.timestep_hz as f32;
+    integration_parameters.num_solver_iterations = execution.solver_values[crate::case_execution_wire::CaseSolverField::SolverIterations as usize] as usize;
+    integration_parameters.max_ccd_substeps = match execution.continuous_collision_mode
+    {
+        CaseExecutionToggle::Disabled => 0,
+        CaseExecutionToggle::Enabled => 1,
+    };
+    let physics_hooks: () = ();
+    let event_handler: () = ();
+    for duration in step_durations
+    {
+        let start: Instant = Instant::now();
+        world.physics_pipeline.step(
+            gravity,
+            &integration_parameters,
+            &mut world.island_manager,
+            &mut world.broad_phase,
+            &mut world.narrow_phase,
+            &mut world.rigid_body_set,
+            &mut world.collider_set,
+            &mut world.impulse_joint_set,
+            &mut world.multibody_joint_set,
+            &mut world.soft_body_set,
+            &mut world.ccd_solver,
+            &physics_hooks,
+            &event_handler,
+        );
+        *duration = start.elapsed();
+    }
+}
+
+pub fn sample_transforms(
+    world: &RapierWorld,
+    transforms: &mut [case_registry::VisualStableTransform],
+) -> Result<(), i32>
+{
+    if transforms.len() < world.dynamic_handles.len()
+    {
         return Err(2);
     }
-    for index in 0..DYNAMIC_BODY_COUNT {
-        let body = &world.rigid_body_set[world.dynamic_handles[index]];
-        let position = body.translation();
-        let rotation = body.rotation();
-        transforms[index] = RapierTransform {
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
-            rotation_x: rotation.x,
-            rotation_y: rotation.y,
-            rotation_z: rotation.z,
-            rotation_w: rotation.w,
+    for index in 0..world.dynamic_handles.len()
+    {
+        let body: &RigidBody = &world.rigid_body_set[world.dynamic_handles[index]];
+        let position: Vector = body.translation();
+        let rotation: &Rotation = body.rotation();
+        transforms[index] = case_registry::VisualStableTransform
+        {
+            stable_slot: index as u32,
+            transform: case_registry::VisualTransform
+            {
+                position_x: position.x,
+                position_y: position.y,
+                position_z: position.z,
+                rotation_x: rotation.x,
+                rotation_y: rotation.y,
+                rotation_z: rotation.z,
+                rotation_w: rotation.w,
+            },
         };
     }
     Ok(())
 }
 
-pub fn copy_static_boxes(boxes: &mut [RapierStaticBox]) -> Result<(), i32> {
-    if boxes.len() < STATIC_BODY_COUNT {
+pub fn build_visual_scene(
+    state: &case_registry::CaseView,
+    geometries: &mut [case_registry::VisualGeometry],
+    meshes: &mut case_registry::VisualMeshStorage,
+    instances: &mut [case_registry::VisualInstance],
+) -> Result<(usize, usize), i32>
+{
+    let case_registry::CaseView::ContainerPile(world) = state else
+    {
+        return Err(2);
+    };
+    let execution: CaseExecutionSpec = world.execution;
+    let fixture: crate::case_execution_wire::CaseExecutionOpenContainer = execution.open_container;
+    if geometries.len() < 1 + fixture.static_box_count as usize ||
+        instances.len() < execution.body_count as usize
+    {
         return Err(2);
     }
-    boxes[0] = RapierStaticBox { position_x: 0.0, position_y: -0.5, position_z: 0.0, half_extent_x: 14.5, half_extent_y: 0.5, half_extent_z: 14.5 };
-    boxes[1] = RapierStaticBox { position_x: -14.5, position_y: 11.75, position_z: 0.0, half_extent_x: 0.5, half_extent_y: 12.25, half_extent_z: 14.5 };
-    boxes[2] = RapierStaticBox { position_x: 14.5, position_y: 11.75, position_z: 0.0, half_extent_x: 0.5, half_extent_y: 12.25, half_extent_z: 14.5 };
-    boxes[3] = RapierStaticBox { position_x: 0.0, position_y: 11.75, position_z: -14.5, half_extent_x: 14.5, half_extent_y: 12.25, half_extent_z: 0.5 };
-    boxes[4] = RapierStaticBox { position_x: 0.0, position_y: 11.75, position_z: 14.5, half_extent_x: 14.5, half_extent_y: 12.25, half_extent_z: 0.5 };
-    Ok(())
+    geometries[0] = case_registry::build_resolved_visual_geometry(&execution,
+        &execution.selected_geometry, meshes)?;
+    for (index, static_box) in fixture.static_boxes.iter().take(fixture.static_box_count as usize).enumerate()
+    {
+        geometries[index + 1] = case_registry::VisualGeometry
+        {
+            kind: 2,
+            parameter_x: static_box.half_extents.x,
+            parameter_y: static_box.half_extents.y,
+            parameter_z: static_box.half_extents.z,
+            ..case_registry::VisualGeometry::default()
+        };
+    }
+    for (index, handle) in world.dynamic_handles.iter().enumerate()
+    {
+        let body: &RigidBody = &world.rigid_body_set[*handle];
+        let position: Vector = body.translation();
+        let rotation: &Rotation = body.rotation();
+        instances[index] = case_registry::VisualInstance
+        {
+            geometry_index: 0,
+            stable_slot: index as u32,
+            transform_slot: index as u32,
+            initial_transform: case_registry::VisualTransform
+            {
+                position_x: position.x, position_y: position.y, position_z: position.z,
+                rotation_x: rotation.x, rotation_y: rotation.y,
+                rotation_z: rotation.z, rotation_w: rotation.w,
+            },
+        };
+    }
+    for (index, static_box) in fixture.static_boxes.iter().take(fixture.static_box_count as usize).enumerate()
+    {
+        let stable_slot: usize = world.dynamic_handles.len() + index;
+        instances[stable_slot] = case_registry::VisualInstance
+        {
+            geometry_index: (index + 1) as u32,
+            stable_slot: stable_slot as u32,
+            transform_slot: u32::MAX,
+            initial_transform: case_registry::VisualTransform
+            {
+                position_x: static_box.center.x, position_y: static_box.center.y,
+                position_z: static_box.center.z,
+                rotation_x: 0.0, rotation_y: 0.0, rotation_z: 0.0, rotation_w: 1.0,
+            },
+        };
+    }
+    Ok((1 + fixture.static_box_count as usize, execution.body_count as usize))
 }
 
-pub fn stability_counters(world: &RapierWorld) -> StabilityCounters {
-    let mut invalid_transform_count = 0;
-    let mut below_floor_count = 0;
-    let mut out_of_bounds_count = 0;
+pub fn invalid_transform_count(world: &RapierWorld) -> usize
+{
+    let mut invalid_transform_count: usize = 0;
 
-    for handle in &world.dynamic_handles {
-        let body = &world.rigid_body_set[*handle];
-        let position = body.translation();
-        let rotation = body.rotation();
+    for handle in &world.dynamic_handles
+    {
+        let body: &RigidBody = &world.rigid_body_set[*handle];
+        let position: Vector = body.translation();
+        let rotation: &Rotation = body.rotation();
         if !position.x.is_finite()
             || !position.y.is_finite()
             || !position.z.is_finite()
@@ -220,47 +343,157 @@ pub fn stability_counters(world: &RapierWorld) -> StabilityCounters {
         {
             invalid_transform_count += 1;
         }
-        if position.y < 0.0 {
-            below_floor_count += 1;
-        }
-        if position.x < -INNER_HALF_WIDTH
-            || position.x > INNER_HALF_WIDTH
-            || position.z < -INNER_HALF_WIDTH
-            || position.z > INNER_HALF_WIDTH
-            || position.y < 0.0
-            || position.y > CEILING_Y
-        {
-            out_of_bounds_count += 1;
-        }
     }
 
-    StabilityCounters {
-        invalid_transform_count,
-        below_floor_count,
-        out_of_bounds_count,
-    }
+    invalid_transform_count
 }
 
-pub fn case_status(counters: StabilityCounters) -> &'static str {
-    if counters.invalid_transform_count == 0 && counters.below_floor_count == 0 {
-        "ok"
-    } else {
-        "invalid_stability_counters"
-    }
-}
-
-pub fn metric_status(case_status: &str) -> &'static str {
-    if case_status == "ok" {
-        "ok"
-    } else {
-        "invalid_result"
-    }
-}
-
-pub fn host_route() -> &'static str {
-    if cfg!(target_os = "windows") {
+pub fn host_route() -> &'static str
+{
+    if cfg!(target_os = "windows")
+    {
         "windows"
-    } else {
+    }
+    else
+    {
         "linux"
     }
+}
+
+pub fn visual_physics_settings(execution: &CaseExecutionSpec, thread_count: usize) -> String
+{
+    let native_count = execution.solver_values[crate::case_execution_wire::CaseSolverField::SolverIterations as usize];
+    let sleep = if execution.sleep_mode == CaseExecutionToggle::Enabled
+    {
+        "enabled"
+    }
+    else
+    {
+        "disabled"
+    };
+    let ccd = if execution.continuous_collision_mode == CaseExecutionToggle::Enabled
+    {
+        "enabled"
+    }
+    else
+    {
+        "disabled"
+    };
+    format!(
+        "solver_iterations={native_count}; sleep={sleep}; ccd={ccd}; worker_count={thread_count}"
+    )
+}
+
+pub fn run_headless(
+    args: &runner_args::RunnerArgs,
+    effective_thread_count: usize,
+) -> Result<(), i32>
+{
+    let mut capture: Option<crate::stack_state_capture::Capture> = match args.verification_mode
+    {
+        runner_args::VerificationMode::On => Some(crate::stack_state_capture::open(args)?),
+        runner_args::VerificationMode::Off => None,
+    };
+    if args.warmup_steps > 0
+    {
+        let mut warmup_world: RapierWorld = create_world(&args.case_execution)?;
+        for ordinal in 0..=args.warmup_steps
+        {
+            if ordinal != 0 { step_world(&mut warmup_world, 1); }
+            if let Some(capture) = capture.as_mut()
+            {
+                capture.frame_start = std::time::Instant::now();
+                sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut warmup_world), &mut capture.transforms)?;
+                crate::stack_state_capture::append(capture, if ordinal == 0
+                {
+                    crate::stack_state_capture::Phase::Construction
+                }
+                else
+                {
+                    crate::stack_state_capture::Phase::Warmup
+                }, 0, ordinal as u32)?;
+            }
+        }
+    }
+    let mut world: RapierWorld = create_world(&args.case_execution)?;
+    let segment: u32 = u32::from(args.warmup_steps > 0);
+    if let Some(capture) = capture.as_mut()
+    {
+        capture.frame_start = std::time::Instant::now();
+        sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut world), &mut capture.transforms)?;
+        crate::stack_state_capture::append(capture, crate::stack_state_capture::Phase::Construction, segment, 0)?;
+    }
+    let mut step_durations: Vec<Duration> = vec![Duration::ZERO; args.step_count];
+    let mut recording: Option<crate::replay_recording::RecordingWriter> = match args.recording_mode
+    {
+        crate::runner_args::RecordingMode::On => Some(crate::replay_recording::begin_recording(args, &case_registry::CaseView::ContainerPile(&mut world))?),
+        crate::runner_args::RecordingMode::Off => None,
+    };
+    for (index, duration) in step_durations.iter_mut().enumerate()
+    {
+        step_world_timed(&mut world, std::slice::from_mut(duration));
+        if let Some(capture) = capture.as_mut()
+        {
+            capture.frame_start = std::time::Instant::now();
+            sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut world), &mut capture.transforms)?;
+            crate::stack_state_capture::append(capture, crate::stack_state_capture::Phase::Measured, segment, index as u32 + 1)?;
+        }
+        if let Some(writer) = recording.as_mut()
+        {
+            crate::replay_recording::append_frame(writer, args,
+                &case_registry::CaseView::ContainerPile(&mut world), index as u64 + 1)?;
+        }
+    }
+    if let Some(writer) = recording
+    {
+        crate::replay_recording::complete_recording(writer)?;
+    }
+    if let Some(capture) = capture
+    {
+        crate::stack_state_capture::close(capture)?;
+    }
+    let elapsed_ms: f64 = step_durations.iter().map(Duration::as_secs_f64).sum::<f64>() * 1000.0;
+    let invalid_transform_count: usize = invalid_transform_count(&world);
+    let case_validity: result_writer::ResultValidity = if invalid_transform_count == 0
+        && world.dynamic_handles.len() == args.case_execution.dynamic_body_count as usize
+        && world.rigid_body_set.len() == args.case_execution.body_count as usize
+        && world.collider_set.len() == args.case_execution.shape_count as usize
+    {
+        result_writer::ResultValidity::Valid
+    }
+    else
+    {
+        result_writer::ResultValidity::Invalid
+    };
+    let metric_valid: bool = elapsed_ms > 0.0
+        && elapsed_ms.is_finite()
+        && world.rigid_body_set.len() == args.case_execution.body_count as usize
+        && world.collider_set.len() == args.case_execution.shape_count as usize
+        && world.dynamic_handles.len() == args.case_execution.dynamic_body_count as usize;
+    let metric_validity: result_writer::ResultValidity = if metric_valid
+    {
+        result_writer::ResultValidity::Valid
+    }
+    else
+    {
+        result_writer::ResultValidity::Invalid
+    };
+    let result: result_writer::BenchmarkResult = result_writer::BenchmarkResult
+    {
+        physics_settings: visual_physics_settings(&args.case_execution, effective_thread_count),
+        body_count: world.rigid_body_set.len(),
+        shape_count: world.collider_set.len(),
+        query_count: args.case_execution.query_count as usize,
+        constraint_count: args.case_execution.constraint_count as usize,
+        invalid_transform_count,
+        effective_thread_count,
+        effective_worker_count: effective_thread_count,
+        completed_work_unit_count: args.step_count,
+        workload_elapsed_ms: elapsed_ms,
+        case_validity,
+        metric_validity,
+        observations: Vec::new(),
+    };
+    result_writer::write_result(args, &result)?;
+    result_writer::write_step_timing(args, &step_durations)
 }

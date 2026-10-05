@@ -35,13 +35,13 @@ require_nvidia_physx34_library(NVIDIA_PHYSX34_PXPVDSDK_LIBRARY PxPvdSDK_x64 PxPv
 require_nvidia_physx34_library(NVIDIA_PHYSX34_PXTASK_LIBRARY PxTask_x64 PxTask)
 require_nvidia_physx34_library(NVIDIA_PHYSX34_PSFASTXML_LIBRARY PsFastXml_x64 PsFastXml)
 
+file(GLOB NVIDIA_PHYSX34_CASE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../cases/*_case.cpp")
 add_executable(nvidia_physx34_polygon_runner
 	nvidia_physx34_polygon_runner.cpp
 	nvidia_physx34_result_writer.cpp
 	nvidia_physx34_runner_args.cpp
-	nvidia_physx34_shared_visual_mode.cpp
 	../cases/nvidia_physx34_case_registry.cpp
-	../cases/nvidia_physx34_box_container_pile_10k_case.cpp)
+	${NVIDIA_PHYSX34_CASE_SOURCES})
 target_compile_features(nvidia_physx34_polygon_runner PRIVATE cxx_std_17)
 target_compile_definitions(nvidia_physx34_polygon_runner PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_include_directories(
@@ -49,6 +49,7 @@ target_include_directories(
 	PRIVATE
 		"${CMAKE_CURRENT_LIST_DIR}"
 		"${CMAKE_CURRENT_LIST_DIR}/../cases"
+		"${CMAKE_CURRENT_LIST_DIR}/../../common"
 		"${CMAKE_CURRENT_LIST_DIR}/../../rendering/include"
 		"${NVIDIA_PHYSX34_ROOT}/PhysX_3.4/Include"
 		"${NVIDIA_PHYSX34_ROOT}/PxShared/include")
@@ -64,9 +65,6 @@ target_link_libraries(
 		"${NVIDIA_PHYSX34_PXTASK_LIBRARY}"
 		"${NVIDIA_PHYSX34_PSFASTXML_LIBRARY}")
 
-if(WIN32)
-	target_link_libraries(nvidia_physx34_polygon_runner PRIVATE ws2_32)
-endif()
 
 if(MSVC)
 	set_property(TARGET nvidia_physx34_polygon_runner PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")

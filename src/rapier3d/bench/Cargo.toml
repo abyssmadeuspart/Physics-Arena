@@ -10,3 +10,7 @@ path = "src/main.rs"
 
 [dependencies]
 rapier3d = { path = "../../../.generated/engines/rapier3d/crates/rapier3d", features = ["parallel"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

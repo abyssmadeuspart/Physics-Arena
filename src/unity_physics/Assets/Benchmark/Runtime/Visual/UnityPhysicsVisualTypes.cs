@@ -1,64 +1,22 @@
+using Unity.Collections;
+using Unity.Physics;
+
 namespace Bas3D.BenchmarkPolygon.UnityPhysics
 {
-    public struct SharedVisualCli
+    public struct UnityPhysicsCaseDescriptor
     {
-        public string SharedVisualMode;
-        public string ConnectHost;
-        public string RunToken;
         public string EngineId;
-        public string CaseId;
-        public int ConnectPort;
-        public int ThreadCount;
-        public int RepeatIndex;
-        public int StepCount;
-        public int WarmupSteps;
     }
 
-    public struct VisualRunConfig
+    public struct UnityPhysicsCaseView
     {
-        public int ThreadCount;
-        public int RepeatIndex;
-        public int StepCount;
-        public int WarmupSteps;
-    }
-
-    public struct VisualFrame
-    {
-        public ushort FrameType;
-        public uint Sequence;
-        public byte[] Payload;
-    }
-
-    public readonly struct UnityPhysicsCaseDescriptor
-    {
-        public readonly string EngineId;
-        public readonly string CaseId;
-        public readonly string FixtureSemantic;
-        public readonly string FixtureVersion;
-        public readonly int DynamicBodyCount;
-        public readonly int StaticBodyCount;
-        public readonly int BodyCount;
-        public readonly float DynamicHalfExtent;
-
-        public UnityPhysicsCaseDescriptor(
-            string engineId,
-            string caseId,
-            string fixtureSemantic,
-            string fixtureVersion,
-            int dynamicBodyCount,
-            int staticBodyCount,
-            int bodyCount,
-            float dynamicHalfExtent)
-        {
-            EngineId = engineId;
-            CaseId = caseId;
-            FixtureSemantic = fixtureSemantic;
-            FixtureVersion = fixtureVersion;
-            DynamicBodyCount = dynamicBodyCount;
-            StaticBodyCount = staticBodyCount;
-            BodyCount = bodyCount;
-            DynamicHalfExtent = dynamicHalfExtent;
-        }
+        public CaseExecutionSpec Execution;
+        public PhysicsWorld World;
+        public NativeArray<RaycastInput> RayInputs;
+        public NativeArray<ColliderCastInput> SphereCastInputs;
+        public NativeArray<OverlapAabbInput> OverlapInputs;
+        public NativeArray<byte> DebugHits;
+        public NativeArray<float> DebugHitDistances;
     }
 
     public struct UnityPhysicsTransform
@@ -72,13 +30,56 @@ namespace Bas3D.BenchmarkPolygon.UnityPhysics
         public float RotationW;
     }
 
-    public struct UnityPhysicsStaticBox
+    public struct UnityPhysicsVisualGeometry
     {
-        public float PositionX;
-        public float PositionY;
-        public float PositionZ;
-        public float HalfExtentX;
-        public float HalfExtentY;
-        public float HalfExtentZ;
+        public uint Kind;
+        public float ParameterX;
+        public float ParameterY;
+        public float ParameterZ;
+        public uint VertexOffset;
+        public uint VertexCount;
+        public uint IndexOffset;
+        public uint IndexCount;
+        public uint EdgeOffset;
+        public uint EdgeCount;
     }
+
+    public struct UnityPhysicsVisualMeshStorage
+    {
+        public float[] Vertices;
+        public uint[] Indices;
+        public uint[] Edges;
+        public int VertexCount;
+        public int IndexCount;
+        public int EdgeCount;
+    }
+
+    public struct UnityPhysicsVisualInstance
+    {
+        public uint GeometryIndex;
+        public uint StableSlot;
+        public uint TransformSlot;
+        public UnityPhysicsTransform InitialTransform;
+    }
+
+    public struct UnityPhysicsVisualStableTransform
+    {
+        public uint StableSlot;
+        public UnityPhysicsTransform Transform;
+    }
+
+    public struct UnityPhysicsVisualDebugPrimitive
+    {
+        public uint Kind;
+        public uint MaterialIndex;
+        public float OriginOrCenterX;
+        public float OriginOrCenterY;
+        public float OriginOrCenterZ;
+        public float EndOrHalfExtentsX;
+        public float EndOrHalfExtentsY;
+        public float EndOrHalfExtentsZ;
+        public float Radius;
+        public uint Reserved;
+    }
+
 }

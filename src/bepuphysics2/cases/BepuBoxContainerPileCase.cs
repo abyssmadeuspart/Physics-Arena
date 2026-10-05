@@ -4,6 +4,7 @@ using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities;
 using BepuUtilities.Memory;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -72,12 +73,7 @@ public unsafe struct PolygonNarrowPhaseCallbacks : INarrowPhaseCallbacks
 
     public void Initialize(Simulation simulation)
     {
-        if (ContactSpringiness.AngularFrequency == 0 && ContactSpringiness.TwiceDampingRatio == 0)
-        {
-            ContactSpringiness = new SpringSettings(30, 1);
-            MaximumRecoveryVelocity = 2f;
-            FrictionCoefficient = 0.5f;
-        }
+
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -117,96 +113,90 @@ public unsafe struct PolygonNarrowPhaseCallbacks : INarrowPhaseCallbacks
     }
 }
 
-public struct BepuTransform
-{
-    public float PositionX;
-    public float PositionY;
-    public float PositionZ;
-    public float RotationX;
-    public float RotationY;
-    public float RotationZ;
-    public float RotationW;
-}
-
-public struct BepuStaticBox
-{
-    public float PositionX;
-    public float PositionY;
-    public float PositionZ;
-    public float HalfExtentX;
-    public float HalfExtentY;
-    public float HalfExtentZ;
-}
-
 public struct BepuStabilityCounters
 {
     public int InvalidTransformCount;
-    public int BelowFloorCount;
-    public int OutOfBoundsCount;
     public int DynamicBodyCount;
 }
 
 public static class BepuBoxContainerPileCase
 {
-    public const string EngineId = "bepuphysics2";
-    public const string CaseId = "box_container_pile_10k";
-    public const string EngineRef = "f73164bb3c9ca733eb3329f1f6b1cea4e216ece7";
-    public const string ToolchainId = "dotnet8_release_no_profiling";
-    public const int XCount = 25;
-    public const int YCount = 16;
-    public const int ZCount = 25;
-    public const int DynamicBodyCount = XCount * YCount * ZCount;
-    public const int StaticBodyCount = 5;
-    public const int BodyCount = DynamicBodyCount + StaticBodyCount;
-    public const float HalfExtent = 0.5f;
-    public const float TimestepDuration = 1f / 60f;
-    public const float Spacing = 1.02f;
-    public const float InitialY = 24.51f;
-    public const float InnerHalfWidth = 15.5f;
-    public const float CeilingY = 96f;
-    public const string FixtureSemantic = "open_container_falling_pile";
-    public const string FixtureVersion = "bepu_open_container_v1";
-
-    public static Simulation CreateSimulation(BufferPool bufferPool, int workerCount, out ThreadDispatcher threadDispatcher)
+    public static BepuCaseRegistration Registration()
     {
+        return new BepuCaseRegistration
+        {
+            Descriptor = Descriptor(),
+            BuildVisualScene = BuildVisualScene,
+            SampleVisualTransforms = SampleVisualTransforms,
+            RunHeadless = RunHeadless
+        };
+    }
+
+    public static BepuCaseDescriptor Descriptor()
+    {
+        return new BepuCaseDescriptor
+        {
+            EngineId = BepuCaseRegistry.EngineId
+        };
+    }
+
+    public static int SampleVisualTransforms(
+        BepuCaseView state, BepuVisualStableTransform[] transforms)
+    {
+        return SampleTransforms(state.Simulation, state.CaseExecution.DynamicBodyCount, transforms);
+    }
+
+    public static Simulation CreateSimulation(BufferPool bufferPool, int workerCount,
+        in CaseExecutionSpec execution, out ThreadDispatcher threadDispatcher)
+    {
+        CaseExecutionOpenContainer fixture = execution.OpenContainer;
         Simulation simulation = Simulation.Create(
             bufferPool,
-            new PolygonNarrowPhaseCallbacks(new SpringSettings(30, 1), 2f, 0.5f),
-            new PolygonPoseIntegratorCallbacks(new Vector3(0, -10, 0), 0, 0),
-            new SolveDescription(4, 1));
+            new PolygonNarrowPhaseCallbacks(new SpringSettings(30, 1), 2f, execution.Friction),
+            new PolygonPoseIntegratorCallbacks(
+                new Vector3(execution.Gravity.X, execution.Gravity.Y, execution.Gravity.Z), 0, 0),
+            new SolveDescription((int)execution.VelocityIterations, (int)execution.Substeps));
         simulation.Deterministic = true;
 
-        TypedIndex floorShape = simulation.Shapes.Add(new Box(29f, 1f, 29f));
-        TypedIndex sideWallShape = simulation.Shapes.Add(new Box(1f, 24.5f, 29f));
-        TypedIndex frontWallShape = simulation.Shapes.Add(new Box(29f, 24.5f, 1f));
-        simulation.Statics.Add(new StaticDescription(new Vector3(0, -0.5f, 0), floorShape));
-        simulation.Statics.Add(new StaticDescription(new Vector3(-14.5f, 11.75f, 0), sideWallShape));
-        simulation.Statics.Add(new StaticDescription(new Vector3(14.5f, 11.75f, 0), sideWallShape));
-        simulation.Statics.Add(new StaticDescription(new Vector3(0, 11.75f, -14.5f), frontWallShape));
-        simulation.Statics.Add(new StaticDescription(new Vector3(0, 11.75f, 14.5f), frontWallShape));
-        Box box = new(1f, 1f, 1f);
-        TypedIndex boxShapeIndex = simulation.Shapes.Add(box);
-        BodyInertia boxInertia = box.ComputeInertia(1f);
-        float originX = -0.5f * (XCount - 1) * Spacing;
-        float originZ = -0.5f * (ZCount - 1) * Spacing;
-        BodyActivityDescription activity = new(-1f);
-
-        for (int y = 0; y < YCount; ++y)
+        for (int index = 0; index < fixture.StaticBoxCount; ++index)
         {
-            for (int z = 0; z < ZCount; ++z)
+            CaseExecutionBox staticBox = fixture.StaticBoxes[index];
+            TypedIndex staticShape = simulation.Shapes.Add(new Box(
+                staticBox.HalfExtents.X * 2f, staticBox.HalfExtents.Y * 2f,
+                staticBox.HalfExtents.Z * 2f));
+            simulation.Statics.Add(new StaticDescription(new Vector3(
+                staticBox.Center.X, staticBox.Center.Y, staticBox.Center.Z), staticShape));
+        }
+        BepuResolvedShape shape = BepuCaseRegistry.AddResolvedShape(simulation, bufferPool,
+            in execution, in execution.SelectedGeometry);
+        BodyInertia inertia = BepuCaseRegistry.ShapeInertia(simulation, shape.Index, fixture.Density * shape.Volume);
+        Quaternion shapeRotation = BepuCaseRegistry.ShapeRotation(execution.SelectedGeometry.Axis);
+        float originX = -0.5f * (fixture.DynamicGrid[0] - 1) * fixture.DynamicSpacing.X;
+        float originZ = -0.5f * (fixture.DynamicGrid[2] - 1) * fixture.DynamicSpacing.Z;
+        BodyActivityDescription activity = execution.SleepMode == CaseExecutionToggle.Enabled
+            ? new BodyActivityDescription(0.01f) : new BodyActivityDescription(-1f);
+
+        for (int y = 0; y < fixture.DynamicGrid[1]; ++y)
+        {
+            for (int z = 0; z < fixture.DynamicGrid[2]; ++z)
             {
-                for (int x = 0; x < XCount; ++x)
+                for (int x = 0; x < fixture.DynamicGrid[0]; ++x)
                 {
                     Vector3 location = new(
-                        originX + x * Spacing,
-                        InitialY + y * Spacing,
-                        originZ + z * Spacing);
-                    simulation.Bodies.Add(BodyDescription.CreateDynamic(location, boxInertia, boxShapeIndex, activity));
+                        originX + x * fixture.DynamicSpacing.X,
+                        fixture.DynamicInitialY + y * fixture.DynamicSpacing.Y,
+                        originZ + z * fixture.DynamicSpacing.Z);
+                    BodyDescription description = BodyDescription.CreateDynamic(
+                        new RigidPose(location + Vector3.Transform(shape.Center, shapeRotation), shapeRotation),
+                        inertia, shape.Index, activity);
+                    if (execution.ContinuousCollisionMode == CaseExecutionToggle.Enabled)
+                        description.Collidable.Continuity = ContinuousDetection.Continuous(1e-3f, 1e-3f);
+                    simulation.Bodies.Add(description);
                 }
             }
         }
 
-        if (simulation.Bodies.ActiveSet.Count != DynamicBodyCount)
+        if (simulation.Bodies.ActiveSet.Count != execution.DynamicBodyCount)
         {
             throw new InvalidOperationException($"Unexpected dynamic body count: {simulation.Bodies.ActiveSet.Count}");
         }
@@ -220,31 +210,42 @@ public static class BepuBoxContainerPileCase
         return threadCount;
     }
 
-    public static void StepSimulation(Simulation simulation, ThreadDispatcher threadDispatcher, int stepCount)
+    public static void StepSimulation(Simulation simulation, ThreadDispatcher threadDispatcher,
+        uint timestepHz, int stepCount)
     {
+        float timestepDuration = 1f / timestepHz;
         if (threadDispatcher == null)
         {
             for (int index = 0; index < stepCount; ++index)
             {
-                simulation.Timestep(TimestepDuration);
+                simulation.Timestep(timestepDuration);
             }
             return;
         }
 
         for (int index = 0; index < stepCount; ++index)
         {
-            simulation.Timestep(TimestepDuration, threadDispatcher);
+            simulation.Timestep(timestepDuration, threadDispatcher);
         }
     }
 
-    public static void RunWarmup(BufferPool bufferPool, int workerCount, int stepCount)
+    public static int RunWarmup(BufferPool bufferPool, int workerCount,
+        in BepuRunnerArgs runnerArgs, ref StackCapture capture)
     {
         Simulation warmupSimulation = default;
         ThreadDispatcher warmupDispatcher = null;
         try
         {
-            warmupSimulation = CreateSimulation(bufferPool, workerCount, out warmupDispatcher);
-            StepSimulation(warmupSimulation, warmupDispatcher, stepCount);
+            CaseExecutionSpec execution = runnerArgs.CaseExecution;
+            warmupSimulation = CreateSimulation(bufferPool, workerCount, in execution, out warmupDispatcher);
+            BepuCaseView view = new() { CaseExecution = execution, Simulation = warmupSimulation, DynamicBodies = null };
+            for (int step = 0; step <= runnerArgs.WarmupSteps; ++step)
+            {
+                if (step != 0) StepSimulation(warmupSimulation, warmupDispatcher, execution.TimestepHz, 1);
+                if (runnerArgs.VerificationMode == VerificationMode.On && StackStateCapture.Append(ref capture, in runnerArgs.CaseRegistration, view,
+                    step == 0 ? StackCapturePhase.Construction : StackCapturePhase.Warmup, 0, (uint)step) != 0) return 2;
+            }
+            return 0;
         }
         finally
         {
@@ -278,26 +279,15 @@ public static class BepuBoxContainerPileCase
                 {
                     counters.InvalidTransformCount += 1;
                 }
-
-                if (position.Y < 0f)
-                {
-                    counters.BelowFloorCount += 1;
-                }
-
-                if (position.X < -InnerHalfWidth || position.X > InnerHalfWidth ||
-                    position.Z < -InnerHalfWidth || position.Z > InnerHalfWidth ||
-                    position.Y < 0f || position.Y > CeilingY)
-                {
-                    counters.OutOfBoundsCount += 1;
-                }
             }
         }
         return counters;
     }
 
-    public static int SampleTransforms(Simulation simulation, BepuTransform[] transforms)
+    public static int SampleTransforms(
+        Simulation simulation, uint expectedDynamicBodyCount, BepuVisualStableTransform[] transforms)
     {
-        if (transforms.Length < DynamicBodyCount)
+        if (transforms.Length < expectedDynamicBodyCount)
         {
             return 2;
         }
@@ -313,43 +303,182 @@ public static class BepuBoxContainerPileCase
             for (int bodyIndex = 0; bodyIndex < set.Count; ++bodyIndex)
             {
                 ref RigidPose pose = ref set.DynamicsState[bodyIndex].Motion.Pose;
-                transforms[transformIndex] = new BepuTransform
+                int stableSlot = set.IndexToHandle[bodyIndex].Value;
+                if ((uint)stableSlot >= expectedDynamicBodyCount) return 2;
+                transforms[stableSlot] = new BepuVisualStableTransform
                 {
-                    PositionX = pose.Position.X,
-                    PositionY = pose.Position.Y,
-                    PositionZ = pose.Position.Z,
-                    RotationX = pose.Orientation.X,
-                    RotationY = pose.Orientation.Y,
-                    RotationZ = pose.Orientation.Z,
-                    RotationW = pose.Orientation.W
+                    StableSlot = (uint)stableSlot,
+                    Transform = new BepuVisualTransform
+                    {
+                        PositionX = pose.Position.X,
+                        PositionY = pose.Position.Y,
+                        PositionZ = pose.Position.Z,
+                        RotationX = pose.Orientation.X,
+                        RotationY = pose.Orientation.Y,
+                        RotationZ = pose.Orientation.Z,
+                        RotationW = pose.Orientation.W
+                    }
                 };
                 transformIndex += 1;
             }
         }
-        return transformIndex == DynamicBodyCount ? 0 : 2;
+        return transformIndex == expectedDynamicBodyCount ? 0 : 2;
     }
 
-    public static int CopyStaticBoxes(BepuStaticBox[] boxes)
+    public static int BuildVisualScene(
+        BepuCaseView state,
+        BepuVisualGeometry[] geometries,
+
+        ref BepuVisualMeshStorage meshes,
+        BepuVisualInstance[] instances,
+        out int geometryCount,
+        out int instanceCount)
     {
-        if (boxes.Length < StaticBodyCount)
+        geometryCount = 0;
+        instanceCount = 0;
+        CaseExecutionSpec execution = state.CaseExecution;
+        CaseExecutionOpenContainer fixture = execution.OpenContainer;
+        if (geometries == null || geometries.Length < 1 + fixture.StaticBoxCount ||
+            instances == null || instances.Length < execution.BodyCount)
         {
             return 2;
         }
-        boxes[0] = new BepuStaticBox { PositionX = 0f, PositionY = -0.5f, PositionZ = 0f, HalfExtentX = 14.5f, HalfExtentY = 0.5f, HalfExtentZ = 14.5f };
-        boxes[1] = new BepuStaticBox { PositionX = -14.5f, PositionY = 11.75f, PositionZ = 0f, HalfExtentX = 0.5f, HalfExtentY = 12.25f, HalfExtentZ = 14.5f };
-        boxes[2] = new BepuStaticBox { PositionX = 14.5f, PositionY = 11.75f, PositionZ = 0f, HalfExtentX = 0.5f, HalfExtentY = 12.25f, HalfExtentZ = 14.5f };
-        boxes[3] = new BepuStaticBox { PositionX = 0f, PositionY = 11.75f, PositionZ = -14.5f, HalfExtentX = 14.5f, HalfExtentY = 12.25f, HalfExtentZ = 0.5f };
-        boxes[4] = new BepuStaticBox { PositionX = 0f, PositionY = 11.75f, PositionZ = 14.5f, HalfExtentX = 14.5f, HalfExtentY = 12.25f, HalfExtentZ = 0.5f };
+        if (BepuCaseRegistry.BuildResolvedVisualGeometry(in execution, in execution.SelectedGeometry,
+            ref meshes, out geometries[0]) != 0) return 2;
+        BepuCaseRegistry.OffsetHullVisualGeometry(state.Simulation,
+            state.Simulation.Bodies.GetBodyReference(new BodyHandle(0)).Collidable.Shape,
+            in execution.SelectedGeometry, ref meshes, in geometries[0]);
+        for (int index = 0; index < fixture.StaticBoxCount; ++index)
+        {
+            CaseExecutionVector3 halfExtents = fixture.StaticBoxes[index].HalfExtents;
+            geometries[index + 1] = new BepuVisualGeometry { Kind = 2,
+                ParameterX = halfExtents.X, ParameterY = halfExtents.Y, ParameterZ = halfExtents.Z };
+        }
+        BepuVisualStableTransform[] transforms = new BepuVisualStableTransform[execution.DynamicBodyCount];
+        if (SampleTransforms(state.Simulation, execution.DynamicBodyCount, transforms) != 0) return 2;
+        for (int index = 0; index < execution.DynamicBodyCount; ++index)
+        {
+            instances[index] = new BepuVisualInstance
+            {
+                GeometryIndex = 0,
+                StableSlot = (uint)index,
+                TransformSlot = (uint)index,
+                InitialTransform = transforms[index].Transform
+            };
+        }
+        for (int index = 0; index < fixture.StaticBoxCount; ++index)
+        {
+            CaseExecutionBox staticBox = fixture.StaticBoxes[index];
+            int stableSlot = (int)execution.DynamicBodyCount + index;
+            instances[stableSlot] = new BepuVisualInstance
+            {
+                GeometryIndex = (uint)(index + 1),
+                StableSlot = (uint)stableSlot,
+                TransformSlot = uint.MaxValue,
+                InitialTransform = new BepuVisualTransform
+                {
+                    PositionX = staticBox.Center.X,
+                    PositionY = staticBox.Center.Y,
+                    PositionZ = staticBox.Center.Z,
+                    RotationW = 1f
+                }
+            };
+        }
+        geometryCount = 1 + fixture.StaticBoxCount;
+        instanceCount = (int)execution.BodyCount;
         return 0;
     }
 
-    public static string CaseStatus(BepuStabilityCounters counters)
+    public static string VisualPhysicsSettings(
+        in CaseExecutionSpec execution, int threadCount)
     {
-        return counters.InvalidTransformCount == 0 && counters.BelowFloorCount == 0 ? "ok" : "invalid_stability_counters";
+        return string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"velocity_iterations={execution.VelocityIterations}; substeps={execution.Substeps}; linear_damping=0; angular_damping=0; sleep={(execution.SleepMode == CaseExecutionToggle.Enabled ? "enabled" : "disabled")}; ccd={(execution.ContinuousCollisionMode == CaseExecutionToggle.Enabled ? "enabled" : "disabled")}; deterministic=yes; worker_count={threadCount}");
     }
 
-    public static string MetricStatus(string caseStatus)
+    public static int RunHeadless(BepuRunnerArgs runnerArgs)
     {
-        return caseStatus == "ok" ? "ok" : "invalid_result";
+        BufferPool bufferPool = new();
+        Simulation simulation = default;
+        ThreadDispatcher threadDispatcher = null;
+        BepuRecordingWriter recording = default;
+        StackCapture capture = default;
+        try
+        {
+            int requestedWorkerCount = RequestedWorkerCount(runnerArgs.WorkerCount);
+            long[] rawStepDurations = new long[runnerArgs.StepCount];
+            if (runnerArgs.VerificationMode == VerificationMode.On && StackStateCapture.Open(in runnerArgs, out capture) != 0) return 2;
+            if (runnerArgs.WarmupSteps > 0)
+            {
+                if (RunWarmup(bufferPool, requestedWorkerCount, in runnerArgs, ref capture) != 0) return 2;
+                bufferPool.Clear();
+            }
+
+            simulation = CreateSimulation(bufferPool, requestedWorkerCount,
+                in runnerArgs.CaseExecution, out threadDispatcher);
+
+            BepuCaseView recordingView = new()
+            {
+                CaseExecution = runnerArgs.CaseExecution, Simulation = simulation, DynamicBodies = null
+            };
+            uint segment = runnerArgs.WarmupSteps > 0 ? 1u : 0u;
+            if (runnerArgs.VerificationMode == VerificationMode.On && StackStateCapture.Append(ref capture, in runnerArgs.CaseRegistration, recordingView,
+                StackCapturePhase.Construction, segment, 0) != 0) return 2;
+            if (runnerArgs.RecordingMode == RecordingMode.On && BepuRecording.Begin(in runnerArgs, in recordingView, out recording) != 0) return 2;
+            float timestepDuration = 1f / runnerArgs.CaseExecution.TimestepHz;
+            for (int step = 0; step < runnerArgs.StepCount; ++step)
+            {
+                long start = Stopwatch.GetTimestamp();
+                if (threadDispatcher == null) simulation.Timestep(timestepDuration);
+                else simulation.Timestep(timestepDuration, threadDispatcher);
+                rawStepDurations[step] = Stopwatch.GetTimestamp() - start;
+                if (runnerArgs.VerificationMode == VerificationMode.On && StackStateCapture.Append(ref capture, in runnerArgs.CaseRegistration, recordingView,
+                    StackCapturePhase.Measured, segment, (uint)step + 1) != 0) return 2;
+                if (runnerArgs.RecordingMode == RecordingMode.On && BepuRecording.Append(ref recording, in runnerArgs.CaseRegistration, recordingView, (ulong)(step + 1)) != 0) return 2;
+            }
+
+            if (runnerArgs.VerificationMode == VerificationMode.On && StackStateCapture.Close(ref capture) != 0) return 2;
+            if (runnerArgs.RecordingMode == RecordingMode.On && BepuRecording.Complete(ref recording) != 0) return 2;
+            double elapsedMilliseconds = 0.0;
+            for (int step = 0; step < rawStepDurations.Length; ++step)
+            {
+                elapsedMilliseconds += rawStepDurations[step] * 1000.0 / Stopwatch.Frequency;
+            }
+            BepuStabilityCounters counters = CountStability(simulation);
+            double msPerStep = elapsedMilliseconds / runnerArgs.StepCount;
+            bool metricValid = elapsedMilliseconds > 0.0 && double.IsFinite(elapsedMilliseconds) &&
+                msPerStep > 0.0 && double.IsFinite(msPerStep) &&
+                counters.DynamicBodyCount == runnerArgs.CaseExecution.DynamicBodyCount;
+            BepuResultValidity caseValidity = counters.InvalidTransformCount == 0 &&
+                counters.DynamicBodyCount == runnerArgs.CaseExecution.DynamicBodyCount ?
+                BepuResultValidity.Valid : BepuResultValidity.Invalid;
+            BepuBenchmarkResult result = new()
+            {
+                PhysicsSettings = VisualPhysicsSettings(
+                    in runnerArgs.CaseExecution, runnerArgs.WorkerCount),
+                BodyCount = (int)runnerArgs.CaseExecution.BodyCount,
+                ShapeCount = (int)runnerArgs.CaseExecution.ShapeCount,
+                QueryCount = (int)runnerArgs.CaseExecution.QueryCount,
+                ConstraintCount = (int)runnerArgs.CaseExecution.ConstraintCount,
+				InvalidTransformCount = (ulong)counters.InvalidTransformCount,
+                EffectiveThreadCount = runnerArgs.WorkerCount,
+                EffectiveWorkerCount = runnerArgs.WorkerCount,
+                CompletedWorkUnitCount = runnerArgs.StepCount,
+                WorkloadElapsedMilliseconds = elapsedMilliseconds,
+                CaseValidity = caseValidity,
+                MetricValidity = metricValid ? BepuResultValidity.Valid : BepuResultValidity.Invalid
+            };
+            int resultStatus = BepuResultWriter.WriteResult(runnerArgs, in result);
+            return resultStatus == 0 ? BepuResultWriter.WriteStepTiming(runnerArgs, rawStepDurations) : resultStatus;
+        }
+        finally
+        {
+            StackStateCapture.Abort(ref capture);
+            if (runnerArgs.RecordingMode == RecordingMode.On) BepuRecording.Abort(ref recording);
+            simulation?.Dispose();
+            threadDispatcher?.Dispose();
+            bufferPool.Clear();
+        }
     }
 }

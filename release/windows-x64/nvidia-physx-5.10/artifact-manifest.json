@@ -1,0 +1,9 @@
+{
+  "schema_version": 3,
+  "artifact_role": "engine_runner",
+  "engine_id": "nvidia_physx5",
+  "executable_path": "release/windows-x64/nvidia-physx-5.10/nvidia_physx5_polygon_runner.exe",
+  "source_version": "5.10.0.75b25f28f9",
+  "toolchain_id": "vs2022_msbuild_release",
+  "report_version": "5.10.0"
+}

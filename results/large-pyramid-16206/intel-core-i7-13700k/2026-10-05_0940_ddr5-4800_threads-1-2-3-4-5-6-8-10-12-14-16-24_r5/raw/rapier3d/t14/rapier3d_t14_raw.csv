@@ -1,0 +1,6 @@
+raw_schema_version,repeat_index,fixture_semantic,fixture_revision,physics_settings,body_count,shape_count,query_count,constraint_count,invalid_transform_count,case_status,metric_status,effective_thread_count,effective_worker_count,actual_taskgraph_worker_count,completed_work_unit_count,workload_elapsed_ms,render_elapsed_ms,present_wait_ms,visual_validation_status,proof_path
+3,0,large_pyramid,1,solver_iterations=4; sleep=disabled; ccd=disabled; worker_count=14,16211,16211,0,0,0,ok,ok,14,14,,600,9991.097700000,,,,
+3,1,large_pyramid,1,solver_iterations=4; sleep=disabled; ccd=disabled; worker_count=14,16211,16211,0,0,0,ok,ok,14,14,,600,10018.798900000,,,,
+3,2,large_pyramid,1,solver_iterations=4; sleep=disabled; ccd=disabled; worker_count=14,16211,16211,0,0,0,ok,ok,14,14,,600,9675.686400000,,,,
+3,3,large_pyramid,1,solver_iterations=4; sleep=disabled; ccd=disabled; worker_count=14,16211,16211,0,0,0,ok,ok,14,14,,600,9896.016200000,,,,
+3,4,large_pyramid,1,solver_iterations=4; sleep=disabled; ccd=disabled; worker_count=14,16211,16211,0,0,0,ok,ok,14,14,,600,9908.761600000,,,,

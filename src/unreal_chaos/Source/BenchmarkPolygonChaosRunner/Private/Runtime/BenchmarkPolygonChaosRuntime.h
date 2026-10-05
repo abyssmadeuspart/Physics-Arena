@@ -5,31 +5,34 @@
 namespace BenchmarkPolygonChaos
 {
 
-    enum class ThreadWorkerStatus : uint8
-    {
-        Ok,
-        InvalidTaskGraphWorkerCount,
-    };
+enum class ThreadWorkerStatus : uint8
+{
+	Ok,
+	InvalidTaskGraphWorkerCount,
+	InvalidChaosExecutionMode,
+};
 
-    struct ThreadRuntimeState
-    {
-        int RequestedThreadCount = 1;
-        int RequestedChaosWorkerCount = 0;
-        int RequestedTaskGraphWorkerCount = 1;
-        int ActualTaskGraphWorkerCount = 0;
-        int EffectiveChaosWorkerCount = 0;
-        ThreadWorkerStatus WorkerStatus = ThreadWorkerStatus::Ok;
-    };
+struct ThreadRuntimeState
+{
+	int RequestedThreadCount = 1;
+	int RequestedChaosWorkerCount = 0;
+	int RequestedTaskGraphWorkerCount = 1;
+	int ActualTaskGraphWorkerCount = 0;
+	int EffectiveChaosWorkerCount = 0;
+	int SingleWorkerPhysics = 0;
+	ThreadWorkerStatus WorkerStatus = ThreadWorkerStatus::Ok;
+};
 
-    const char* ThreadWorkerStatusText(ThreadWorkerStatus Status);
+const char* ThreadWorkerStatusText(ThreadWorkerStatus Status);
 
-    struct ScopedCoreRuntime
-    {
-        int StartedTaskGraph = 0;
-        ThreadRuntimeState State;
+struct ScopedCoreRuntime
+{
+	int StartedTaskGraph = 0;
+	int PreviousSingleWorkerPhysics = 0;
+	ThreadRuntimeState State;
 
-        ScopedCoreRuntime(int ThreadCount);
-        ~ScopedCoreRuntime();
-    };
+	ScopedCoreRuntime(int ThreadCount);
+	~ScopedCoreRuntime();
+};
 
 } // namespace BenchmarkPolygonChaos

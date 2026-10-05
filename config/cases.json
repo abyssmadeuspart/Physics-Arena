@@ -1,56 +1,67 @@
 {
-  "schema_version": 1,
-  "result_statuses": [
-    "ok",
-    "unsupported",
-    "build_failed",
-    "run_failed",
-    "invalid_result",
-    "metric_unavailable",
-    "tool_missing",
-    "ref_mismatch",
-    "fetch_failed",
-    "unsupported_platform",
-    "route_unavailable",
-    "unsupported_thread_count"
-  ],
-  "benchmark_modes": [
-    "matched_quality_discrete",
-    "matched_quality_ccd",
-    "best_throughput",
-    "headless_api",
-    "visualized_local",
-    "visualized_release"
-  ],
-  "host_routes": [
-    "linux",
-    "windows"
-  ],
+  "schema_version": 5,
+  "default_public_case": "box-container-pile-10k",
   "cases": [
     {
       "id": "box_container_pile_10k",
+      "shape_presets": ["authored", "sphere", "capsule", "convex_hull"],
       "slug": "box-container-pile-10k",
       "display_name": "Box Container Pile 10k",
+      "description": "Simulates 10,000 falling dynamic boxes inside a five-static-body open container at 60 Hz",
       "category": "simulation",
-      "dynamic_box_count": 10000,
-      "static_box_count": 5,
+      "fixture_semantic": "open_container_falling_pile",
+      "fixture_revision": 1,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "step",
+      "work_unit_label": "step",
+      "dynamic_body_count": 10000,
+      "kinematic_body_count": 0,
+      "static_body_count": 5,
       "mesh_triangle_count": 0,
       "query_count": 0,
+      "constraint_count": 0,
       "body_count": 10005,
       "shape_count": 10005,
-      "box_half_extents": [
-        0.5,
-        0.5,
-        0.5
-      ],
-      "gravity": [
-        0,
-        -10,
-        0
-      ],
+      "visual_instance_count": 10005,
+      "visual_debug_primitive_count": 0,
       "timestep_hz": 60,
-      "step_count": 300,
-      "warmup_steps": 30,
+      "warmup_work_unit_count": 30,
+      "measured_work_unit_count": 300,
+      "fixture": {
+        "gravity": [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.5,
+        "restitution": 0.0,
+        "density": 1.0,
+        "dynamic_grid": [
+          25,
+          16,
+          25
+        ],
+        "dynamic_half_extents": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "dynamic_spacing": [
+          1.02,
+          1.02,
+          1.02
+        ],
+        "dynamic_initial_y": 24.51,
+        "static_boxes": [
+          {"center": [0.0, -0.5, 0.0], "half_extents": [14.5, 0.5, 14.5]},
+          {"center": [-14.5, 11.75, 0.0], "half_extents": [0.5, 12.25, 14.5]},
+          {"center": [14.5, 11.75, 0.0], "half_extents": [0.5, 12.25, 14.5]},
+          {"center": [0.0, 11.75, -14.5], "half_extents": [14.5, 12.25, 0.5]},
+          {"center": [0.0, 11.75, 14.5], "half_extents": [14.5, 12.25, 0.5]}
+        ]
+      },
       "thread_counts": [
         1,
         2,
@@ -59,6 +70,984 @@
         5,
         6,
         8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fixed",
+        "eye": [
+          0.0,
+          80.3817,
+          -40.653
+        ],
+        "target": [
+          0.0,
+          19.655,
+          0.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 45.0,
+        "near_plane": 0.1,
+        "far_plane": 300.0
+      },
+      "primary_metric": {
+        "id": "median_ms_per_step",
+        "unit": "ms",
+        "direction": "lower_is_better",
+        "label": "Physics ms/step",
+        "note": "lower is better"
+      },
+      "observations": [],
+      "result_groups": []
+    },
+    {
+      "id": "box_contact_islands_10k",
+      "shape_presets": [
+        "authored"
+      ],
+      "slug": "box-contact-islands-10k",
+      "display_name": "Box Contact Islands 10k",
+      "description": "Simulates 50 independent stacks of 200 initially aligned, touching one-metre boxes at 60 Hz",
+      "category": "simulation",
+      "fixture_semantic": "box_contact_islands_10k",
+      "fixture_revision": 2,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "step",
+      "work_unit_label": "step",
+      "dynamic_body_count": 10000,
+      "kinematic_body_count": 0,
+      "static_body_count": 50,
+      "body_count": 10050,
+      "shape_count": 10050,
+      "visual_instance_count": 10050,
+      "visual_debug_primitive_count": 0,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "constraint_count": 0,
+      "timestep_hz": 60,
+      "warmup_work_unit_count": 30,
+      "measured_work_unit_count": 300,
+      "fixture": {
+        "gravity": [0.0, -10.0, 0.0],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.5,
+        "restitution": 0.0,
+        "density": 1.0,
+        "island_grid": [10, 5],
+        "island_spacing": [24.0, 24.0],
+        "body_grid": [5, 8, 5],
+        "body_half_extents": [0.5, 0.5, 0.5],
+        "body_spacing": [1.0, 1.0, 1.0],
+        "body_initial_y": 0.5,
+        "floor_half_extents": [6.0, 0.5, 6.0]
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fit_scene",
+        "direction": [
+          -0.45,
+          0.38,
+          -1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 45.0,
+        "viewport_fill": 0.9
+      },
+      "primary_metric": {
+        "id": "median_ms_per_step",
+        "unit": "ms",
+        "direction": "lower_is_better",
+        "label": "Physics ms/step",
+        "note": "lower is better"
+      },
+      "observations": [],
+      "result_groups": []
+    },
+    {
+      "id": "spatial_query_trace",
+      "shape_presets": ["authored", "sphere", "capsule", "convex_hull"],
+      "slug": "spatial-query-trace",
+      "display_name": "Spatial Query Trace",
+      "description": "Runs 50,000 closest rays, 25,000 closest radius-0.25 sphere casts, and 25,000 engine-native AABB overlap presence queries against 10,000 static boxes per batch",
+      "category": "query",
+      "fixture_semantic": "spatial_query_trace",
+      "fixture_revision": 1,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "query_batch",
+      "work_unit_label": "query batch",
+      "dynamic_body_count": 0,
+      "kinematic_body_count": 0,
+      "static_body_count": 10000,
+      "body_count": 10000,
+      "shape_count": 10000,
+      "visual_instance_count": 10000,
+      "visual_debug_primitive_count": 768,
+      "mesh_triangle_count": 0,
+      "query_count": 100000,
+      "constraint_count": 0,
+      "warmup_work_unit_count": 10,
+      "measured_work_unit_count": 100,
+      "fixture": {
+        "gravity": [0.0, 0.0, 0.0],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.5,
+        "restitution": 0.0,
+        "static_grid": [25, 16, 25],
+        "static_half_extents": [0.5, 0.5, 0.5],
+        "static_spacing": [1.25, 1.25, 1.25],
+        "static_base_center": [0.0, 0.5, 0.0],
+        "ray_count": 50000,
+        "sphere_cast_count": 25000,
+        "overlap_count": 25000,
+        "query_distance": 50.0,
+        "sphere_cast_radius": 0.25,
+        "overlap_half_extents": [0.6, 0.6, 0.6],
+        "miss_offset": 1.25,
+        "debug_samples_per_family": 256
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fit_bounds",
+        "minimum": [
+          -29.75,
+          -25.5,
+          -29.75
+        ],
+        "maximum": [
+          29.75,
+          45.25,
+          29.75
+        ],
+        "direction": [
+          -0.45,
+          0.38,
+          -1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 45.0,
+        "viewport_fill": 0.9
+      },
+      "primary_metric": {
+        "id": "queries_per_second",
+        "unit": "queries/s",
+        "direction": "higher_is_better",
+        "label": "Queries/s",
+        "note": "higher is better"
+      },
+      "observations": [
+        {
+          "id": "ray_queries_per_second",
+          "label": "Ray queries/s",
+          "result_group_id": "performance",
+          "value_type": "float64",
+          "unit": "queries/s",
+          "role": "performance",
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "sphere_cast_queries_per_second",
+          "label": "Sphere cast queries/s",
+          "result_group_id": "performance",
+          "value_type": "float64",
+          "unit": "queries/s",
+          "role": "performance",
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "overlap_queries_per_second",
+          "label": "Overlap queries/s",
+          "result_group_id": "performance",
+          "value_type": "float64",
+          "unit": "queries/s",
+          "role": "performance",
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "ray_hit_count",
+          "label": "Ray hits",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_exact",
+          "expected_value": 25000,
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "sphere_cast_hit_count",
+          "label": "Sphere cast hits",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_exact",
+          "expected_value": 12500,
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "overlap_hit_count",
+          "label": "Overlap hits",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_exact",
+          "expected_value": 12500,
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
+        }
+      ],
+      "result_groups": [
+        {
+          "id": "performance",
+          "label": "Query performance"
+        },
+        {
+          "id": "quality",
+          "label": "Hit counts"
+        }
+      ]
+    },
+    {
+      "id": "ragdoll_stair_tumble",
+      "shape_presets": ["authored", "sphere", "capsule", "convex_hull"],
+      "slug": "ragdoll-stair-tumble",
+      "display_name": "Ragdoll Stair Tumble",
+      "description": "Simulates 512 fifteen-body ragdolls tumbling down a 64-step staircase into a ground-sealed invisible three-wall catch basin at 60 Hz using 7,168 ball-and-socket joints",
+      "category": "simulation",
+      "fixture_semantic": "ragdoll_stair_tumble",
+      "fixture_revision": 4,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "step",
+      "work_unit_label": "step",
+      "dynamic_body_count": 7680,
+      "kinematic_body_count": 0,
+      "static_body_count": 68,
+      "body_count": 7748,
+      "shape_count": 7748,
+      "visual_instance_count": 7745,
+      "visual_debug_primitive_count": 3,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "constraint_count": 7168,
+      "timestep_hz": 60,
+      "warmup_work_unit_count": 30,
+      "measured_work_unit_count": 600,
+      "fixture": {
+        "gravity": [0.0, -10.0, 0.0],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "linked_collision_mode": "enabled",
+        "friction": 0.5,
+        "restitution": 0.0,
+        "linear_damping": 0.0,
+        "angular_damping": 0.0,
+        "part_mass": 1.0,
+        "ragdoll_grid": [32, 16],
+        "column_spacing": 2.8,
+        "row_spacing": 0.75,
+        "base_height_offset": 0.20,
+        "pitch_degrees": 12.0,
+        "yaw_pattern_degrees": [-5.0, 0.0, 5.0],
+        "trigger_row_speed": 8.0,
+        "follower_row_speed": 2.0,
+        "staircase": {
+          "count": 64,
+          "rise": 1.5,
+          "depth": 0.75,
+          "half_width": 64.0,
+          "half_height": 0.75,
+          "half_depth": 0.375
+        },
+        "extra_static_boxes": [
+          {"center": [0.0, -0.5, 36.0], "half_extents": [64.0, 0.5, 12.0]},
+          {"center": [-64.5, 3.5, 36.25], "half_extents": [0.5, 4.5, 12.25]},
+          {"center": [64.5, 3.5, 36.25], "half_extents": [0.5, 4.5, 12.25]},
+          {"center": [0.0, 3.5, 48.5], "half_extents": [65.5, 4.5, 1.0]}
+        ],
+        "parts": [
+          {"shape": "box", "half_extents": [0.18, 0.14, 0.12], "center": [0.0, 1.28, 0.0]},
+          {"shape": "box", "half_extents": [0.24, 0.25, 0.13], "center": [0.0, 1.68, 0.0]},
+          {"shape": "sphere", "radius": 0.16, "center": [0.0, 2.10, 0.0]},
+          {"shape": "box", "half_extents": [0.22, 0.08, 0.08], "center": [-0.48, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.20, 0.07, 0.07], "center": [-0.92, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.10, 0.06, 0.12], "center": [-1.23, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.22, 0.08, 0.08], "center": [0.48, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.20, 0.07, 0.07], "center": [0.92, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.10, 0.06, 0.12], "center": [1.23, 1.76, 0.0]},
+          {"shape": "box", "half_extents": [0.10, 0.27, 0.10], "center": [-0.13, 0.85, 0.0]},
+          {"shape": "box", "half_extents": [0.085, 0.23, 0.085], "center": [-0.13, 0.34, 0.0]},
+          {"shape": "box", "half_extents": [0.10, 0.06, 0.20], "center": [-0.13, 0.03, 0.14]},
+          {"shape": "box", "half_extents": [0.10, 0.27, 0.10], "center": [0.13, 0.85, 0.0]},
+          {"shape": "box", "half_extents": [0.085, 0.23, 0.085], "center": [0.13, 0.34, 0.0]},
+          {"shape": "box", "half_extents": [0.10, 0.06, 0.20], "center": [0.13, 0.03, 0.14]}
+        ],
+        "links": [
+          {"parent_part": 0, "child_part": 1, "anchor": [0.0, 1.425, 0.0]},
+          {"parent_part": 1, "child_part": 2, "anchor": [0.0, 1.935, 0.0]},
+          {"parent_part": 1, "child_part": 3, "anchor": [-0.25, 1.76, 0.0]},
+          {"parent_part": 3, "child_part": 4, "anchor": [-0.71, 1.76, 0.0]},
+          {"parent_part": 4, "child_part": 5, "anchor": [-1.125, 1.76, 0.0]},
+          {"parent_part": 1, "child_part": 6, "anchor": [0.25, 1.76, 0.0]},
+          {"parent_part": 6, "child_part": 7, "anchor": [0.71, 1.76, 0.0]},
+          {"parent_part": 7, "child_part": 8, "anchor": [1.125, 1.76, 0.0]},
+          {"parent_part": 0, "child_part": 9, "anchor": [-0.13, 1.13, 0.0]},
+          {"parent_part": 9, "child_part": 10, "anchor": [-0.13, 0.57, 0.0]},
+          {"parent_part": 10, "child_part": 11, "anchor": [-0.13, 0.10, 0.04]},
+          {"parent_part": 0, "child_part": 12, "anchor": [0.13, 1.13, 0.0]},
+          {"parent_part": 12, "child_part": 13, "anchor": [0.13, 0.57, 0.0]},
+          {"parent_part": 13, "child_part": 14, "anchor": [0.13, 0.10, 0.04]}
+        ]
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fixed",
+        "eye": [
+          2.9,
+          31.3,
+          100.0
+        ],
+        "target": [
+          3.4283,
+          39.3872,
+          24.3276
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 80.0,
+        "near_plane": 0.1,
+        "far_plane": 300.0
+      },
+      "primary_metric": {
+        "id": "physical_quality",
+        "unit": "none",
+        "direction": "not_ranked",
+        "label": "Physical quality",
+        "note": "No speed measurement or physical pass tolerance"
+      },
+      "observations": [
+        {
+          "id": "joint_anchor_gap_rms_m",
+          "label": "Joint anchor gap RMS",
+          "result_group_id": "quality",
+          "value_type": "float64",
+          "unit": "m",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        },
+        {
+          "id": "joint_anchor_gap_max_m",
+          "label": "Maximum joint anchor gap",
+          "result_group_id": "quality",
+          "value_type": "float64",
+          "unit": "m",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        },
+        {
+          "id": "worst_joint_id",
+          "label": "Worst joint ID (zero based)",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "id",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        },
+        {
+          "id": "worst_joint_step",
+          "label": "Worst joint step",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "step",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        },
+        {
+          "id": "joint_sample_count",
+          "label": "Valid joint samples",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_exact",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ],
+          "expected_value": 4300800
+        },
+        {
+          "id": "body_sample_count",
+          "label": "Observed body samples",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_exact",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ],
+          "expected_value": 4608000
+        },
+        {
+          "id": "invalid_body_sample_count",
+          "label": "Invalid body samples",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_zero",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ],
+          "expected_value": 0
+        },
+        {
+          "id": "missing_body_sample_count",
+          "label": "Missing body samples",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_zero",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ],
+          "expected_value": 0
+        },
+        {
+          "id": "first_invalid_body_id",
+          "label": "First invalid body ID (zero based)",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "id",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        },
+        {
+          "id": "first_invalid_step",
+          "label": "First invalid step (zero means none)",
+          "result_group_id": "quality",
+          "value_type": "uint64",
+          "unit": "step",
+          "role": "quality",
+          "phase_id": "final",
+          "sample_indices": [
+            600
+          ]
+        }
+      ],
+      "result_groups": [
+        {
+          "id": "quality",
+          "label": "Joint cohesion and state validity"
+        }
+      ]
+    },
+    {
+      "id": "large_pyramid_16206",
+      "shape_presets": ["authored"],
+      "slug": "large-pyramid-16206",
+      "display_name": "Large Pyramid",
+      "description": "Simulates a gravity-supported 16,206-cube square stepped pyramid on a floor, holds it for two measured seconds, then launches four medium spheres into its front base at 60 Hz",
+      "category": "simulation",
+      "fixture_semantic": "large_pyramid",
+      "fixture_revision": 1,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "step",
+      "work_unit_label": "step",
+      "dynamic_body_count": 16210,
+      "kinematic_body_count": 0,
+      "static_body_count": 1,
+      "body_count": 16211,
+      "shape_count": 16211,
+      "visual_instance_count": 16211,
+      "visual_debug_primitive_count": 0,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "constraint_count": 0,
+      "timestep_hz": 60,
+      "warmup_work_unit_count": 0,
+      "measured_work_unit_count": 600,
+      "fixture": {
+        "gravity": [0.0, -10.0, 0.0],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.5,
+        "restitution": 0.0,
+        "row_count": 36,
+        "box_half_extents": [0.25, 0.25, 0.25],
+        "box_spacing": [0.5, 0.5, 0.5],
+        "base_center": [0.0, 0.25, 0.0],
+        "floor_half_extents": [40.0, 0.5, 40.0],
+        "box_density": 1.0,
+        "projectile_count": 4,
+        "projectile_radius": 2.0,
+        "projectile_density": 10.0,
+        "projectile_initial_center": [-6.0, 2.0, 30.0],
+        "projectile_center_spacing": [4.0, 0.0, 0.0],
+        "projectile_launch_velocity": [0.0, 0.0, -30.0],
+        "projectile_launch_after_work_units": 120
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fit_bounds",
+        "minimum": [-14.0, -1.0, -12.0],
+        "maximum": [14.0, 22.0, 34.0],
+        "direction": [0.0, 0.08, -1.0],
+        "up": [0.0, 1.0, 0.0],
+        "vertical_fov_degrees": 45.0,
+        "viewport_fill": 0.92
+      },
+      "primary_metric": {
+        "id": "median_ms_per_step",
+        "unit": "ms",
+        "direction": "lower_is_better",
+        "label": "Physics ms/step",
+        "note": "lower is better"
+      },
+      "observations": [],
+      "result_groups": []
+    },
+    {
+      "id": "pyramid_wall_4095",
+      "shape_presets": [
+        "authored"
+      ],
+      "slug": "pyramid-wall-4095",
+      "display_name": "Pyramid Wall",
+      "description": "A triangular wall of 16,290 stacked cubes, one cube deep",
+      "category": "simulation",
+      "fixture_semantic": "pyramid_wall",
+      "fixture_revision": 1,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "step",
+      "work_unit_label": "step",
+      "dynamic_body_count": 16290,
+      "kinematic_body_count": 0,
+      "static_body_count": 1,
+      "body_count": 16291,
+      "shape_count": 16291,
+      "visual_instance_count": 16291,
+      "visual_debug_primitive_count": 0,
+      "mesh_triangle_count": 0,
+      "query_count": 0,
+      "constraint_count": 0,
+      "timestep_hz": 60,
+      "warmup_work_unit_count": 1,
+      "measured_work_unit_count": 300,
+      "fixture": {
+        "gravity": [
+          0.0,
+          -10.0,
+          0.0
+        ],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.6,
+        "restitution": 0.0,
+        "row_count": 180,
+        "half_extent": 0.5,
+        "density": 100.0,
+        "floor_half_extents": [
+          400.0,
+          1.0,
+          400.0
+        ]
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        24
+      ],
+      "repeat_presets": {
+        "qualification": 1,
+        "full": 5
+      },
+      "visual_camera": {
+        "mode": "fit_bounds",
+        "minimum": [
+          -91.0,
+          -1.0,
+          -2.0
+        ],
+        "maximum": [
+          91.0,
+          182.0,
+          2.0
+        ],
+        "direction": [
+          0.2,
+          0.06,
+          -1.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 45.0,
+        "viewport_fill": 0.92
+      },
+      "primary_metric": {
+        "id": "median_ms_per_step",
+        "unit": "ms",
+        "direction": "lower_is_better",
+        "label": "Physics ms/step",
+        "note": "lower is better"
+      },
+      "observations": [
+        {
+          "id": "centre_of_mass_height",
+          "label": "Centre of mass height",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "m",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "lateral_rms",
+          "label": "Lateral displacement RMS",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "m",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "translational_energy",
+          "label": "Translational kinetic energy",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "J",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "rotational_energy",
+          "label": "Rotational kinetic energy",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "J",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "potential_energy",
+          "label": "Gravitational potential energy",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "J",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "floor_penetration",
+          "label": "Deepest floor penetration",
+          "result_group_id": "physical",
+          "value_type": "float64",
+          "unit": "m",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "escaped_body_count",
+          "label": "Escaped bodies",
+          "result_group_id": "physical",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "quality",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        },
+        {
+          "id": "invalid_body_count",
+          "label": "Invalid bodies or sleep state",
+          "result_group_id": "physical",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_zero",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ],
+          "expected_value": 0
+        },
+        {
+          "id": "initial_potential_energy",
+          "label": "Initial gravitational potential energy",
+          "result_group_id": "construction",
+          "value_type": "float64",
+          "unit": "J",
+          "role": "quality",
+          "phase_id": "construction",
+          "sample_indices": [
+            0
+          ]
+        },
+        {
+          "id": "observation_elapsed_ms",
+          "label": "Observation and reduction cost",
+          "result_group_id": "performance",
+          "value_type": "float64",
+          "unit": "ms",
+          "role": "performance",
+          "phase_id": "observation",
+          "sample_indices": [
+            1,
+            75,
+            150,
+            300
+          ]
+        }
+      ],
+      "result_groups": [
+        {
+          "id": "construction",
+          "label": "Initial construction"
+        },
+        {
+          "id": "physical",
+          "label": "Physical observations"
+        },
+        {
+          "id": "performance",
+          "label": "Observation cost"
+        }
+      ]
+    },
+    {
+      "id": "ray_tracing_heavy",
+      "shape_presets": [
+        "authored"
+      ],
+      "slug": "ray-tracing-heavy",
+      "display_name": "Heavy Ray Tracing",
+      "description": "Native CPU ray queries through 65,536 primitives and 1,048,576 mesh triangles across six fixed camera views",
+      "category": "query",
+      "fixture_semantic": "ray_tracing",
+      "fixture_revision": 1,
+      "benchmark_mode": "headless_api",
+      "work_unit_id": "ray_frame",
+      "work_unit_label": "frame",
+      "dynamic_body_count": 0,
+      "kinematic_body_count": 8192,
+      "static_body_count": 58368,
+      "body_count": 66560,
+      "shape_count": 66560,
+      "visual_instance_count": 0,
+      "visual_debug_primitive_count": 0,
+      "mesh_triangle_count": 1048576,
+      "query_count": 2073600,
+      "constraint_count": 0,
+      "warmup_work_unit_count": 6,
+      "measured_work_unit_count": 24,
+      "fixture": {
+        "gravity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sleep_mode": "disabled",
+        "continuous_collision_mode": "disabled",
+        "friction": 0.0,
+        "restitution": 0.0,
+        "recipe_revision": 1,
+        "width": 1920,
+        "height": 1080,
+        "view_count": 6,
+        "primitive_count": 65536,
+        "mesh_count": 1024,
+        "triangles_per_mesh": 1024,
+        "moving_count": 8192,
+        "seed_low": 1498562905,
+        "seed_high": 1112559436
+      },
+      "thread_counts": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        12,
+        14,
         16,
         24
       ],
@@ -66,60 +1055,55 @@
         "qualification": 1,
         "full": 3
       },
-      "benchmark_mode": "headless_api",
-      "supported_engine_sets": [
-        "core",
-        "default_release",
-        "default_visual_release"
-      ],
-      "stability_counters": [
-        "invalid_transform_count",
-        "below_floor_count"
-      ],
-      "fixture_contract": {
-        "semantic": "open_container_falling_pile",
-        "required_metadata_columns": [
-          "fixture_semantic",
-          "fixture_version",
-          "static_box_count"
+      "visual_camera": {
+        "mode": "fixed",
+        "eye": [
+          0.0,
+          20.0,
+          120.0
         ],
-        "engine_fixture_versions": {
-          "bepuphysics2": "bepu_open_container_v1",
-          "avian3d": "avian3d_open_container_v1",
-          "box3d": "box3d_open_container_v1",
-          "joltphysics": "jolt_open_container_v1",
-          "nvidia_physx34": "nvidia_physx34_open_container_v1",
-          "nvidia_physx5": "nvidia_physx5_open_container_v1",
-          "physx34": "physx34_open_container_v1",
-          "rapier3d": "rapier3d_open_container_v1",
-          "unreal_chaos": "unreal_chaos_open_container_v1",
-          "unity_physics": "unity_physics_open_container_v1"
+        "target": [
+          0.0,
+          16.0,
+          0.0
+        ],
+        "up": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "vertical_fov_degrees": 60.0,
+        "near_plane": 0.01,
+        "far_plane": 512.0
+      },
+      "primary_metric": {
+        "id": "queries_per_second",
+        "unit": "rays/s",
+        "direction": "higher_is_better",
+        "label": "Primary closest rays/s",
+        "note": "static coherent closest, ordinary native API, higher is better"
+      },
+      "observations": [
+        {
+          "id": "ray_correctness_errors",
+          "label": "Unclassified ray errors",
+          "result_group_id": "correctness",
+          "value_type": "uint64",
+          "unit": "count",
+          "role": "validity_zero",
+          "expected_value": 0,
+          "phase_id": "final",
+          "sample_indices": [
+            0
+          ]
         }
-      },
-      "notes": "Deterministic 25x25x16 grid of 1m dynamic boxes falling into an open static floor and four-wall container."
-    },
-    {
-      "id": "box_drop_grid",
-      "slug": "box-drop-grid",
-      "display_name": "Box Drop Grid",
-      "category": "simulation",
-      "dynamic_box_count": 1024,
-      "static_box_count": 1,
-      "mesh_triangle_count": 0,
-      "query_count": 0,
-      "body_count": 1025,
-      "shape_count": 1025,
-      "thread_counts": [
-        1
       ],
-      "repeat_presets": {
-        "qualification": 1
-      },
-      "benchmark_mode": "matched_quality_discrete",
-      "supported_engine_sets": [
-        "core"
-      ],
-      "notes": "Regular grid of identical dynamic boxes falling onto one static floor box."
+      "result_groups": [
+        {
+          "id": "correctness",
+          "label": "Ray correctness"
+        }
+      ]
     }
   ]
 }

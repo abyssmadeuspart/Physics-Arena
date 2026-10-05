@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup Condition="'$(BepuRunnerBaseIntermediateOutputPath)' != ''">
+    <BaseIntermediateOutputPath>$(BepuRunnerBaseIntermediateOutputPath)</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(BepuRunnerBaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+</Project>

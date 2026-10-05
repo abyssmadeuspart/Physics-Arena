@@ -1,47 +1,9 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
+  "artifact_role": "engine_runner",
   "engine_id": "physx34",
-  "platform": "windows-x64",
-  "host_route": "windows",
-  "source_version": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
-  "source_provenance": "pinned upstream source; source is not vendored in the release package",
   "executable_path": "release/windows-x64/physx34/physx34_polygon_runner.exe",
-  "launcher": "direct",
-  "required_sidecars": [
-    "release/windows-x64/physx34/PhysX3Common_x64.dll",
-    "release/windows-x64/physx34/PhysX3Cooking_x64.dll",
-    "release/windows-x64/physx34/PhysX3_x64.dll",
-    "release/windows-x64/physx34/PxFoundation_x64.dll",
-    "release/windows-x64/physx34/PxPvdSDK_x64.dll"
-  ],
-  "compiler_runtime": {
-    "toolchain_id": "windows_clang_cl_release",
-    "compiler_detail": "clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)",
-    "runtime_detail": "Vite's PhysX 3.4 runtime DLLs plus repo runner executable"
-  },
-  "license_id": "BSD-3-Clause",
-  "notice_license_reference": "SOURCES.md#physx34",
-  "package_metadata": {
-    "physx_version": "3.4.0",
-    "sdk_build_config": "release",
-    "sdk_platform": "windows",
-    "sdk_compiler": "clang-cl.exe",
-    "sdk_toolset": "unknown",
-    "sdk_windows_sdk": "unknown",
-    "sdk_optimization": "release optimized build",
-    "sdk_build_id": "windows-clangcl-release",
-    "runner_compiler": "clang-cl.exe",
-    "runner_optimization": "release optimized build",
-    "cpu_isa_requirement": "x64",
-    "binary_release_status": "packaged_runtime_artifacts",
-    "cmake_version": "cmake version 4.3.1-msvc1",
-    "ninja_version": "1.13.2",
-    "linker_detail": "LLD 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)"
-  },
-  "visual": {
-    "route_status": "supported",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "producer_mode_arg": "--producer-mode=shared-visual"
-  }
+  "source_version": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
+  "toolchain_id": "windows_clang_cl_release",
+  "report_version": "3.4"
 }

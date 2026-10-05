@@ -1,114 +1,77 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "avian3d",
-  "route_status": "supported",
-  "supported_platforms": [
-    "windows"
-  ],
-  "prepared_path": ".generated/engines/avian",
-  "report_metadata": {
-    "physics_settings": "substeps=4; sleep=disabled; solver_defaults=avian",
-    "build_settings": "Rust 1.95 Cargo release; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,f32,parry-f32,parallel,simd"
+  "source": {
+    "type": "git",
+    "repository_url": "https://github.com/avianphysics/avian",
+    "revision": "47d5948b2a8ee829848fbc3d4ce5e44ad0fd863f",
+    "reference_child": "avian"
   },
-  "case_support": [
-    {
-      "case_id": "box_container_pile_10k",
-      "headless": "supported",
-      "visual": "supported"
-    },
-    {
-      "case_id": "box_drop_grid",
-      "headless": "unsupported",
-      "visual": "unsupported"
-    }
-  ],
-  "metadata_requirements": [
-    "source_version",
-    "avian_version",
-    "bevy_version",
-    "rust_version",
-    "cargo_version",
-    "toolchain_id",
-    "cargo_profile",
-    "cargo_features",
-    "cargo_lock_sha256",
-    "runner_manifest_sha256",
-    "host_route"
-  ],
-  "thread_support": {
-    "mode": "host_bounded",
-    "requested_worker_count": "thread_count",
-    "effective_worker_count": "thread_count",
-    "main_thread_participates": "yes"
+  "prepare": {
+    "prepared_path": ".generated/engines/avian",
+    "overlays": []
   },
   "build": {
     "route": "cargo_release",
-    "runner_source_dir": "src/avian3d/bench",
     "runner_manifest": "src/avian3d/bench/Cargo.toml",
     "cargo_lock": "src/avian3d/bench/Cargo.lock",
     "cargo_target_dir": ".build/avian3d/cargo-release",
     "build_metadata": ".build/avian3d/build-metadata.json",
     "package_dir_windows": "release/windows-x64/avian3d",
-    "target": "avian3d_polygon_runner",
     "executable_name_windows": "avian3d_polygon_runner.exe",
     "toolchain_id": "rust_1_95_msvc_cargo_release",
     "cargo_profile": "release",
     "cargo_features": [
       "3d",
-      "f32",
       "parry-f32",
       "parallel",
-      "simd"
+      "simd",
+      "xpbd_joints"
     ],
     "package_metadata": {
       "avian_version": "0.8.0-dev",
       "bevy_version": "0.19.0"
     },
     "engine_build_scope": "generated_avian_source_plus_repo_runner_cargo",
-    "public_build_label": "Rust 1.95 Cargo release; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,f32,parry-f32,parallel,simd"
+    "public_build_label": "Rust 1.95 Cargo release ThinLTO codegen-units=1; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,parry-f32,parallel,simd,xpbd_joints"
   },
-  "run": {
-    "route": "avian3d_polygon_runner_cli",
-    "route_status": "supported",
-    "executable_env": "AVIAN3D_POLYGON_RUNNER_EXE",
-    "executable_names": [
-      "avian3d_polygon_runner",
-      "avian3d_polygon_runner.exe"
+  "report_metadata": {
+    "physics_settings": "substeps=4; sleep=disabled; solver_defaults=avian",
+    "build_settings": "Rust 1.95 Cargo release ThinLTO codegen-units=1; Avian3D 0.8.0-dev; Bevy 0.19.0; features 3d,parry-f32,parallel,simd,xpbd_joints",
+    "report_version": "0.8"
+  },
+  "native_settings": {
+    "solver": {
+      "substeps": {
+        "native_name": "SubstepCount",
+        "minimum": 1,
+        "maximum": 4294967295,
+        "authored_default": 4
+      }
+    },
+    "sleep_enabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "raw_output": "polygon_results.csv",
-    "runtime_route": "avian3d_polygon_runner",
-    "timing_scope": "bevy_physics_schedule",
-    "sleeping_status": "disabled",
-    "repeat_mode": "per_repeat",
-    "launcher": "direct",
-    "args": [
-      "--case={case_id}",
-      "--thread-count={thread_count}",
-      "--step-count={step_count}",
-      "--warmup-steps={warmup_steps}",
-      "--repeat-index={repeat_index}",
-      "--output={raw_output}"
-    ]
-  },
-  "visual": {
-    "route": "shared_visual_renderer_cli",
-    "route_status": "supported",
-    "launch_mode": "render_owned_visual_runner",
-    "supported_modes": [
-      "live"
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "connection_mode": "renderer_listens_loopback",
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "release": {
-      "platform": "windows-x64",
-      "route_status": "supported"
-    }
-  },
-  "release": {
-    "platform": "windows-x64",
-    "artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json"
+    "continuous_collision_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "maximum_restitution": 1.0,
+    "ragdoll_damping_mode": "native_coefficient",
+    "continuous_collision_semantics": "discrete_swept_ccd"
   }
 }

@@ -5,23 +5,13 @@ namespace Bas3D.BenchmarkPolygon.UnityPhysics
 {
     public static partial class UnityPhysicsBenchmarkRunner
     {
-        private static RunnerArgs DefaultRunnerArgs()
+        public static int ParseArgs(string[] args, out RunnerArgs runnerArgs)
         {
-            UnityPhysicsCaseDescriptor defaultDescriptor = UnityPhysicsBoxContainerPileDescriptor();
-            return new RunnerArgs
+            runnerArgs = new RunnerArgs
             {
-                CaseId = defaultDescriptor.CaseId,
                 OutputPath = "polygon_results.csv",
-                CaseDescriptor = defaultDescriptor,
-                ThreadCount = 1,
-                StepCount = 300,
-                WarmupSteps = 0,
-                RepeatIndex = 0
+                ThreadCount = 1
             };
-        }
-
-        private static int ParseArgs(string[] args, ref RunnerArgs runnerArgs)
-        {
             int delimiterIndex = Array.IndexOf(args, "--");
             if (delimiterIndex < 0)
             {
@@ -29,52 +19,72 @@ namespace Bas3D.BenchmarkPolygon.UnityPhysics
                 return 2;
             }
 
+            int caseContractCount = 0;
+            int verificationCount = 0;
+            int stabilizationCount = 0;
+            int recordingCount = 0;
             for (int index = delimiterIndex + 1; index < args.Length; ++index)
             {
                 string arg = args[index];
-                if (arg.StartsWith("--case=", StringComparison.Ordinal))
+                if (arg.StartsWith("--case-contract=", StringComparison.Ordinal))
                 {
-                    runnerArgs.CaseId = arg.Substring("--case=".Length);
+                    ++caseContractCount;
+                    if (caseContractCount != 1 || UnityPhysicsCaseExecutionWire.DecodeHex(
+                            arg.Substring("--case-contract=".Length), out runnerArgs.CaseExecution) != 0)
+                    {
+                        return 2;
+                    }
+                }
+                else if (arg.StartsWith("--contact-solver-stabilization=", StringComparison.Ordinal))
+                {
+                    string value = arg.Substring("--contact-solver-stabilization=".Length);
+                    if (++stabilizationCount != 1 || (value != "enabled" && value != "disabled")) return 2;
+                    runnerArgs.SolverStabilization = value == "enabled" ? CaseExecutionToggle.Enabled : CaseExecutionToggle.Disabled;
+                }
+                else if (arg.StartsWith("--stack-stream=", StringComparison.Ordinal))
+                {
+                    string endpoint = arg.Substring("--stack-stream=".Length);
+                    if (runnerArgs.StackStream != null || !endpoint.StartsWith(@"\\.\pipe\", StringComparison.Ordinal) || endpoint.Length <= 9) return 2;
+                    runnerArgs.StackStream = endpoint;
+                }
+                else if (arg.StartsWith("--verify=", StringComparison.Ordinal))
+                {
+                    string value = arg.Substring("--verify=".Length);
+                    if (++verificationCount != 1 || (value != "on" && value != "off")) return 2;
+                    runnerArgs.VerificationMode = value == "on" ? VerificationMode.On : VerificationMode.Off;
                 }
                 else if (arg.StartsWith("--thread-count=", StringComparison.Ordinal))
                 {
                     if (!int.TryParse(arg.Substring("--thread-count=".Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out runnerArgs.ThreadCount) ||
-                        runnerArgs.ThreadCount < 1)
+                        runnerArgs.ThreadCount < 1 || runnerArgs.ThreadCount > 1_000_000)
                     {
                         Console.Error.WriteLine("invalid_argument name=thread-count value=" + arg);
-                        return 2;
-                    }
-                }
-                else if (arg.StartsWith("--step-count=", StringComparison.Ordinal))
-                {
-                    if (!int.TryParse(arg.Substring("--step-count=".Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out runnerArgs.StepCount) ||
-                        runnerArgs.StepCount < 1)
-                    {
-                        Console.Error.WriteLine("invalid_argument name=step-count value=" + arg);
-                        return 2;
-                    }
-                }
-                else if (arg.StartsWith("--warmup-steps=", StringComparison.Ordinal))
-                {
-                    if (!int.TryParse(arg.Substring("--warmup-steps=".Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out runnerArgs.WarmupSteps) ||
-                        runnerArgs.WarmupSteps < 0)
-                    {
-                        Console.Error.WriteLine("invalid_argument name=warmup-steps value=" + arg);
                         return 2;
                     }
                 }
                 else if (arg.StartsWith("--repeat-index=", StringComparison.Ordinal))
                 {
                     if (!int.TryParse(arg.Substring("--repeat-index=".Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out runnerArgs.RepeatIndex) ||
-                        runnerArgs.RepeatIndex < 0)
+                        runnerArgs.RepeatIndex < 0 || runnerArgs.RepeatIndex > 1_000_000)
                     {
                         Console.Error.WriteLine("invalid_argument name=repeat-index value=" + arg);
                         return 2;
                     }
                 }
+                else if (arg.StartsWith("--recording-output=", StringComparison.Ordinal))
+                {
+                    if (++recordingCount != 1 || arg.Length == "--recording-output=".Length) return 2;
+                    runnerArgs.RecordingPath = arg.Substring("--recording-output=".Length);
+                    runnerArgs.RecordingMode = RecordingMode.On;
+                }
                 else if (arg.StartsWith("--output=", StringComparison.Ordinal))
                 {
                     runnerArgs.OutputPath = arg.Substring("--output=".Length);
+                }
+                else if (arg.StartsWith("--step-timing-output=", StringComparison.Ordinal) &&
+                    arg.Length > "--step-timing-output=".Length)
+                {
+                    runnerArgs.StepTimingOutputPath = arg.Substring("--step-timing-output=".Length);
                 }
                 else
                 {
@@ -83,11 +93,25 @@ namespace Bas3D.BenchmarkPolygon.UnityPhysics
                 }
             }
 
-            if (ResolveUnityPhysicsCase(runnerArgs.CaseId, out UnityPhysicsCaseDescriptor descriptor) != 0)
+            if (caseContractCount != 1 ||
+                runnerArgs.CaseExecution.MeasuredWorkUnitCount > int.MaxValue ||
+                runnerArgs.CaseExecution.WarmupWorkUnitCount > int.MaxValue ||
+                ResolveUnityPhysicsCase(
+                    runnerArgs.CaseExecution.FixtureKind,
+                    out UnityPhysicsCaseRegistration registration) != 0)
             {
                 return 2;
             }
-            runnerArgs.CaseDescriptor = descriptor;
+            int query = runnerArgs.CaseExecution.FixtureKind == CaseFixtureKind.SpatialQueryTrace ? 1 : 0;
+            if (stabilizationCount != (query != 0 ? 0 : 1)) return 2;
+            runnerArgs.CaseRegistration = registration;
+            CaseFixtureKind fixture = runnerArgs.CaseExecution.FixtureKind;
+            int requiresStream = runnerArgs.VerificationMode == VerificationMode.On &&
+                (fixture == CaseFixtureKind.OpenContainerFallingPile || fixture == CaseFixtureKind.BoxContactIslands ||
+                 fixture == CaseFixtureKind.LargePyramid || fixture == CaseFixtureKind.PyramidWall) ? 1 : 0;
+            if (requiresStream != 0 ? runnerArgs.StackStream == null : runnerArgs.StackStream != null) return 2;
+            runnerArgs.StepCount = (int)runnerArgs.CaseExecution.MeasuredWorkUnitCount;
+            runnerArgs.WarmupSteps = (int)runnerArgs.CaseExecution.WarmupWorkUnitCount;
 
             return 0;
         }

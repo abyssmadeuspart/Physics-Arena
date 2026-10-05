@@ -7,7 +7,6 @@
     "PxShared",
     "Externals"
   ],
-  "required_nvtoolsext_include": "Externals/nvToolsExt/1/include",
   "generated_adjustment_manifest": ".physx34-compatibility-adjustments.json",
   "adjustment_id": "physx34_windows_nvtx_disabled_optional_nvtoolsext_import_lib",
   "source_scope": "generated_copy_only",

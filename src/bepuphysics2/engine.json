@@ -1,43 +1,24 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "bepuphysics2",
-  "route_status": "supported",
-  "supported_platforms": [
-    "linux",
-    "windows"
-  ],
-  "prepared_path": ".generated/engines/bepuphysics2",
-  "report_metadata": {
-    "physics_settings": "SolveDescription(4,1); sleep=disabled",
-    "build_settings": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling"
+  "source": {
+    "type": "git",
+    "repository_url": "https://github.com/bepu/bepuphysics2",
+    "revision": "c230dd1178d6f481d8b3f03c0f595f8ad910b725",
+    "reference_child": "bepuphysics2"
   },
-  "case_support": [
-    {
-      "case_id": "box_container_pile_10k",
-      "headless": "supported",
-      "visual": "supported"
-    },
-    {
-      "case_id": "box_drop_grid",
-      "headless": "unsupported",
-      "visual": "unsupported"
-    }
-  ],
-  "metadata_requirements": [
-    "engine_commit",
-    "dotnet_version",
-    "runner_configuration",
-    "bepu_physics_configuration",
-    "bepu_utilities_configuration",
-    "runtime_target_framework",
-    "host_route",
-    "toolchain_id"
-  ],
-  "thread_support": {
-    "mode": "host_bounded",
-    "requested_worker_count": "thread_count",
-    "effective_worker_count": "thread_count",
-    "main_thread_participates": "yes"
+  "prepare": {
+    "prepared_path": ".generated/engines/bepuphysics2",
+    "overlays": [
+      {
+        "source": "src/bepuphysics2/bench",
+        "target": "polygon_bench"
+      },
+      {
+        "source": "src/bepuphysics2/cases",
+        "target": "cases"
+      }
+    ]
   },
   "build": {
     "route": "dotnet10_release_no_profiling",
@@ -56,56 +37,51 @@
     "package_mode": "self_contained_apphost",
     "runner_configuration": "Release",
     "bepu_physics_configuration": "ReleaseNoProfiling",
-    "bepu_utilities_configuration": "Release",
-    "public_build_label": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling",
-    "shared_source_dirs": [
-      {
-        "source": "src/bepuphysics2/cases",
-        "target": "cases"
+    "bepu_utilities_configuration": "Release"
+  },
+  "report_metadata": {
+    "physics_settings": "SolveDescription(1,4); sleep=disabled",
+    "build_settings": ".NET 10 self-contained Windows x64 Release; BepuPhysics ReleaseNoProfiling",
+    "report_version": "2.5"
+  },
+  "native_settings": {
+    "solver": {
+      "velocity_iterations": {
+        "native_name": "VelocityIterationCount",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 1
+      },
+      "substeps": {
+        "native_name": "SubstepCount",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 4
       }
-    ]
-  },
-  "run": {
-    "route": "bepu_polygon_runner_cli",
-    "route_status": "supported",
-    "executable_env": "BEPU_POLYGON_RUNNER_EXE",
-    "executable_names": [
-      "BepuPhysics2.PolygonRunner.exe"
+    },
+    "sleep_enabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "raw_output": "polygon_results.csv",
-    "runtime_route": "bepu_polygon_runner",
-    "timing_scope": "physics_step_loop",
-    "sleeping_status": "disabled",
-    "repeat_mode": "per_repeat",
-    "launcher": "direct",
-    "args": [
-      "--case={case_id}",
-      "--thread-count={thread_count}",
-      "--step-count={step_count}",
-      "--warmup-steps={warmup_steps}",
-      "--repeat-index={repeat_index}",
-      "--output={raw_output}"
-    ]
-  },
-  "visual": {
-    "route": "shared_visual_renderer_cli",
-    "route_status": "supported",
-    "launch_mode": "render_owned_visual_runner",
-    "supported_modes": [
-      "live"
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "connection_mode": "renderer_listens_loopback",
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "release": {
-      "platform": "windows-x64",
-      "route_status": "supported"
-    }
-  },
-  "release": {
-    "platform": "windows-x64",
-    "artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json"
+    "continuous_collision_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "maximum_restitution": 0.0,
+    "ragdoll_damping_mode": "per_second_fraction",
+    "continuous_collision_semantics": "passive_continuous"
   }
 }

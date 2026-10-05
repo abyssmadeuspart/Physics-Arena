@@ -1,0 +1,9 @@
+{
+  "schema_version": 3,
+  "artifact_role": "engine_runner",
+  "engine_id": "entasis",
+  "executable_path": "release/windows-x64/entasis/entasis_polygon_runner.exe",
+  "source_version": "c380d34c57cf83e1cb481d712de4460d16c08774",
+  "toolchain_id": "odin_dev_2026_09_windows_amd64_v3",
+  "report_version": "1.0.0"
+}

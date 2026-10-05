@@ -1,0 +1,195 @@
+{
+  "schema_version": 8,
+  "run_id": "2026-10-05_1700_ddr5-4800_threads-1-2-3-4-5-6-8-10-12-14-16-24_r1",
+  "host_route": "windows",
+  "case_id": "large_pyramid_16206",
+  "benchmark_mode": "headless_api",
+  "verification_mode": "off",
+  "recordings": null,
+  "run_configuration": {"authored_case_id":"large_pyramid_16206","authored_fixture_revision":1,"shape_preset":"authored","mode":"authored","case_definition":{"id":"large_pyramid_16206","shape_presets":["authored"],"slug":"large-pyramid-16206","display_name":"Large Pyramid","description":"Simulates a gravity-supported 16,206-cube square stepped pyramid on a floor, holds it for two measured seconds, then launches four medium spheres into its front base at 60 Hz","category":"simulation","fixture_semantic":"large_pyramid","fixture_revision":1,"benchmark_mode":"headless_api","work_unit_id":"step","work_unit_label":"step","dynamic_body_count":16210,"kinematic_body_count":0,"static_body_count":1,"body_count":16211,"shape_count":16211,"visual_instance_count":16211,"visual_debug_primitive_count":0,"mesh_triangle_count":0,"query_count":0,"constraint_count":0,"warmup_work_unit_count":0,"measured_work_unit_count":600,"fixture":{"gravity":[0.0,-10.0,0.0],"sleep_mode":"disabled","continuous_collision_mode":"disabled","friction":0.5,"restitution":0.0,"row_count":36,"box_half_extents":[0.25,0.25,0.25],"box_spacing":[0.5,0.5,0.5],"base_center":[0.0,0.25,0.0],"floor_half_extents":[40.0,0.5,40.0],"box_density":1.0,"projectile_count":4,"projectile_radius":2.0,"projectile_density":10.0,"projectile_initial_center":[-6.0,2.0,30.0],"projectile_center_spacing":[4.0,0.0,0.0],"projectile_launch_velocity":[0.0,0.0,-30.0],"projectile_launch_after_work_units":120},"thread_counts":[1,2,3,4,5,6,8,10,12,14,16,24],"repeat_presets":{"qualification":1,"full":5},"visual_camera":{"mode":"fit_bounds","up":[0.0,1.0,0.0],"vertical_fov_degrees":45.0,"direction":[0.0,0.07999999821186066,-1.0],"viewport_fill":0.9200000166893005,"minimum":[-14.0,-1.0,-12.0],"maximum":[14.0,22.0,34.0]},"primary_metric":{"id":"median_ms_per_step","unit":"ms","direction":"lower_is_better","label":"Physics ms/step","note":"lower is better"},"observations":[],"result_groups":[],"timestep_hz":60},"engine_settings":{"box3d":{"solver":{"substeps":4},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"joltphysics":{"solver":{"velocity_iterations":4,"position_iterations":1,"collision_steps":1},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"bepuphysics2":{"solver":{"velocity_iterations":1,"substeps":4},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"rapier3d":{"solver":{"solver_iterations":4},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"avian3d":{"solver":{"substeps":4},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"unity_physics":{"solver":{"solver_iterations":2,"substeps":3},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled","solver_stabilization":"enabled"},"physx34":{"solver":{"velocity_iterations":1,"position_iterations":5},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"nvidia_physx34":{"solver":{"velocity_iterations":1,"position_iterations":5},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"nvidia_physx5":{"solver":{"velocity_iterations":1,"position_iterations":5},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"unreal_chaos":{"solver":{"velocity_iterations":1,"position_iterations":3,"projection_iterations":1},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"},"entasis":{"solver":{"velocity_iterations":1,"substeps":4},"friction":0.5,"restitution":0.0,"sleep_mode":"disabled","continuous_collision_mode":"disabled"}}},
+  "thread_counts": [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 24],
+  "thread_selection": {
+    "mode": "explicit",
+    "host_logical_threads": 24,
+    "thread_counts": [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 24],
+    "requested_max": 0,
+    "effective_max": 0,
+    "requested_thread_counts": [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 24],
+    "dropped_thread_counts": [],
+    "generated_thread_counts": []
+  },
+  "work_unit_id": "step",
+  "measured_work_unit_count": 600,
+  "warmup_work_unit_count": 0,
+  "repeat_count": 1,
+  "run_slug_metadata": {
+    "run_slug": "2026-10-05_1700_ddr5-4800_threads-1-2-3-4-5-6-8-10-12-14-16-24_r1",
+    "base_run_slug": "2026-10-05_1700_ddr5-4800_threads-1-2-3-4-5-6-8-10-12-14-16-24_r1",
+    "timestamp": "2026-10-05_1700",
+    "timestamp_source": "local_time",
+    "timestamp_format": "%Y-%m-%d_%H%M",
+    "thread_selection_token": "threads-1-2-3-4-5-6-8-10-12-14-16-24",
+    "collision_suffix": ""
+  },
+  "host": {
+    "cpu": {
+      "model": "Intel Core i7-13700K",
+      "physical_cores": 16,
+      "logical_threads": 24,
+      "max_clock_mhz": 3400,
+      "current_clock_mhz": 3400,
+      "p_core_count": 8,
+      "e_core_count": 8,
+      "topology": "8P+8E / 24T"
+    },
+    "memory": {
+      "total_gb": 64,
+      "type": "DDR5",
+      "configured_clock_mhz": 4800,
+      "modules": [
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller0-DIMMA2"
+        },
+        {
+          "capacity_gb": 32,
+          "configured_clock_mhz": 4800,
+          "speed_mhz": 4800,
+          "type": "DDR5",
+          "manufacturer": "Corsair",
+          "part_number": "CMK64GX5M2B6600C32",
+          "slot": "Controller1-DIMMB2"
+        }
+      ]
+    },
+    "os": {
+      "name": "Microsoft Windows 11 Pro for Workstations",
+      "version": "10.0.26200",
+      "build": "26200",
+      "architecture": "64-bit"
+    },
+    "motherboard": {
+      "model": "Micro-Star International Co., Ltd. PRO Z790-A WIFI (MS-7E07)",
+      "bios_version": "A.E0",
+      "bios_date": "2024-09-30"
+    },
+    "metadata_sources": {
+      "cpu.model": "windows_cim",
+      "cpu.physical_cores": "windows_processor_topology_api",
+      "cpu.logical_threads": "windows_processor_topology_api",
+      "cpu.max_clock_mhz": "windows_cim",
+      "cpu.current_clock_mhz": "windows_cim",
+      "memory.total_gb": "windows_cim",
+      "memory.type": "windows_cim",
+      "memory.configured_clock_mhz": "windows_cim",
+      "memory.modules": "windows_cim",
+      "os.name": "windows_cim",
+      "os.version": "windows_cim",
+      "os.build": "windows_cim",
+      "os.architecture": "windows_cim",
+      "motherboard.model": "windows_cim",
+      "motherboard.bios_version": "windows_cim",
+      "motherboard.bios_date": "windows_cim",
+      "cpu.p_core_count": "windows_processor_topology_api",
+      "cpu.e_core_count": "windows_processor_topology_api",
+      "cpu.topology": "windows_processor_topology_api"
+    }
+  },
+  "step_timing": {"schema_version": 2, "csv": "step-timing.csv", "svg": "step-timing.svg", "physics_series": "per_work_unit_wall", "render_series": "absent", "collection": "inline_all_repeats"},
+  "observations": {"schema_version": 1, "csv": "observations.csv"},
+  "engines": [
+    {
+      "id": "box3d",
+      "release_artifact_manifest": "release/windows-x64/box3d/artifact-manifest.json",
+      "source_version": "9e5a4cde862fba95ff19f096b79567f3ea6c01fd",
+      "toolchain_id": "windows_clang_cl_release",
+      "report_version": "0.1",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "joltphysics",
+      "release_artifact_manifest": "release/windows-x64/joltphysics/artifact-manifest.json",
+      "source_version": "82b24442917ba8d9ced3582c2f2d8a49f4c969f6",
+      "toolchain_id": "windows_clang_cl_distribution",
+      "report_version": "5.6.1",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "bepuphysics2",
+      "release_artifact_manifest": "release/windows-x64/bepuphysics2/artifact-manifest.json",
+      "source_version": "c230dd1178d6f481d8b3f03c0f595f8ad910b725",
+      "toolchain_id": "dotnet10_release_no_profiling_self_contained",
+      "report_version": "2.5",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "rapier3d",
+      "release_artifact_manifest": "release/windows-x64/rapier3d/artifact-manifest.json",
+      "source_version": "28d0ba929b460597f0959fe600c7afd65612f6f9",
+      "toolchain_id": "rust_1_89_msvc_cargo_release",
+      "report_version": "0.35",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "avian3d",
+      "release_artifact_manifest": "release/windows-x64/avian3d/artifact-manifest.json",
+      "source_version": "47d5948b2a8ee829848fbc3d4ce5e44ad0fd863f",
+      "toolchain_id": "rust_1_95_msvc_cargo_release",
+      "report_version": "0.8",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "unity_physics",
+      "release_artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json",
+      "source_version": "unity-6000.5.2f1-com.unity.physics-6.5.0",
+      "toolchain_id": "unity_player",
+      "report_version": "6.5",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "physx34",
+      "release_artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json",
+      "source_version": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
+      "toolchain_id": "windows_clang_cl_release",
+      "report_version": "3.4",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "nvidia_physx34",
+      "release_artifact_manifest": "release/windows-x64/nvidia-physx-3.4/artifact-manifest.json",
+      "source_version": "3.4.2",
+      "toolchain_id": "vs2026_msbuild_release",
+      "report_version": "3.4.2",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "nvidia_physx5",
+      "release_artifact_manifest": "release/windows-x64/nvidia-physx-5.10/artifact-manifest.json",
+      "source_version": "5.10.0.75b25f28f9",
+      "toolchain_id": "vs2022_msbuild_release",
+      "report_version": "5.10.0",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "unreal_chaos",
+      "release_artifact_manifest": "release/windows-x64/unreal_chaos/artifact-manifest.json",
+      "source_version": "7deeb413d3dc1fc034f48d1aacc0861301829d32",
+      "toolchain_id": "unreal_chaos_ubt_win64_shipping",
+      "report_version": "5.8",
+      "timing_scope": "work_unit_wall_sum_inline"
+    },
+    {
+      "id": "entasis",
+      "release_artifact_manifest": "release/windows-x64/entasis/artifact-manifest.json",
+      "source_version": "c380d34c57cf83e1cb481d712de4460d16c08774",
+      "toolchain_id": "odin_dev_2026_09_windows_amd64_v3",
+      "report_version": "1.0.0",
+      "timing_scope": "work_unit_wall_sum_inline"
+    }
+  ]
+}

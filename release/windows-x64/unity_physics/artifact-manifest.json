@@ -1,69 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
+  "artifact_role": "engine_runner",
   "engine_id": "unity_physics",
-  "platform": "windows-x64",
-  "host_route": "windows",
-  "source_version": "unity-6000.5.2f1-com.unity.physics-6.5.0",
-  "source_provenance": "repo Unity project source; source is not vendored in the release package",
   "executable_path": "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics.exe",
-  "launcher": "direct",
-  "required_sidecars": [
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Plugins/x86_64/lib_burst_generated.dll",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity default resources",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/Resources/unity_builtin_extra",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/RuntimeInitializeOnLoads.json",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/ScriptingAssemblies.json",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/StreamingAssets/EntityScenes/scene_info.bin",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/app.info",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/boot.config",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/globalgamemanagers.assets.resS",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Metadata/global-metadata.dat",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/il2cpp_data/Resources/mscorlib.dll-resources.dat",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/level0",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/resources.assets",
-    "release/windows-x64/unity_physics/BenchmarkPolygonUnityPhysics_Data/sharedassets0.assets",
-    "release/windows-x64/unity_physics/D3D12/D3D12Core.dll",
-    "release/windows-x64/unity_physics/GameAssembly.dll",
-    "release/windows-x64/unity_physics/UnityCrashHandler64.exe",
-    "release/windows-x64/unity_physics/UnityPlayer.dll",
-    "release/windows-x64/unity_physics/baselib.dll",
-    "release/windows-x64/unity_physics/dstorage.dll",
-    "release/windows-x64/unity_physics/dstoragecore.dll",
-    "release/windows-x64/unity_physics/player-build-metadata.json"
-  ],
-  "compiler_runtime": {
-    "toolchain_id": "unity_player",
-    "compiler_detail": "unity_editor_version= 6000.5.2f1",
-    "runtime_detail": "Unity IL2CPP StandaloneWindows64 player without generated backup/debug source folder"
-  },
-  "license_id": "Unity-Companion-License",
-  "notice_license_reference": "SOURCES.md#unity_physics",
-  "package_metadata": {
-    "build_target": "standalonewindows64_player",
-    "backend": "il2cpp",
-    "burst_enabled_state": "enabled",
-    "safety_check_state": "disabled",
-    "unity_package_versions": {
-      "com.unity.physics": "6.5.0",
-      "com.unity.entities": "6.5.0",
-      "com.unity.burst": "1.8.29",
-      "com.unity.collections": "6.5.0",
-      "com.unity.mathematics": "1.4.0"
-    }
-  },
-  "visual": {
-    "route_status": "working",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "producer_prefix_args": [
-      "-batchmode",
-      "-nographics",
-      "-logFile",
-      "-",
-      "--"
-    ]
-  }
+  "source_version": "unity-6000.5.2f1-com.unity.physics-6.5.0",
+  "toolchain_id": "unity_player",
+  "report_version": "6.5",
+  "producer_prefix_args": ["-batchmode", "-nographics", "-logFile", "-", "--"]
 }

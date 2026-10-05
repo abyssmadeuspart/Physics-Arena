@@ -2,61 +2,73 @@ using System.Globalization;
 
 namespace Bas3D.BenchmarkPolygon.BepuPhysics2;
 
+public enum RecordingMode
+{
+    Off,
+    On
+}
+
+public enum VerificationMode : byte
+{
+    On,
+    Off
+}
+
 public struct BepuRunnerArgs
 {
-    public BepuCaseDescriptor CaseDescriptor;
+    public BepuCaseRegistration CaseRegistration;
+    public CaseExecutionSpec CaseExecution;
     public string OutputPath;
+    public string StackStream;
+    public string StepTimingOutputPath;
+    public string RecordingPath;
+    public RecordingMode RecordingMode;
+    public VerificationMode VerificationMode;
     public int WorkerCount;
     public int StepCount;
     public int WarmupSteps;
     public int RepeatIndex;
 }
 
-public struct BepuRunnerArgsParser
+public static class BepuRunnerArgsParser
 {
-    public static BepuRunnerArgs Default()
+    public static int Parse(string[] args, out BepuRunnerArgs runnerArgs)
     {
-        return new BepuRunnerArgs
+        runnerArgs = new BepuRunnerArgs
         {
-            CaseDescriptor = BepuCaseRegistry.DefaultCase(),
             OutputPath = "polygon_results.csv",
-            WorkerCount = 1,
-            StepCount = 300,
-            WarmupSteps = 0,
-            RepeatIndex = 0
+            WorkerCount = 1
         };
-    }
-
-    public static int Parse(string[] args, ref BepuRunnerArgs runnerArgs)
-    {
-        string requestedCaseId = runnerArgs.CaseDescriptor.CaseId;
+        int caseContractCount = 0;
+        int verificationCount = 0;
 
         for (int index = 0; index < args.Length; ++index)
         {
             string arg = args[index];
-            if (arg.StartsWith("--case=", StringComparison.Ordinal))
+            if (arg.StartsWith("--case-contract=", StringComparison.Ordinal))
             {
-                requestedCaseId = arg["--case=".Length..];
+                ++caseContractCount;
+                if (caseContractCount != 1 ||
+                    CaseExecutionWire.DecodeHex(arg["--case-contract=".Length..], out runnerArgs.CaseExecution) != 0)
+                {
+                    return 2;
+                }
+            }
+            else if (arg.StartsWith("--stack-stream=", StringComparison.Ordinal))
+            {
+                string endpoint = arg.Substring("--stack-stream=".Length);
+                if (runnerArgs.StackStream != null || !endpoint.StartsWith(@"\\.\pipe\", StringComparison.Ordinal) || endpoint.Length <= 9) return 2;
+                runnerArgs.StackStream = endpoint;
+            }
+            else if (arg.StartsWith("--verify=", StringComparison.Ordinal))
+            {
+                string value = arg["--verify=".Length..];
+                if (++verificationCount != 1 || (value != "on" && value != "off")) return 2;
+                runnerArgs.VerificationMode = value == "on" ? VerificationMode.On : VerificationMode.Off;
             }
             else if (arg.StartsWith("--thread-count=", StringComparison.Ordinal))
             {
                 int parseStatus = ParseNumber("thread-count", arg["--thread-count=".Length..], 1, out runnerArgs.WorkerCount);
-                if (parseStatus != 0)
-                {
-                    return parseStatus;
-                }
-            }
-            else if (arg.StartsWith("--step-count=", StringComparison.Ordinal))
-            {
-                int parseStatus = ParseNumber("step-count", arg["--step-count=".Length..], 1, out runnerArgs.StepCount);
-                if (parseStatus != 0)
-                {
-                    return parseStatus;
-                }
-            }
-            else if (arg.StartsWith("--warmup-steps=", StringComparison.Ordinal))
-            {
-                int parseStatus = ParseNumber("warmup-steps", arg["--warmup-steps=".Length..], 0, out runnerArgs.WarmupSteps);
                 if (parseStatus != 0)
                 {
                     return parseStatus;
@@ -74,6 +86,17 @@ public struct BepuRunnerArgsParser
             {
                 runnerArgs.OutputPath = arg["--output=".Length..];
             }
+            else if (arg.StartsWith("--recording-output=", StringComparison.Ordinal) &&
+                arg.Length > "--recording-output=".Length && runnerArgs.RecordingPath == null)
+            {
+                runnerArgs.RecordingPath = arg["--recording-output=".Length..];
+                runnerArgs.RecordingMode = RecordingMode.On;
+            }
+            else if (arg.StartsWith("--step-timing-output=", StringComparison.Ordinal) &&
+                arg.Length > "--step-timing-output=".Length)
+            {
+                runnerArgs.StepTimingOutputPath = arg["--step-timing-output=".Length..];
+            }
             else
             {
                 Console.Error.WriteLine($"invalid_argument value={arg}");
@@ -81,12 +104,23 @@ public struct BepuRunnerArgsParser
             }
         }
 
-        return BepuCaseRegistry.Resolve(requestedCaseId, out runnerArgs.CaseDescriptor);
+        if (caseContractCount != 1) return 2;
+        if (runnerArgs.CaseExecution.MeasuredWorkUnitCount > int.MaxValue ||
+            runnerArgs.CaseExecution.WarmupWorkUnitCount > int.MaxValue) return 2;
+            CaseFixtureKind fixture = runnerArgs.CaseExecution.FixtureKind;
+            int requiresStream = runnerArgs.VerificationMode == VerificationMode.On &&
+                (fixture == CaseFixtureKind.OpenContainerFallingPile || fixture == CaseFixtureKind.BoxContactIslands ||
+                 fixture == CaseFixtureKind.LargePyramid || fixture == CaseFixtureKind.PyramidWall) ? 1 : 0;
+            if (requiresStream != 0 ? runnerArgs.StackStream == null : runnerArgs.StackStream != null) return 2;
+        runnerArgs.StepCount = (int)runnerArgs.CaseExecution.MeasuredWorkUnitCount;
+        runnerArgs.WarmupSteps = (int)runnerArgs.CaseExecution.WarmupWorkUnitCount;
+        return BepuCaseRegistry.Resolve(runnerArgs.CaseExecution.FixtureKind, out runnerArgs.CaseRegistration);
     }
 
     public static int ParseNumber(string name, string value, int minimum, out int parsed)
     {
-        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed) || parsed < minimum)
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out parsed) ||
+            parsed < minimum || parsed > 1_000_000)
         {
             Console.Error.WriteLine($"invalid_argument name={name} value={value}");
             return 2;

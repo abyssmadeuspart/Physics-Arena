@@ -9,6 +9,7 @@ public class BenchmarkPolygonChaosRunner : ModuleRules
         PCHUsage = PCHUsageMode.NoPCHs;
 
         PublicIncludePathModuleNames.Add("Launch");
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "../../../common"));
         PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "../../../rendering/include"));
 
         SetupModulePhysicsSupport(Target);
@@ -20,8 +21,7 @@ public class BenchmarkPolygonChaosRunner : ModuleRules
                 "Core",
                 "CoreUObject",
                 "Projects",
-                "GeometryCore",
-                "Sockets"
+                "GeometryCore"
             }
         );
 

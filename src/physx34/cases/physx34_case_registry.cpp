@@ -1,44 +1,13 @@
 #include "physx34_case_registry.h"
 
-#include <cstring>
+#include "physx34_box_contact_islands_10k_case.h"
+#include "physx34_box_container_pile_10k_case.h"
+#include "physx34_large_pyramid_case.h"
+#include "physx34_pyramid_wall_case.h"
+#include "physx34_ragdoll_stair_tumble_case.h"
+#include "physx34_spatial_query_trace_case.h"
+#include "physx34_runner_args.h"
 
-namespace physx34_benchmark
-{
-const PhysXCaseDescriptor& PhysXContainerPileCaseDescriptor()
-{
-	static const PhysXCaseDescriptor descriptor =
-	{
-		kCaseId,
-		kFixtureSemantic,
-		kFixtureVersion,
-		kDynamicBodyCount,
-		kStaticBodyCount,
-		kBodyCount,
-		kHalfExtent,
-		kOpenContainerLateralEscape,
-		kOpenContainerMaxY,
-		RunPhysXCaseWarmup,
-		CreatePhysXCaseState,
-		StepPhysXCase,
-		DestroyPhysXCaseState,
-		SamplePhysXTransforms,
-		CopyPhysXStaticBoxes,
-	};
-	return descriptor;
-}
-
-int ResolvePhysXCase(const char* caseId, const PhysXCaseDescriptor** descriptor)
-{
-	if (caseId == nullptr || descriptor == nullptr)
-	{
-		return 2;
-	}
-	const PhysXCaseDescriptor& containerPile = PhysXContainerPileCaseDescriptor();
-	if (std::strcmp(caseId, containerPile.caseId) == 0)
-	{
-		*descriptor = &containerPile;
-		return 0;
-	}
-	return 2;
-}
-}
+#define PHYSICS_ARENA_PHYSX_NAMESPACE physx34_benchmark
+#include "../../common/physx_case_registry.inl"
+#undef PHYSICS_ARENA_PHYSX_NAMESPACE

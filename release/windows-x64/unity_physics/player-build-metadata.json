@@ -2,6 +2,9 @@
     "schema_version": 1,
     "build_target": "standalonewindows64_player",
     "backend": "il2cpp",
+    "development_build_state": "disabled",
+    "il2cpp_compiler_configuration": "release",
+    "il2cpp_code_generation": "optimize_speed",
     "burst_enabled_state": "enabled",
     "safety_check_state": "disabled"
 }

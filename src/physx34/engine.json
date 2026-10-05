@@ -1,64 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "physx34",
-  "route_status": "supported",
-  "supported_platforms": [
-    "windows"
-  ],
-  "prepared_path": ".generated/engines/physx34/PhysX3",
-  "report_metadata": {
-    "physics_settings": "solver_iterations=4,1; sleep_threshold=0",
-    "build_settings": "clang-cl 22 Release runner; Vite PhysX 3.4 runtime DLLs"
+  "source": {
+    "type": "git",
+    "repository_url": "git@github.com:GapingPixel/UnrealEngineVite-PhysX.git",
+    "revision": "2b13cae09734616d07d09ecf645326fa0bf43ef7",
+    "reference_child": "UnrealEngineVite-PhysX"
   },
-  "source_preparation_manifest": "src/physx34/source-preparation.json",
-  "case_support": [
-    {
-      "case_id": "box_container_pile_10k",
-      "headless": "supported",
-      "visual": "supported"
-    },
-    {
-      "case_id": "box_drop_grid",
-      "headless": "unsupported",
-      "visual": "unsupported"
-    }
-  ],
-  "metadata_requirements": [
-    "engine_commit",
-    "physx_version",
-    "sdk_compiler",
-    "sdk_compiler_detail",
-    "sdk_build_config",
-    "sdk_compile_flags",
-    "sdk_link_flags",
-    "sdk_output_sha256",
-    "runner_compiler",
-    "runner_compile_flags",
-    "runner_link_flags",
-    "host_route",
-    "toolchain_id"
-  ],
-  "thread_support": {
-    "mode": "host_bounded",
-    "requested_worker_count": "thread_count",
-    "effective_worker_count": "thread_count",
-    "main_thread_participates": "yes"
+  "prepare": {
+    "prepared_path": ".generated/engines/physx34/PhysX3",
+    "overlays": [
+      {
+        "source": "src/physx34/bench",
+        "target": "Engine/Source/ThirdParty/PhysX3"
+      },
+      {
+        "source": "src/physx34/cases",
+        "target": "cases"
+      }
+    ]
   },
   "build": {
     "route": "physx34_clangcl_sdk_release",
-    "route_id": "physx34_clangcl_release",
+    "preparation_manifest": "src/physx34/source-preparation.json",
     "source_subdir": "Engine/Source/ThirdParty/PhysX3",
     "generated_source_path": ".generated/engines/physx34/PhysX3",
     "sdk_build_dir_windows": ".build/physx34/sdk/windows-clangcl-release",
     "sdk_bin_dir_windows": ".build/physx34/sdk/windows-clangcl-release/bin",
     "sdk_lib_dir_windows": ".build/physx34/sdk/windows-clangcl-release/lib",
     "runner_source_dir": "src/physx34/bench",
-    "shared_source_dirs": [
-      {
-        "source": "src/physx34/cases",
-        "target": "cases"
-      }
-    ],
     "runner_build_dir_windows": ".build/physx34/runner/windows-clangcl-release",
     "package_dir_windows": ".build/physx34/package/windows-x64-clangcl-release",
     "target": "physx34_polygon_runner",
@@ -74,48 +44,51 @@
       "PsFastXml"
     ],
     "toolchain_id_windows": "windows_clang_cl_release",
-    "cpu_isa_requirement": "x64"
+    "executable_name_windows": "physx34_polygon_runner.exe"
   },
-  "run": {
-    "route": "physx34_polygon_runner_cli",
-    "route_status": "supported",
-    "executable_env": "PHYSX34_POLYGON_RUNNER_EXE",
-    "executable_names": [
-      "physx34_polygon_runner.exe"
+  "report_metadata": {
+    "physics_settings": "position_iterations=5; velocity_iterations=1; sleep_threshold=0",
+    "build_settings": "clang-cl 22 Release runner; Vite PhysX 3.4 runtime DLLs",
+    "report_version": "3.4"
+  },
+  "native_settings": {
+    "solver": {
+      "position_iterations": {
+        "native_name": "setSolverIterationCounts minPositionIters",
+        "minimum": 1,
+        "maximum": 255,
+        "authored_default": 5
+      },
+      "velocity_iterations": {
+        "native_name": "setSolverIterationCounts minVelocityIters",
+        "minimum": 1,
+        "maximum": 255,
+        "authored_default": 1
+      }
+    },
+    "sleep_enabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "raw_output": "polygon_results.csv",
-    "runtime_route": "physx34_polygon_runner",
-    "timing_scope": "physics_step_loop",
-    "sleeping_status": "threshold_zero",
-    "repeat_mode": "per_repeat",
-    "args": [
-      "--case={case_id}",
-      "--thread-count={thread_count}",
-      "--step-count={step_count}",
-      "--warmup-steps={warmup_steps}",
-      "--repeat-index={repeat_index}",
-      "--output={raw_output}"
-    ]
-  },
-  "visual": {
-    "route": "shared_visual_renderer_cli",
-    "route_status": "supported",
-    "launch_mode": "render_owned_visual_runner",
-    "supported_modes": [
-      "live"
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "connection_mode": "renderer_listens_loopback",
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "release": {
-      "platform": "windows-x64",
-      "route_status": "supported"
-    }
-  },
-  "release": {
-    "platform": "windows-x64",
-    "artifact_manifest": "release/windows-x64/physx34/artifact-manifest.json"
+    "continuous_collision_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "maximum_restitution": 1.0,
+    "ragdoll_damping_mode": "native_coefficient",
+    "continuous_collision_semantics": "discrete_swept_ccd"
   }
 }

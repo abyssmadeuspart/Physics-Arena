@@ -1,0 +1,22 @@
+BasedOnStyle: Microsoft
+BreakBeforeBraces: Allman
+AllowShortBlocksOnASingleLine: Never
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+ColumnLimit: 120
+IndentWidth: 4
+TabWidth: 4
+UseTab: ForIndentation
+PointerAlignment: Left
+SortIncludes: Never
+SortUsingDeclarations: Never
+ReflowComments: Never
+BreakStringLiterals: false
+FixNamespaceComments: false
+---
+Language: CSharp
+# c# uses .editorconfig to preserve Allman switch-expression braces
+DisableFormat: true

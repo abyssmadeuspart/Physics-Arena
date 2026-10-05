@@ -1,402 +1,402 @@
 #include "benchmark_visual/visual_renderer.h"
 
-#include <bgfx/bgfx.h>
-#include <bgfx/embedded_shader.h>
-
-#include <cmath>
+#include <raylib.h>
+#include <raymath.h>
+#include <rlgl.h>
+#include <algorithm>
+#include <array>
 #include <cstdint>
+#include <string_view>
+#include <vector>
+#include <new>
 
-#include "vs_debugdraw_fill_lit.bin.h"
-#include "fs_debugdraw_fill_lit.bin.h"
-
+// altered raylib 6.0 instancing and shadowmap examples with original notices in SOURCES.md
 namespace benchmark_visual
 {
-struct SceneVertex
+constexpr std::uint32_t kMaterialCount = 8;
+enum SceneGroupSurface
 {
-	float x;
-	float y;
-	float z;
-	uint8_t indices[4];
+	SceneGroupSurface_Solid,
+	SceneGroupSurface_Outline,
+};
+struct SceneInstanceGroup
+{
+	std::uint32_t offset;
+	std::uint32_t count;
+	SceneGroupSurface surface;
+};
+struct PhysicsSceneResources
+{
+	Shader shader;
+	Material material;
+	std::array<Mesh, kMaxSceneGeometries> meshes;
+	std::array<SceneInstanceGroup, kMaxSceneGeometries * kMaterialCount * 2> groups;
+	std::vector<std::uint32_t> instanceOrder;
+	std::vector<Matrix> transforms;
+	const VisualScene* scene;
+	VisualCameraContext cameraContext;
+	ResolvedVisualCamera resolvedCamera;
+	ResolvedVisualCamera cameraOverride;
+	int resolvedCameraReady;
+	int cameraOverrideActive;
+	int step;
+	ReplayAppearance appearance;
 };
 
-struct SceneVec3
+namespace
 {
-	float x;
-	float y;
-	float z;
-};
+const Vector3 kLightDirection = Vector3Normalize({0.35f, -1, -0.35f});
 
-constexpr int kCubeVertexCount = 8;
-constexpr int kCubeIndexCount = 36;
-constexpr int kSceneBoxesPerChunk = 1024;
-constexpr int kViewId = 0;
+const char* kVertexShader = R"(#version 330
+in vec3 vertexPosition;
+in vec2 vertexTexCoord;
+in vec3 vertexNormal;
+in mat4 instanceTransform;
+uniform mat4 mvp;
+out vec2 fragTexCoord;
+out vec3 fragNormal;
 
-static const float kCubeSigns[kCubeVertexCount][3] =
+void main()
 {
-	{ -1.0f, -1.0f, -1.0f },
-	{  1.0f, -1.0f, -1.0f },
-	{ -1.0f,  1.0f, -1.0f },
-	{  1.0f,  1.0f, -1.0f },
-	{ -1.0f, -1.0f,  1.0f },
-	{  1.0f, -1.0f,  1.0f },
-	{ -1.0f,  1.0f,  1.0f },
-	{  1.0f,  1.0f,  1.0f },
-};
-
-static const uint16_t kCubeIndices[kCubeIndexCount] =
-{
-	0, 2, 1,
-	1, 2, 3,
-	4, 5, 6,
-	5, 7, 6,
-	0, 1, 4,
-	1, 5, 4,
-	2, 6, 3,
-	3, 6, 7,
-	0, 4, 2,
-	2, 4, 6,
-	1, 3, 5,
-	3, 7, 5,
-};
-
-static const bgfx::EmbeddedShader kSceneShaders[] =
-{
-	BGFX_EMBEDDED_SHADER(vs_debugdraw_fill_lit),
-	BGFX_EMBEDDED_SHADER(fs_debugdraw_fill_lit),
-	BGFX_EMBEDDED_SHADER_END()
-};
-
-static bgfx::VertexLayout s_sceneVertexLayout;
-static bgfx::ProgramHandle s_sceneProgram = BGFX_INVALID_HANDLE;
-static bgfx::UniformHandle s_sceneParams = BGFX_INVALID_HANDLE;
-static int s_sceneReady = 0;
-
-SceneVec3 Subtract(SceneVec3 left, SceneVec3 right)
-{
-	return { left.x - right.x, left.y - right.y, left.z - right.z };
+    fragTexCoord = vertexTexCoord;
+    fragNormal = normalize(mat3(instanceTransform)*vertexNormal);
+    gl_Position = mvp*instanceTransform*vec4(vertexPosition, 1.0);
 }
+)";
+const char* kFragmentShader = R"(#version 330
+in vec2 fragTexCoord;
+in vec3 fragNormal;
+uniform sampler2D texture0;
+uniform vec4 colDiffuse;
+uniform vec3 lightDir;
+uniform vec3 lightColor;
+uniform vec3 ambient;
+out vec4 finalColor;
 
-SceneVec3 Cross(SceneVec3 left, SceneVec3 right)
+void main()
 {
-	return {
-		left.y * right.z - left.z * right.y,
-		left.z * right.x - left.x * right.z,
-		left.x * right.y - left.y * right.x,
-	};
+    vec4 albedo = texture(texture0, fragTexCoord)*colDiffuse;
+    float diffuse = max(dot(normalize(fragNormal), -lightDir), 0.0);
+    vec3 linearColor = albedo.rgb*(ambient + lightColor*diffuse);
+    finalColor = vec4(pow(linearColor, vec3(1.0/2.2)), albedo.a);
 }
+)";
 
-float Dot(SceneVec3 left, SceneVec3 right)
+int CreateSceneResources(PhysicsSceneResources* resources)
 {
-	return left.x * right.x + left.y * right.y + left.z * right.z;
-}
-
-SceneVec3 Normalize(SceneVec3 value)
-{
-	float length = std::sqrt(Dot(value, value));
-	if (length <= 0.000001f)
-	{
-		return { 0.0f, 1.0f, 0.0f };
-	}
-
-	float inverseLength = 1.0f / length;
-	return { value.x * inverseLength, value.y * inverseLength, value.z * inverseLength };
-}
-
-void BuildLookAt(float* result, SceneVec3 eye, SceneVec3 target)
-{
-	SceneVec3 upSeed = { 0.0f, 1.0f, 0.0f };
-	SceneVec3 forward = Normalize(Subtract(target, eye));
-	SceneVec3 right = Normalize(Cross(upSeed, forward));
-	SceneVec3 up = Cross(forward, right);
-
-	result[0] = right.x;
-	result[1] = up.x;
-	result[2] = forward.x;
-	result[3] = 0.0f;
-	result[4] = right.y;
-	result[5] = up.y;
-	result[6] = forward.y;
-	result[7] = 0.0f;
-	result[8] = right.z;
-	result[9] = up.z;
-	result[10] = forward.z;
-	result[11] = 0.0f;
-	result[12] = -Dot(right, eye);
-	result[13] = -Dot(up, eye);
-	result[14] = -Dot(forward, eye);
-	result[15] = 1.0f;
-}
-
-void BuildPerspective(float* result, float fovYDegrees, float aspect, float nearPlane, float farPlane, int homogeneousNdc)
-{
-	for (int index = 0; index < 16; ++index)
-	{
-		result[index] = 0.0f;
-	}
-
-	float radians = fovYDegrees * 0.017453292519943295769f;
-	float height = 1.0f / std::tan(radians * 0.5f);
-	float width = height / aspect;
-	float range = farPlane - nearPlane;
-	float aa = homogeneousNdc != 0 ? (farPlane + nearPlane) / range : farPlane / range;
-	float bb = homogeneousNdc != 0 ? (2.0f * farPlane * nearPlane) / range : nearPlane * aa;
-
-	result[0] = width;
-	result[5] = height;
-	result[10] = aa;
-	result[11] = 1.0f;
-	result[14] = -bb;
-}
-
-void AppendIndexBlock(uint16_t* target, int boxIndex)
-{
-	uint16_t vertexOffset = static_cast<uint16_t>(boxIndex * kCubeVertexCount);
-	int indexOffset = boxIndex * kCubeIndexCount;
-	for (int index = 0; index < kCubeIndexCount; ++index)
-	{
-		target[indexOffset + index] = static_cast<uint16_t>(vertexOffset + kCubeIndices[index]);
-	}
-}
-
-void RotateOffset(VisualTransform transform, float localX, float localY, float localZ, float* outX, float* outY, float* outZ)
-{
-	float qx = transform.rotationX;
-	float qy = transform.rotationY;
-	float qz = transform.rotationZ;
-	float qw = transform.rotationW;
-
-	float tx = 2.0f * (qy * localZ - qz * localY);
-	float ty = 2.0f * (qz * localX - qx * localZ);
-	float tz = 2.0f * (qx * localY - qy * localX);
-
-	*outX = localX + qw * tx + (qy * tz - qz * ty);
-	*outY = localY + qw * ty + (qz * tx - qx * tz);
-	*outZ = localZ + qw * tz + (qx * ty - qy * tx);
-}
-
-void AppendDynamicBox(SceneVertex* target, int boxIndex, VisualTransform transform, float hx, float hy, float hz)
-{
-	int vertexOffset = boxIndex * kCubeVertexCount;
-	for (int index = 0; index < kCubeVertexCount; ++index)
-	{
-		float offsetX = kCubeSigns[index][0] * hx;
-		float offsetY = kCubeSigns[index][1] * hy;
-		float offsetZ = kCubeSigns[index][2] * hz;
-		float rotatedX = 0.0f;
-		float rotatedY = 0.0f;
-		float rotatedZ = 0.0f;
-		RotateOffset(transform, offsetX, offsetY, offsetZ, &rotatedX, &rotatedY, &rotatedZ);
-
-		SceneVertex* vertex = &target[vertexOffset + index];
-		vertex->x = transform.positionX + rotatedX;
-		vertex->y = transform.positionY + rotatedY;
-		vertex->z = transform.positionZ + rotatedZ;
-		vertex->indices[0] = 0;
-		vertex->indices[1] = 0;
-		vertex->indices[2] = 0;
-		vertex->indices[3] = 0;
-	}
-}
-
-void AppendStaticBox(SceneVertex* target, int boxIndex, VisualStaticBox box)
-{
-	int vertexOffset = boxIndex * kCubeVertexCount;
-	for (int index = 0; index < kCubeVertexCount; ++index)
-	{
-		SceneVertex* vertex = &target[vertexOffset + index];
-		vertex->x = box.positionX + kCubeSigns[index][0] * box.halfExtentX;
-		vertex->y = box.positionY + kCubeSigns[index][1] * box.halfExtentY;
-		vertex->z = box.positionZ + kCubeSigns[index][2] * box.halfExtentZ;
-		vertex->indices[0] = 0;
-		vertex->indices[1] = 0;
-		vertex->indices[2] = 0;
-		vertex->indices[3] = 0;
-	}
-}
-
-void SubmitBatch(int boxCount, uint64_t state, const float* color)
-{
-	float params[16] =
-	{
-		-0.35f, 0.75f, -0.55f, 16.0f,
-		1.10f, 1.06f, 0.96f, 1.0f,
-		0.30f, 0.36f, 0.42f, 1.0f,
-		color[0], color[1], color[2], color[3],
-	};
-
-	static const float kIdentity[16] =
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f,
-	};
-
-	bgfx::setTransform(kIdentity);
-	bgfx::setUniform(s_sceneParams, params, 4);
-	bgfx::setState(state);
-	bgfx::submit(kViewId, s_sceneProgram);
-}
-
-int SubmitDynamicBoxes(VisualSnapshot snapshot, uint64_t state, const float* color)
-{
-	int submitted = 0;
-	while (submitted < snapshot.transformCount)
-	{
-		int remaining = snapshot.transformCount - submitted;
-		int chunkCount = remaining < kSceneBoxesPerChunk ? remaining : kSceneBoxesPerChunk;
-		uint32_t vertexCount = static_cast<uint32_t>(chunkCount * kCubeVertexCount);
-		uint32_t indexCount = static_cast<uint32_t>(chunkCount * kCubeIndexCount);
-
-		if (bgfx::getAvailTransientVertexBuffer(vertexCount, s_sceneVertexLayout) < vertexCount ||
-			bgfx::getAvailTransientIndexBuffer(indexCount) < indexCount)
-		{
-			return RenderViewerStatus_TransientBufferUnavailable;
-		}
-
-		bgfx::TransientVertexBuffer vertexBuffer;
-		bgfx::TransientIndexBuffer indexBuffer;
-		bgfx::allocTransientVertexBuffer(&vertexBuffer, vertexCount, s_sceneVertexLayout);
-		bgfx::allocTransientIndexBuffer(&indexBuffer, indexCount);
-
-		SceneVertex* vertices = reinterpret_cast<SceneVertex*>(vertexBuffer.data);
-		uint16_t* indices = reinterpret_cast<uint16_t*>(indexBuffer.data);
-		for (int boxIndex = 0; boxIndex < chunkCount; ++boxIndex)
-		{
-			AppendDynamicBox(
-				vertices,
-				boxIndex,
-				snapshot.transforms[submitted + boxIndex],
-				snapshot.dynamicHalfExtentX,
-				snapshot.dynamicHalfExtentY,
-				snapshot.dynamicHalfExtentZ);
-			AppendIndexBlock(indices, boxIndex);
-		}
-
-		bgfx::setVertexBuffer(0, &vertexBuffer);
-		bgfx::setIndexBuffer(&indexBuffer);
-		SubmitBatch(chunkCount, state, color);
-		submitted += chunkCount;
-	}
-
-	return RenderViewerStatus_Ok;
-}
-
-int SubmitStaticBoxes(VisualSnapshot snapshot, uint64_t state, const float* color)
-{
-	if (snapshot.staticBoxCount == 0)
-	{
-		return RenderViewerStatus_Ok;
-	}
-
-	uint32_t vertexCount = static_cast<uint32_t>(snapshot.staticBoxCount * kCubeVertexCount);
-	uint32_t indexCount = static_cast<uint32_t>(snapshot.staticBoxCount * kCubeIndexCount);
-	if (bgfx::getAvailTransientVertexBuffer(vertexCount, s_sceneVertexLayout) < vertexCount ||
-		bgfx::getAvailTransientIndexBuffer(indexCount) < indexCount)
-	{
-		return RenderViewerStatus_TransientBufferUnavailable;
-	}
-
-	bgfx::TransientVertexBuffer vertexBuffer;
-	bgfx::TransientIndexBuffer indexBuffer;
-	bgfx::allocTransientVertexBuffer(&vertexBuffer, vertexCount, s_sceneVertexLayout);
-	bgfx::allocTransientIndexBuffer(&indexBuffer, indexCount);
-
-	SceneVertex* vertices = reinterpret_cast<SceneVertex*>(vertexBuffer.data);
-	uint16_t* indices = reinterpret_cast<uint16_t*>(indexBuffer.data);
-	for (int boxIndex = 0; boxIndex < snapshot.staticBoxCount; ++boxIndex)
-	{
-		AppendStaticBox(vertices, boxIndex, snapshot.staticBoxes[boxIndex]);
-		AppendIndexBlock(indices, boxIndex);
-	}
-
-	bgfx::setVertexBuffer(0, &vertexBuffer);
-	bgfx::setIndexBuffer(&indexBuffer);
-	SubmitBatch(snapshot.staticBoxCount, state, color);
-	return RenderViewerStatus_Ok;
-}
-
-void SetupCamera(RenderPlatformState state)
-{
-	float view[16];
-	float proj[16];
-	float aspect = static_cast<float>(state.width) / static_cast<float>(state.height);
-	SceneVec3 eye = { 0.0f, 50.0f, 26.0f };
-	SceneVec3 target = { 0.0f, 13.5f, 0.0f };
-	BuildLookAt(view, eye, target);
-	BuildPerspective(proj, 60.0f, aspect, 0.1f, 140.0f, bgfx::getCaps()->homogeneousDepth ? 1 : 0);
-	bgfx::setViewTransform(kViewId, view, proj);
-}
-
-int PhysicsSceneViewCreate()
-{
-	s_sceneVertexLayout
-		.begin()
-		.add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-		.add(bgfx::Attrib::Indices, 4, bgfx::AttribType::Uint8)
-		.end();
-
-	bgfx::RendererType::Enum type = bgfx::getRendererType();
-	s_sceneProgram = bgfx::createProgram(
-		bgfx::createEmbeddedShader(kSceneShaders, type, "vs_debugdraw_fill_lit"),
-		bgfx::createEmbeddedShader(kSceneShaders, type, "fs_debugdraw_fill_lit"),
-		true);
-	s_sceneParams = bgfx::createUniform("u_params", bgfx::UniformType::Vec4, 4);
-	if (!bgfx::isValid(s_sceneProgram) || !bgfx::isValid(s_sceneParams))
-	{
-		PhysicsSceneViewDestroy();
+	resources->shader = LoadShaderFromMemory(kVertexShader, kFragmentShader);
+	if (resources->shader.id == 0 || resources->shader.id == rlGetShaderIdDefault())
 		return RenderViewerStatus_RendererResourceFailed;
-	}
-
-	s_sceneReady = 1;
+	resources->shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(resources->shader, "mvp");
+	resources->shader.locs[SHADER_LOC_VERTEX_INSTANCETRANSFORM] = GetShaderLocationAttrib(resources->shader, "instanceTransform");
+	if (resources->shader.locs[SHADER_LOC_MATRIX_MVP] < 0 || resources->shader.locs[SHADER_LOC_VERTEX_INSTANCETRANSFORM] < 0)
+		return RenderViewerStatus_RendererResourceFailed;
+	const Vector3 lightColor = {0.55f, 0.55f, 0.55f};
+	const Vector3 ambient = {0.20f, 0.20f, 0.20f};
+	SetShaderValue(resources->shader, GetShaderLocation(resources->shader, "lightDir"), &kLightDirection, SHADER_UNIFORM_VEC3);
+	SetShaderValue(resources->shader, GetShaderLocation(resources->shader, "lightColor"), &lightColor, SHADER_UNIFORM_VEC3);
+	SetShaderValue(resources->shader, GetShaderLocation(resources->shader, "ambient"), &ambient, SHADER_UNIFORM_VEC3);
+	resources->material = LoadMaterialDefault();
+	if (resources->material.maps == nullptr)
+		return RenderViewerStatus_RendererResourceFailed;
+	resources->material.shader = resources->shader;
 	return RenderViewerStatus_Ok;
 }
 
-int PhysicsSceneViewDrawSnapshot(RenderPlatformState state, VisualSnapshot snapshot)
+Mesh ImportTriangles(const VisualScene& scene, const VisualGeometry& geometry)
 {
-	int snapshotStatus = ValidateSnapshot(snapshot);
-	if (snapshotStatus != VisualBridgeStatus_Ok)
+	Mesh mesh = {};
+	mesh.vertexCount = static_cast<int>(geometry.indexCount);
+	mesh.triangleCount = mesh.vertexCount / 3;
+	mesh.vertices = static_cast<float*>(MemAlloc(mesh.vertexCount * 3 * sizeof(float)));
+	mesh.normals = static_cast<float*>(MemAlloc(mesh.vertexCount * 3 * sizeof(float)));
+	mesh.texcoords = static_cast<float*>(MemAlloc(mesh.vertexCount * 2 * sizeof(float)));
+	if (mesh.vertices == nullptr || mesh.normals == nullptr || mesh.texcoords == nullptr)
+		return mesh;
+	for (int triangle = 0; triangle < mesh.triangleCount; ++triangle)
 	{
+		std::array<Vector3, 3> corners = {};
+		for (int corner = 0; corner < 3; ++corner)
+		{
+			const VisualMeshVertex& vertex =
+			    scene.vertices[geometry.vertexOffset + scene.indices[geometry.indexOffset + triangle * 3 + corner]];
+			corners[corner] = {vertex.x, vertex.y, vertex.z};
+		}
+		const Vector3 normal = Vector3Normalize(
+		    Vector3CrossProduct(Vector3Subtract(corners[1], corners[0]), Vector3Subtract(corners[2], corners[0])));
+		for (int corner = 0; corner < 3; ++corner)
+		{
+			const int index = triangle * 3 + corner;
+			mesh.vertices[index * 3] = corners[corner].x;
+			mesh.vertices[index * 3 + 1] = corners[corner].y;
+			mesh.vertices[index * 3 + 2] = corners[corner].z;
+			mesh.normals[index * 3] = normal.x;
+			mesh.normals[index * 3 + 1] = normal.y;
+			mesh.normals[index * 3 + 2] = normal.z;
+			mesh.texcoords[index * 2] = mesh.texcoords[index * 2 + 1] = 0;
+		}
+	}
+	UploadMesh(&mesh, false);
+	return mesh;
+}
+
+void UpdateTransforms(PhysicsSceneResources* resources, const VisualSnapshot& snapshot)
+{
+	if (resources->step == snapshot.stepIndex)
+		return;
+	for (std::size_t index = 0; index < resources->instanceOrder.size(); ++index)
+	{
+		const VisualInstance& instance = resources->scene->instances[resources->instanceOrder[index]];
+		const VisualTransform& pose = instance.transformSlot == UINT32_MAX
+		                                  ? instance.initialTransform
+		                                  : snapshot.transforms[instance.transformSlot].transform;
+		Matrix matrix = QuaternionToMatrix({pose.rotationX, pose.rotationY, pose.rotationZ, pose.rotationW});
+		matrix.m12 = pose.positionX;
+		matrix.m13 = pose.positionY;
+		matrix.m14 = pose.positionZ;
+		resources->transforms[index] = matrix;
+	}
+	resources->step = snapshot.stepIndex;
+}
+
+void DrawGroups(PhysicsSceneResources* resources)
+{
+	for (std::uint32_t index = 0; index < resources->scene->geometryCount * kMaterialCount * 2; ++index)
+	{
+		const SceneInstanceGroup& group = resources->groups[index];
+		if (group.count == 0 || group.surface == SceneGroupSurface_Outline)
+			continue;
+		const VisualInstance& first = resources->scene->instances[resources->instanceOrder[group.offset]];
+		resources->material.maps[MATERIAL_MAP_DIFFUSE].color =
+		    first.transformSlot == UINT32_MAX ? Color{87, 99, 107, 255} : Color{255, 102, 12, 255};
+		DrawMeshInstanced(resources->meshes[index / (kMaterialCount * 2)], resources->material, resources->transforms.data() + group.offset,
+		                  static_cast<int>(group.count));
+	}
+}
+
+void DrawContainerOutlines(PhysicsSceneResources* resources)
+{
+	for (std::uint32_t index = 0; index < resources->scene->geometryCount * kMaterialCount * 2; ++index)
+	{
+		const SceneInstanceGroup& group = resources->groups[index];
+		if (group.count == 0 || group.surface != SceneGroupSurface_Outline)
+			continue;
+		const VisualGeometry& geometry = resources->scene->geometries[index / (kMaterialCount * 2)];
+		const Vector3 size = {2 * geometry.parameterX, 2 * geometry.parameterY, 2 * geometry.parameterZ};
+		for (std::uint32_t instance = group.offset; instance < group.offset + group.count; ++instance)
+		{
+			rlPushMatrix();
+			rlMultMatrixf(MatrixToFloat(resources->transforms[instance]));
+			DrawCubeWiresV({}, size, {130, 145, 155, 255});
+			rlPopMatrix();
+		}
+	}
+}
+
+void DrawSceneDebugPrimitives(const VisualSnapshot& snapshot)
+{
+	for (int index = 0; index < snapshot.debugPrimitiveCount; ++index)
+	{
+		const VisualDebugPrimitive& primitive = snapshot.debugPrimitives[index];
+		const Color color = primitive.materialIndex == 6 ? Color{13, 255, 26, 255} : Color{255, 184, 61, 255};
+		const Vector3 origin = {primitive.originOrCenterX, primitive.originOrCenterY, primitive.originOrCenterZ};
+		const Vector3 end = {primitive.endOrHalfExtentsX, primitive.endOrHalfExtentsY, primitive.endOrHalfExtentsZ};
+		if (primitive.kind == VisualDebugPrimitiveKind_AabbOverlap)
+			DrawCubeWiresV(origin, Vector3Scale(end, 2), color);
+		else
+		{
+			DrawLine3D(origin, end, color);
+			if (primitive.kind == VisualDebugPrimitiveKind_SphereCast)
+			{
+				DrawSphereWires(origin, primitive.radius, 4, 8, color);
+				DrawSphereWires(end, primitive.radius, 4, 8, color);
+			}
+		}
+	}
+}
+}
+
+void PhysicsSceneViewSetAppearance(PhysicsSceneResources* resources, ReplayAppearance appearance)
+{
+	resources->appearance = appearance;
+}
+
+void PhysicsSceneViewReleaseScene(PhysicsSceneResources* resources)
+{
+	if (resources == nullptr)
+		return;
+	for (Mesh& mesh : resources->meshes)
+	{
+		if (mesh.vertices != nullptr || mesh.normals != nullptr || mesh.texcoords != nullptr || mesh.vaoId != 0)
+			UnloadMesh(mesh);
+		mesh = {};
+	}
+	// maps use the library default texture while the scene shader has one separate owner
+	if (resources->material.maps != nullptr)
+		MemFree(resources->material.maps);
+	resources->material = {};
+	if (resources->shader.id != 0 && resources->shader.id != rlGetShaderIdDefault())
+		UnloadShader(resources->shader);
+	resources->shader = {};
+	delete resources;
+}
+
+int PhysicsSceneViewInstallScene(const VisualScene* scene, PhysicsSceneResources** output)
+{
+	PhysicsSceneResources* resources = new (std::nothrow) PhysicsSceneResources{};
+	if (resources == nullptr)
+		return RenderViewerStatus_RendererResourceFailed;
+	resources->step = -1;
+	if (ValidateScene(scene) != VisualBridgeStatus_Ok ||
+	    PrepareVisualCamera(scene, &resources->cameraContext) != VisualCameraStatus_Ok)
+	{
+		delete resources;
 		return RenderViewerStatus_InvalidArgument;
 	}
-
-	if (s_sceneReady == 0)
+	if (CreateSceneResources(resources) != RenderViewerStatus_Ok)
 	{
+		PhysicsSceneViewReleaseScene(resources);
 		return RenderViewerStatus_RendererResourceFailed;
 	}
-
-	bgfx::setViewRect(kViewId, 0, 0, static_cast<unsigned short>(state.width), static_cast<unsigned short>(state.height));
-	bgfx::setViewClear(kViewId, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x202833ff, 1.0f, 0);
-	bgfx::touch(kViewId);
-	SetupCamera(state);
-
-	uint64_t stateFlags = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS;
-	static const float kStaticColor[4] = { 0.34f, 0.39f, 0.42f, 1.0f };
-	static const float kDynamicColor[4] = { 0.19f, 0.62f, 0.92f, 1.0f };
-
-	int staticStatus = SubmitStaticBoxes(snapshot, stateFlags, kStaticColor);
-	if (staticStatus != RenderViewerStatus_Ok)
+	for (std::uint32_t index = 0; index < scene->geometryCount; ++index)
 	{
-		return staticStatus;
+		const VisualGeometry& geometry = scene->geometries[index];
+		resources->meshes[index] = geometry.kind == VisualGeometryKind_Box
+		                      ? GenMeshCube(2 * geometry.parameterX, 2 * geometry.parameterY, 2 * geometry.parameterZ)
+		                  : geometry.kind == VisualGeometryKind_Sphere ? GenMeshSphere(geometry.parameterX, 16, 32)
+		                                                               : ImportTriangles(*scene, geometry);
+		if (resources->meshes[index].vaoId == 0)
+		{
+			PhysicsSceneViewReleaseScene(resources);
+			return RenderViewerStatus_RendererResourceFailed;
+		}
 	}
-
-	return SubmitDynamicBoxes(snapshot, stateFlags, kDynamicColor);
+	resources->instanceOrder.resize(scene->instanceCount);
+	resources->transforms.resize(scene->instanceCount);
+	for (std::uint32_t index = 0; index < scene->instanceCount; ++index)
+	{
+		const VisualInstance& instance = scene->instances[index];
+		if (instance.materialIndex >= kMaterialCount)
+		{
+			PhysicsSceneViewReleaseScene(resources);
+			return RenderViewerStatus_InvalidArgument;
+		}
+		++resources->groups[(instance.geometryIndex * kMaterialCount + instance.materialIndex) * 2 +
+		           (instance.transformSlot != UINT32_MAX ? 1 : 0)]
+		      .count;
+	}
+	std::uint32_t offset = 0;
+	for (SceneInstanceGroup& group : resources->groups)
+	{
+		group.offset = offset;
+		offset += group.count;
+		group.count = 0;
+	}
+	for (std::uint32_t index = 0; index < scene->instanceCount; ++index)
+	{
+		const VisualInstance& instance = scene->instances[index];
+		SceneInstanceGroup& group = resources->groups[(instance.geometryIndex * kMaterialCount + instance.materialIndex) * 2 +
+		                                     (instance.transformSlot != UINT32_MAX ? 1 : 0)];
+		resources->instanceOrder[group.offset + group.count++] = index;
+		if (instance.transformSlot == UINT32_MAX &&
+		    scene->geometries[instance.geometryIndex].kind == VisualGeometryKind_Box &&
+		    std::string_view(scene->identity.fixtureSemantic).starts_with("open_container_falling_pile"))
+			group.surface = SceneGroupSurface_Outline;
+	}
+	resources->scene = scene;
+	*output = resources;
+	return RenderViewerStatus_Ok;
 }
 
-void PhysicsSceneViewDestroy()
+int PhysicsSceneViewGetCameraControl(const PhysicsSceneResources* resources, ResolvedVisualCamera* camera, int* overrideActive)
 {
-	if (bgfx::isValid(s_sceneProgram))
-	{
-		bgfx::destroy(s_sceneProgram);
-		s_sceneProgram = BGFX_INVALID_HANDLE;
-	}
-
-	if (bgfx::isValid(s_sceneParams))
-	{
-		bgfx::destroy(s_sceneParams);
-		s_sceneParams = BGFX_INVALID_HANDLE;
-	}
-
-	s_sceneReady = 0;
+	if (camera == nullptr || overrideActive == nullptr || resources->resolvedCameraReady == 0)
+		return RenderViewerStatus_RouteUnavailable;
+	*camera = resources->resolvedCamera;
+	*overrideActive = resources->cameraOverrideActive;
+	return RenderViewerStatus_Ok;
 }
+
+int PhysicsSceneViewSetCameraControl(PhysicsSceneResources* resources, const ResolvedVisualCamera* camera)
+{
+	if (camera == nullptr || resources->scene == nullptr)
+		return RenderViewerStatus_InvalidArgument;
+	VisualCameraPolicy policy = {};
+	policy.eye = camera->eye;
+	policy.target = camera->target;
+	policy.up = camera->up;
+	policy.verticalFovDegrees = camera->verticalFovDegrees;
+	policy.nearPlane = camera->nearPlane;
+	policy.farPlane = camera->farPlane;
+	policy.mode = VisualCameraMode_Fixed;
+	if (ValidateVisualCameraPolicy(&policy) != VisualCameraStatus_Ok)
+		return RenderViewerStatus_InvalidArgument;
+	resources->cameraOverride = *camera;
+	resources->resolvedCamera = *camera;
+	resources->resolvedCameraReady = 1;
+	resources->cameraOverrideActive = 1;
+	return RenderViewerStatus_Ok;
+}
+
+void PhysicsSceneViewResetCameraControl(PhysicsSceneResources* resources)
+{
+	resources->cameraOverride = {};
+	resources->cameraOverrideActive = 0;
+}
+
+int PhysicsSceneViewDrawSnapshot(PhysicsSceneResources* resources, RenderPlatformState state, RenderViewport viewport, VisualSnapshot snapshot, RenderViewport clip)
+{
+	if (clip.width <= 0 || clip.height <= 0)
+		return RenderViewerStatus_Ok;
+	if (resources->scene == nullptr || resources->scene != snapshot.scene ||
+	    snapshot.transformCount != static_cast<int>(resources->scene->dynamicTransformCount) ||
+	    snapshot.debugPrimitiveCount != static_cast<int>(resources->scene->debugPrimitiveCount) ||
+	    (snapshot.transformCount != 0 && snapshot.transforms == nullptr) ||
+	    (snapshot.debugPrimitiveCount != 0 && snapshot.debugPrimitives == nullptr))
+		return RenderViewerStatus_InvalidArgument;
+	ResolvedVisualCamera camera = {};
+	if (ResolveVisualCamera(&resources->cameraContext, static_cast<float>(viewport.width) / viewport.height, snapshot.transforms,
+	                        static_cast<std::uint32_t>(snapshot.transformCount), &camera) != VisualCameraStatus_Ok)
+		return RenderViewerStatus_InvalidArgument;
+	if (resources->cameraOverrideActive != 0)
+		camera = resources->cameraOverride;
+	resources->resolvedCamera = camera;
+	resources->resolvedCameraReady = 1;
+	UpdateTransforms(resources, snapshot);
+	RendererRaylibBeginFrame();
+	rlDrawRenderBatchActive();
+	rlDisableBackfaceCulling();
+	rlSetClipPlanes(camera.nearPlane, camera.farPlane);
+	const Camera3D rayCamera = {{camera.eye.x, camera.eye.y, camera.eye.z},
+	                            {camera.target.x, camera.target.y, camera.target.z},
+	                            {camera.up.x, camera.up.y, camera.up.z},
+	                            camera.verticalFovDegrees,
+	                            CAMERA_PERSPECTIVE};
+	rlViewport(viewport.x, state.height - viewport.y - viewport.height, viewport.width, viewport.height);
+	rlEnableScissorTest();
+	rlScissor(clip.x, state.height - clip.y - clip.height, clip.width, clip.height);
+	BeginMode3D(rayCamera);
+	rlMatrixMode(RL_PROJECTION);
+	rlLoadIdentity();
+	const double top = camera.nearPlane * std::tan(camera.verticalFovDegrees * 0.008726646259971648);
+	const double right = top * static_cast<double>(viewport.width) / viewport.height;
+	rlFrustum(-right, right, -top, top, camera.nearPlane, camera.farPlane);
+	// retain the saved camera's left-handed screen orientation
+	rlMatrixMode(RL_PROJECTION);
+	rlScalef(-1, 1, 1);
+	rlMatrixMode(RL_MODELVIEW);
+	if (resources->appearance.surface == ReplaySurfaceMode_Wireframe)
+		rlEnableWireMode();
+	DrawGroups(resources);
+	rlDisableWireMode();
+	rlDisableShader();
+	rlEnableBackfaceCulling();
+	DrawContainerOutlines(resources);
+	DrawSceneDebugPrimitives(snapshot);
+	EndMode3D();
+	rlDisableScissorTest();
+	rlViewport(0, 0, state.width, state.height);
+	return RenderViewerStatus_Ok;
+}
+
 }

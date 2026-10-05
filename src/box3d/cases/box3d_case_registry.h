@@ -1,28 +1,67 @@
 #pragma once
 
-#include "box3d_box_container_pile_10k_case.h"
+#include "benchmark_visual/visual_snapshot.h"
+#include "case_execution_wire.h"
+#include <box3d/box3d.h>
+#include <box3d/collision.h>
+
+#include <cstddef>
+#include <cstdint>
 
 namespace box3d_benchmark
 {
-struct Box3DCaseDescriptor
+struct Box3DRunRequest;
+
+int BuildResolvedVisualGeometry(const CaseExecutionSpec& execution, const CaseExecutionGeometry& geometry,
+                                benchmark_visual::VisualMeshStorage* meshes, benchmark_visual::VisualGeometry* visual);
+
+struct Box3DResolvedShape
 {
-	const char* caseId;
-	const char* fixtureSemantic;
-	const char* fixtureVersion;
-	int dynamicBodyCount;
-	int staticBodyCount;
-	int bodyCount;
-	float dynamicHalfExtent;
-	float lateralEscapeLimit;
-	float maxY;
-	int (*RunWarmup)(const Box3DCaseConfig& config);
-	int (*CreateState)(const Box3DCaseConfig& config, Box3DCaseState* state);
-	int (*Step)(Box3DCaseState* state, int stepCount);
-	void (*DestroyState)(Box3DCaseState* state);
-	void (*SampleTransforms)(const Box3DCaseState& state, Box3DTransform* transforms, int transformCapacity);
-	void (*CopyStaticBoxes)(Box3DStaticBox* boxes, int boxCapacity);
+	CaseExecutionShape kind;
+	b3BoxHull box;
+	b3HullData* hull;
+	b3Sphere sphere;
+	b3Capsule capsule;
+	b3Quat rotation;
+	float unitMass;
 };
 
-int ResolveBox3DCase(const char* caseId, const Box3DCaseDescriptor** descriptor);
-const Box3DCaseDescriptor& Box3DContainerPileCaseDescriptor();
+int CreateBox3DResolvedShape(const CaseExecutionGeometry& geometry, const CaseExecutionSpec& execution,
+                             Box3DResolvedShape* shape);
+void DestroyBox3DResolvedShape(Box3DResolvedShape* shape);
+int AttachBox3DResolvedShape(b3BodyId body, const b3ShapeDef& definition, const Box3DResolvedShape& shape);
+
+struct Box3DCaseConfig
+{
+	const CaseExecutionSpec* caseExecution;
+	int threadCount;
+	int repeatIndex;
+	int stepCount;
+	int warmupSteps;
+};
+
+struct Box3DCaseView
+{
+	void* value;
+};
+
+struct Box3DCaseDescriptor
+{
+	const char* engineId;
+	int (*runCase)(const Box3DRunRequest& request);
+	int (*stepWorkUnits)(Box3DCaseView* state, int workUnitCount);
+	int (*buildScene)(const Box3DCaseView& state, benchmark_visual::VisualGeometry* geometries,
+	                  benchmark_visual::VisualMeshStorage* meshes, int geometryCapacity,
+	                  benchmark_visual::VisualInstance* instances, int instanceCapacity, int* geometryCount,
+	                  int* instanceCount);
+	int (*sampleTransforms)(const Box3DCaseView& state, benchmark_visual::VisualStableTransform* transforms,
+	                        int transformCapacity);
+	int (*buildDebugPrimitives)(const Box3DCaseView& state, benchmark_visual::VisualDebugPrimitive* primitives,
+	                            int primitiveCapacity);
+};
+
+int ResolveBox3DCase(const CaseExecutionSpec& execution, const Box3DCaseDescriptor** descriptor);
+const Box3DCaseDescriptor& DefaultBox3DCase();
+int RequestedWorkerCount(int threadCount);
+int RunBox3DCase(const Box3DRunRequest& request, const Box3DCaseDescriptor& descriptor);
 }

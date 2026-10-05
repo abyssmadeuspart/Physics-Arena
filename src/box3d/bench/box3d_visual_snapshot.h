@@ -1,17 +1,11 @@
 #pragma once
 
-#include "box3d_case_registry.h"
-#include "benchmark_visual/visual_transport.h"
+#include "stack_state_capture.h"
 
-#include <cstdint>
-#include <vector>
+#include "box3d_case_registry.h"
+#include "box3d_runner_args.h"
 
 namespace box3d_benchmark
 {
-uint32_t BuildBox3DVisualSnapshotPayload(
-	const Box3DCaseDescriptor& descriptor,
-	const Box3DCaseState& state,
-	Box3DTransform* caseTransforms,
-	Box3DStaticBox* caseBoxes,
-	std::vector<uint8_t>& payload);
+int RecordBox3DCase(const Box3DRunRequest& request, Box3DCaseView* state, benchmark_stack::Capture* capture = nullptr);
 }

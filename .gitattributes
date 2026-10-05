@@ -1,5 +1,4 @@
-# Shell entrypoints must remain valid in Windows Git checkouts.
 *.sh text eol=lf
 
-# Published release packages are validated byte-for-byte against SHA-256 manifests.
+/PhysicsArena.exe -text
 /release/windows-x64/** -text

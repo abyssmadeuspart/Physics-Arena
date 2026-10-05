@@ -1,36 +1,9 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
+  "artifact_role": "engine_runner",
   "engine_id": "nvidia_physx34",
-  "platform": "windows-x64",
-  "host_route": "windows",
-  "source_version": "3.4.2",
-  "source_provenance": "official NVIDIA PhysX source; source is not vendored in the release package",
   "executable_path": "release/windows-x64/nvidia-physx-3.4/nvidia_physx34_polygon_runner.exe",
-  "launcher": "direct",
-  "required_sidecars": [
-    "release/windows-x64/nvidia-physx-3.4/PhysX3Common_x64.dll",
-    "release/windows-x64/nvidia-physx-3.4/PhysX3Cooking_x64.dll",
-    "release/windows-x64/nvidia-physx-3.4/PhysX3_x64.dll",
-    "release/windows-x64/nvidia-physx-3.4/PxFoundation_x64.dll",
-    "release/windows-x64/nvidia-physx-3.4/PxPvdSDK_x64.dll"
-  ],
-  "compiler_runtime": {
-    "toolchain_id": "nvidia_physx34_optimized_release",
-    "compiler_detail": "Visual Studio 2026 MSBuild",
-    "runtime_detail": "windows-x64 native release"
-  },
-  "package_metadata": {
-    "build_label": "nvidia_physx34_optimized_release",
-    "physx_version": "3.4.2",
-    "sdk_toolchain_id": "vs2026_msbuild_release",
-    "sdk_build_config": "release"
-  },
-  "license_id": "BSD-3-Clause",
-  "notice_license_reference": "SOURCES.md#nvidia_physx34",
-  "visual": {
-    "route_status": "supported",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "producer_mode_arg": "--producer-mode=shared-visual"
-  }
+  "source_version": "3.4.2",
+  "toolchain_id": "vs2026_msbuild_release",
+  "report_version": "3.4.2"
 }

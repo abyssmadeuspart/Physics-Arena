@@ -1,39 +1,60 @@
-use avian3d::{math::Vector, prelude::*};
+use crate::case_execution_wire::{CaseExecutionSpec, CaseExecutionToggle};
+use crate::{case_registry, result_writer, runner_args};
+use avian3d::{math::RVector, prelude::*};
 use bevy::{
     MinimalPlugins,
     app::{App, PluginsState},
-    ecs::{entity::Entity, schedule::ScheduleLabel},
+    ecs::entity::Entity,
     prelude::Transform,
     time::{Time, TimeUpdateStrategy},
     transform::TransformPlugin,
 };
-use core::time::Duration;
+use std::time::{Duration, Instant};
 
-pub const ENGINE_ID: &str = "avian3d";
-pub const CASE_ID: &str = "box_container_pile_10k";
-pub const PILE_X_COUNT: usize = 25;
-pub const PILE_Y_COUNT: usize = 16;
-pub const PILE_Z_COUNT: usize = 25;
-pub const DYNAMIC_BODY_COUNT: usize = PILE_X_COUNT * PILE_Y_COUNT * PILE_Z_COUNT;
-pub const STATIC_BODY_COUNT: usize = 5;
-pub const BODY_COUNT: usize = DYNAMIC_BODY_COUNT + STATIC_BODY_COUNT;
-pub const HALF_EXTENT: f32 = 0.5;
-pub const CUBE_SIZE: f32 = HALF_EXTENT * 2.0;
-pub const SPACING: f32 = 1.02;
-pub const INITIAL_Y: f32 = 24.51;
-pub const TIMESTEP: f32 = 1.0 / 60.0;
-pub const PHYSICS_SUBSTEP_COUNT: u32 = 4;
-pub const INNER_HALF_WIDTH: f32 = 15.5;
-pub const CEILING_Y: f32 = 96.0;
-pub const FIXTURE_SEMANTIC: &str = "open_container_falling_pile";
-pub const FIXTURE_VERSION: &str = "avian3d_open_container_v1";
-pub const TOOLCHAIN_ID: &str = "rust_1_95_msvc_cargo_release";
-pub const ENGINE_REF: &str = "fc99fdcdbff804fbbe6dc1eb7fc4137e677853d2";
+pub const DESCRIPTOR: case_registry::AvianCaseDescriptor = case_registry::AvianCaseDescriptor
+{
+    engine_id: case_registry::ENGINE_ID,
+};
 
-#[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct AvianBenchmarkSchedule;
+pub const REGISTRATION: case_registry::CaseRegistration = case_registry::CaseRegistration
+{
+    descriptor: DESCRIPTOR,
+    run_headless,
+    build_visual_scene,
+    sample_visual_transforms,
+    build_visual_debug_primitives: build_no_visual_debug_primitives,
+};
 
-pub struct AvianWorld {
+pub fn build_no_visual_debug_primitives(
+    _state: &case_registry::CaseView,
+    primitives: &mut [case_registry::VisualDebugPrimitive],
+) -> Result<(), i32>
+{
+    if primitives.is_empty()
+    {
+        Ok(())
+    }
+    else
+    {
+        Err(2)
+    }
+}
+
+pub fn sample_visual_transforms(
+    state: &case_registry::CaseView,
+    transforms: &mut [case_registry::VisualStableTransform],
+) -> Result<(), i32>
+{
+    let case_registry::CaseView::ContainerPile(world) = state else
+    {
+        return Err(2);
+    };
+    sample_transforms(world, transforms)
+}
+
+pub struct AvianWorld
+{
+    pub execution: CaseExecutionSpec,
     pub app: App,
     pub dynamic_entities: Vec<Entity>,
     pub body_count: usize,
@@ -41,186 +62,283 @@ pub struct AvianWorld {
     pub completed_step_count: usize,
 }
 
-#[derive(Clone, Copy)]
-pub struct AvianTransform {
-    pub position_x: f32,
-    pub position_y: f32,
-    pub position_z: f32,
-    pub rotation_x: f32,
-    pub rotation_y: f32,
-    pub rotation_z: f32,
-    pub rotation_w: f32,
-}
-
-#[derive(Clone, Copy)]
-pub struct AvianStaticBox {
-    pub position_x: f32,
-    pub position_y: f32,
-    pub position_z: f32,
-    pub half_extent_x: f32,
-    pub half_extent_y: f32,
-    pub half_extent_z: f32,
-}
-
-#[derive(Clone, Copy)]
-pub struct StabilityCounters {
-    pub invalid_transform_count: usize,
-    pub below_floor_count: usize,
-    pub out_of_bounds_count: usize,
-}
-
-pub fn create_world() -> Result<AvianWorld, i32> {
-    let mut app = App::new();
+pub fn create_world(execution: &CaseExecutionSpec) -> Result<AvianWorld, i32>
+{
+    let fixture: crate::case_execution_wire::CaseExecutionOpenContainer = execution.open_container;
+    let timestep: f64 = 1.0 / execution.timestep_hz as f64;
+    let mut app: App = App::new();
     app.add_plugins((
         MinimalPlugins,
         TransformPlugin,
-        PhysicsPlugins::new(AvianBenchmarkSchedule),
+        PhysicsPlugins::new(case_registry::AvianBenchmarkSchedule),
     ))
-    .insert_resource(Gravity(Vector::new(0.0, -10.0, 0.0)))
-    .insert_resource(SubstepCount(PHYSICS_SUBSTEP_COUNT))
-    .insert_resource(Time::from_hz(60.0))
+    .insert_resource(Gravity(RVector::new(execution.gravity.x, execution.gravity.y, execution.gravity.z)))
+    .insert_resource(SubstepCount(execution.solver_values[crate::case_execution_wire::CaseSolverField::Substeps as usize]))
+    .insert_resource(Time::from_hz(execution.timestep_hz as f64))
     .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_secs_f64(
-        TIMESTEP as f64,
+        timestep,
     )));
 
-    while app.plugins_state() != PluginsState::Ready {
+    while app.plugins_state() != PluginsState::Ready
+    {
         bevy::tasks::tick_global_task_pools_on_main_thread();
     }
     app.finish();
     app.cleanup();
 
-    let mut dynamic_entities = Vec::with_capacity(DYNAMIC_BODY_COUNT);
+    let mut dynamic_entities: Vec<bevy::ecs::entity::Entity> = Vec::with_capacity(execution.dynamic_body_count as usize);
+    let shape: Collider = case_registry::create_resolved_shape(&execution.selected_geometry, execution)?;
+    let shape_rotation: bevy::math::Quat = case_registry::shape_rotation(execution.selected_geometry.axis);
 
-    add_static_box(&mut app, 0.0, -0.5, 0.0, 14.5, 0.5, 14.5);
-    add_static_box(&mut app, -14.5, 11.75, 0.0, 0.5, 12.25, 14.5);
-    add_static_box(&mut app, 14.5, 11.75, 0.0, 0.5, 12.25, 14.5);
-    add_static_box(&mut app, 0.0, 11.75, -14.5, 14.5, 12.25, 0.5);
-    add_static_box(&mut app, 0.0, 11.75, 14.5, 14.5, 12.25, 0.5);
+    for static_box in fixture.static_boxes.iter().take(fixture.static_box_count as usize)
+    {
+        add_static_box(&mut app, static_box, execution);
+    }
 
-    let origin_x = -0.5 * (PILE_X_COUNT as f32 - 1.0) * SPACING;
-    let origin_z = -0.5 * (PILE_Z_COUNT as f32 - 1.0) * SPACING;
-    for y in 0..PILE_Y_COUNT {
-        for z in 0..PILE_Z_COUNT {
-            for x in 0..PILE_X_COUNT {
-                let position_x = origin_x + x as f32 * SPACING;
-                let position_y = INITIAL_Y + y as f32 * SPACING;
-                let position_z = origin_z + z as f32 * SPACING;
-                let entity = app
-                    .world_mut()
-                    .spawn((
+    let origin_x: f32 = -0.5 * (fixture.dynamic_grid[0] as f32 - 1.0) * fixture.dynamic_spacing.x;
+    let origin_z: f32 = -0.5 * (fixture.dynamic_grid[2] as f32 - 1.0) * fixture.dynamic_spacing.z;
+    for y in 0..fixture.dynamic_grid[1]
+    {
+        for z in 0..fixture.dynamic_grid[2]
+        {
+            for x in 0..fixture.dynamic_grid[0]
+            {
+                let position_x: f32 = origin_x + x as f32 * fixture.dynamic_spacing.x;
+                let position_y: f32 = fixture.dynamic_initial_y + y as f32 * fixture.dynamic_spacing.y;
+                let position_z: f32 = origin_z + z as f32 * fixture.dynamic_spacing.z;
+                let mut entity_commands: bevy::ecs::world::EntityWorldMut<'_> = app.world_mut().spawn((
                         RigidBody::Dynamic,
-                        Collider::cuboid(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE),
+                        shape.clone(),
+                        ColliderDensity(fixture.density),
+                        Friction::new(execution.friction),
+                        Restitution::new(execution.restitution),
                         Position::from_xyz(position_x, position_y, position_z),
-                        Rotation::IDENTITY,
-                        Transform::from_xyz(position_x, position_y, position_z),
-                        SleepingDisabled,
-                    ))
-                    .id();
-                dynamic_entities.push(entity);
+                        Rotation(shape_rotation),
+                        Transform::from_xyz(position_x, position_y, position_z).with_rotation(shape_rotation),
+                    ));
+                if execution.sleep_mode == CaseExecutionToggle::Disabled
+                {
+                    entity_commands.insert(SleepingDisabled);
+                }
+                entity_commands.insert(SweptCcd::default().with_filter(
+                    if execution.continuous_collision_mode == CaseExecutionToggle::Enabled
+                    {
+                        CcdFilter::DEFAULT
+                    }
+                    else
+                    {
+                        CcdFilter::NONE
+                    },
+                ));
+                dynamic_entities.push(entity_commands.id());
             }
         }
     }
 
-    if dynamic_entities.len() != DYNAMIC_BODY_COUNT {
+    if dynamic_entities.len() != execution.dynamic_body_count as usize
+    {
         eprintln!(
             "invalid_result body_count={} shape_count={} dynamic_body_count={}",
-            BODY_COUNT,
-            BODY_COUNT,
+            execution.body_count,
+            execution.shape_count,
             dynamic_entities.len()
         );
         return Err(2);
     }
 
-    Ok(AvianWorld {
+    Ok(AvianWorld
+    {
+        execution: *execution,
         app,
         dynamic_entities,
-        body_count: BODY_COUNT,
-        shape_count: BODY_COUNT,
+        body_count: execution.body_count as usize,
+        shape_count: execution.shape_count as usize,
         completed_step_count: 0,
     })
 }
 
-pub fn add_static_box(app: &mut App, x: f32, y: f32, z: f32, hx: f32, hy: f32, hz: f32) {
+pub fn add_static_box(app: &mut App,
+    static_box: &crate::case_execution_wire::CaseExecutionBox,
+    execution: &CaseExecutionSpec)
+{
     app.world_mut().spawn((
         RigidBody::Static,
-        Collider::cuboid(hx * 2.0, hy * 2.0, hz * 2.0),
-        Position::from_xyz(x, y, z),
+        Collider::cuboid(static_box.half_extents.x * 2.0,
+            static_box.half_extents.y * 2.0, static_box.half_extents.z * 2.0),
+        Friction::new(execution.friction),
+        Restitution::new(execution.restitution),
+        Position::from_xyz(static_box.center.x, static_box.center.y, static_box.center.z),
         Rotation::IDENTITY,
-        Transform::from_xyz(x, y, z),
+        Transform::from_xyz(static_box.center.x, static_box.center.y, static_box.center.z),
     ));
 }
 
-pub fn step_world(world: &mut AvianWorld, step_count: usize) {
-    for _ in 0..step_count {
+pub fn step_world(world: &mut AvianWorld, step_count: usize)
+{
+    let timestep: f64 = 1.0 / world.execution.timestep_hz as f64;
+    for _ in 0..step_count
+    {
         world
             .app
             .world_mut()
             .resource_mut::<Time>()
-            .advance_by(Duration::from_secs_f64(TIMESTEP as f64));
+            .advance_by(Duration::from_secs_f64(timestep));
         world
             .app
             .world_mut()
-            .run_schedule(AvianBenchmarkSchedule);
+            .run_schedule(case_registry::AvianBenchmarkSchedule);
         world.completed_step_count += 1;
     }
 }
 
-pub fn sample_transforms(world: &AvianWorld, transforms: &mut [AvianTransform]) -> Result<(), i32> {
-    if transforms.len() < DYNAMIC_BODY_COUNT {
+pub fn step_world_timed(world: &mut AvianWorld, step_durations: &mut [Duration])
+{
+    let timestep: f64 = 1.0 / world.execution.timestep_hz as f64;
+    for duration in step_durations
+    {
+        let start: Instant = Instant::now();
+        world
+            .app
+            .world_mut()
+            .resource_mut::<Time>()
+            .advance_by(Duration::from_secs_f64(timestep));
+        world
+            .app
+            .world_mut()
+            .run_schedule(case_registry::AvianBenchmarkSchedule);
+        *duration = start.elapsed();
+        world.completed_step_count += 1;
+    }
+}
+
+pub fn sample_transforms(
+    world: &AvianWorld,
+    transforms: &mut [case_registry::VisualStableTransform],
+) -> Result<(), i32>
+{
+    if transforms.len() < world.dynamic_entities.len()
+    {
         return Err(2);
     }
-    for index in 0..DYNAMIC_BODY_COUNT {
-        let entity = world.app.world().entity(world.dynamic_entities[index]);
-        let position = match entity.get::<Position>() {
+    for index in 0..world.dynamic_entities.len()
+    {
+        let entity: bevy::ecs::world::EntityRef<'_> = world.app.world().entity(world.dynamic_entities[index]);
+        let position: RVector = match entity.get::<Position>()
+        {
             Some(value) => value.0,
             None => return Err(2),
         };
-        let rotation = match entity.get::<Rotation>() {
+        let rotation: bevy::math::Quat = match entity.get::<Rotation>()
+        {
             Some(value) => value.0,
             None => return Err(2),
         };
-        transforms[index] = AvianTransform {
-            position_x: position.x,
-            position_y: position.y,
-            position_z: position.z,
-            rotation_x: rotation.x,
-            rotation_y: rotation.y,
-            rotation_z: rotation.z,
-            rotation_w: rotation.w,
+        transforms[index] = case_registry::VisualStableTransform
+        {
+            stable_slot: index as u32,
+            transform: case_registry::VisualTransform
+            {
+                position_x: position.x,
+                position_y: position.y,
+                position_z: position.z,
+                rotation_x: rotation.x,
+                rotation_y: rotation.y,
+                rotation_z: rotation.z,
+                rotation_w: rotation.w,
+            },
         };
     }
     Ok(())
 }
 
-pub fn copy_static_boxes(boxes: &mut [AvianStaticBox]) -> Result<(), i32> {
-    if boxes.len() < STATIC_BODY_COUNT {
+pub fn build_visual_scene(
+    state: &case_registry::CaseView,
+    geometries: &mut [case_registry::VisualGeometry],
+    meshes: &mut case_registry::VisualMeshStorage,
+    instances: &mut [case_registry::VisualInstance],
+) -> Result<(usize, usize), i32>
+{
+    let case_registry::CaseView::ContainerPile(world) = state else
+    {
+        return Err(2);
+    };
+    let execution: CaseExecutionSpec = world.execution;
+    let fixture: crate::case_execution_wire::CaseExecutionOpenContainer = execution.open_container;
+    if geometries.len() < 1 + fixture.static_box_count as usize ||
+        instances.len() < execution.body_count as usize
+    {
         return Err(2);
     }
-    boxes[0] = AvianStaticBox { position_x: 0.0, position_y: -0.5, position_z: 0.0, half_extent_x: 14.5, half_extent_y: 0.5, half_extent_z: 14.5 };
-    boxes[1] = AvianStaticBox { position_x: -14.5, position_y: 11.75, position_z: 0.0, half_extent_x: 0.5, half_extent_y: 12.25, half_extent_z: 14.5 };
-    boxes[2] = AvianStaticBox { position_x: 14.5, position_y: 11.75, position_z: 0.0, half_extent_x: 0.5, half_extent_y: 12.25, half_extent_z: 14.5 };
-    boxes[3] = AvianStaticBox { position_x: 0.0, position_y: 11.75, position_z: -14.5, half_extent_x: 14.5, half_extent_y: 12.25, half_extent_z: 0.5 };
-    boxes[4] = AvianStaticBox { position_x: 0.0, position_y: 11.75, position_z: 14.5, half_extent_x: 14.5, half_extent_y: 12.25, half_extent_z: 0.5 };
-    Ok(())
+    geometries[0] = case_registry::build_resolved_visual_geometry(&execution,
+        &execution.selected_geometry, meshes)?;
+    for (index, static_box) in fixture.static_boxes.iter().take(fixture.static_box_count as usize).enumerate()
+    {
+        geometries[index + 1] = case_registry::VisualGeometry
+        {
+            kind: 2,
+            parameter_x: static_box.half_extents.x,
+            parameter_y: static_box.half_extents.y,
+            parameter_z: static_box.half_extents.z,
+            ..case_registry::VisualGeometry::default()
+        };
+    }
+    let mut transforms: Vec<case_registry::VisualStableTransform> = vec![case_registry::VisualStableTransform
+    {
+        stable_slot: 0,
+        transform: case_registry::VisualTransform
+        {
+            position_x: 0.0, position_y: 0.0, position_z: 0.0,
+            rotation_x: 0.0, rotation_y: 0.0, rotation_z: 0.0, rotation_w: 1.0,
+        },
+    }; world.dynamic_entities.len()];
+    sample_transforms(world, &mut transforms)?;
+    for index in 0..world.dynamic_entities.len()
+    {
+        instances[index] = case_registry::VisualInstance
+        {
+            geometry_index: 0, stable_slot: index as u32, transform_slot: index as u32,
+            initial_transform: transforms[index].transform,
+        };
+    }
+    for (index, static_box) in fixture.static_boxes.iter().take(fixture.static_box_count as usize).enumerate()
+    {
+        let stable_slot: usize = world.dynamic_entities.len() + index;
+        instances[stable_slot] = case_registry::VisualInstance
+        {
+            geometry_index: (index + 1) as u32, stable_slot: stable_slot as u32,
+            transform_slot: u32::MAX,
+            initial_transform: case_registry::VisualTransform
+            {
+                position_x: static_box.center.x, position_y: static_box.center.y,
+                position_z: static_box.center.z,
+                rotation_x: 0.0, rotation_y: 0.0, rotation_z: 0.0, rotation_w: 1.0,
+            },
+        };
+    }
+    Ok((1 + fixture.static_box_count as usize, execution.body_count as usize))
 }
 
-pub fn stability_counters(world: &AvianWorld) -> StabilityCounters {
-    let mut invalid_transform_count = 0;
-    let mut below_floor_count = 0;
-    let mut out_of_bounds_count = 0;
+pub fn invalid_transform_count(world: &AvianWorld) -> usize
+{
+    let mut invalid_transform_count: usize = 0;
 
-    for entity in &world.dynamic_entities {
-        let entity_ref = world.app.world().entity(*entity);
-        let position = match entity_ref.get::<Position>() {
+    for entity in &world.dynamic_entities
+    {
+        let entity_ref: bevy::ecs::world::EntityRef<'_> = world.app.world().entity(*entity);
+        let position: RVector = match entity_ref.get::<Position>()
+        {
             Some(value) => value.0,
-            None => {
+            None =>
+            {
                 invalid_transform_count += 1;
                 continue;
             }
         };
-        let rotation = match entity_ref.get::<Rotation>() {
+        let rotation: bevy::math::Quat = match entity_ref.get::<Rotation>()
+        {
             Some(value) => value.0,
-            None => {
+            None =>
+            {
                 invalid_transform_count += 1;
                 continue;
             }
@@ -235,47 +353,156 @@ pub fn stability_counters(world: &AvianWorld) -> StabilityCounters {
         {
             invalid_transform_count += 1;
         }
-        if position.y < 0.0 {
-            below_floor_count += 1;
-        }
-        if position.x < -INNER_HALF_WIDTH
-            || position.x > INNER_HALF_WIDTH
-            || position.z < -INNER_HALF_WIDTH
-            || position.z > INNER_HALF_WIDTH
-            || position.y < 0.0
-            || position.y > CEILING_Y
-        {
-            out_of_bounds_count += 1;
-        }
     }
 
-    StabilityCounters {
-        invalid_transform_count,
-        below_floor_count,
-        out_of_bounds_count,
-    }
+    invalid_transform_count
 }
 
-pub fn case_status(counters: StabilityCounters) -> &'static str {
-    if counters.invalid_transform_count == 0 && counters.below_floor_count == 0 {
-        "ok"
-    } else {
-        "invalid_stability_counters"
-    }
-}
-
-pub fn metric_status(case_status: &str) -> &'static str {
-    if case_status == "ok" {
-        "ok"
-    } else {
-        "invalid_result"
-    }
-}
-
-pub fn host_route() -> &'static str {
-    if cfg!(target_os = "windows") {
+pub fn host_route() -> &'static str
+{
+    if cfg!(target_os = "windows")
+    {
         "windows"
-    } else {
+    }
+    else
+    {
         "linux"
     }
+}
+
+pub fn visual_physics_settings(execution: &CaseExecutionSpec, thread_count: usize) -> String
+{
+    let native_count = execution.solver_values[crate::case_execution_wire::CaseSolverField::Substeps as usize];
+    let sleep = if execution.sleep_mode == CaseExecutionToggle::Enabled
+    {
+        "enabled"
+    }
+    else
+    {
+        "disabled"
+    };
+    let ccd = if execution.continuous_collision_mode == CaseExecutionToggle::Enabled
+    {
+        "enabled"
+    }
+    else
+    {
+        "disabled"
+    };
+    format!("substeps={native_count}; sleep={sleep}; ccd={ccd}; solver_defaults=avian; worker_count={thread_count}")
+}
+
+pub fn run_headless(
+    args: &runner_args::RunnerArgs,
+    effective_thread_count: usize,
+) -> Result<(), i32>
+{
+    let mut capture: Option<crate::stack_state_capture::Capture> = match args.verification_mode
+    {
+        runner_args::VerificationMode::On => Some(crate::stack_state_capture::open(args)?),
+        runner_args::VerificationMode::Off => None,
+    };
+    if args.warmup_steps > 0
+    {
+        let mut warmup_world: AvianWorld = create_world(&args.case_execution)?;
+        for ordinal in 0..=args.warmup_steps
+        {
+            if ordinal != 0 { step_world(&mut warmup_world, 1); }
+            if let Some(capture) = capture.as_mut()
+            {
+                capture.frame_start = std::time::Instant::now();
+                sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut warmup_world), &mut capture.transforms)?;
+                crate::stack_state_capture::append(capture, if ordinal == 0
+                {
+                    crate::stack_state_capture::Phase::Construction
+                }
+                else
+                {
+                    crate::stack_state_capture::Phase::Warmup
+                }, 0, ordinal as u32)?;
+            }
+        }
+    }
+    let mut world: AvianWorld = create_world(&args.case_execution)?;
+    let segment: u32 = u32::from(args.warmup_steps > 0);
+    if let Some(capture) = capture.as_mut()
+    {
+        capture.frame_start = std::time::Instant::now();
+        sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut world), &mut capture.transforms)?;
+        crate::stack_state_capture::append(capture, crate::stack_state_capture::Phase::Construction, segment, 0)?;
+    }
+    let mut step_durations: Vec<Duration> = vec![Duration::ZERO; args.step_count];
+    let mut recording: Option<crate::replay_recording::RecordingWriter> = match args.recording_mode
+    {
+        crate::runner_args::RecordingMode::On => Some(crate::replay_recording::begin_recording(args, &case_registry::CaseView::ContainerPile(&mut world))?),
+        crate::runner_args::RecordingMode::Off => None,
+    };
+    for (index, duration) in step_durations.iter_mut().enumerate()
+    {
+        step_world_timed(&mut world, std::slice::from_mut(duration));
+        if let Some(capture) = capture.as_mut()
+        {
+            capture.frame_start = std::time::Instant::now();
+            sample_visual_transforms(&case_registry::CaseView::ContainerPile(&mut world), &mut capture.transforms)?;
+            crate::stack_state_capture::append(capture, crate::stack_state_capture::Phase::Measured, segment, index as u32 + 1)?;
+        }
+        if let Some(writer) = recording.as_mut()
+        {
+            crate::replay_recording::append_frame(writer, args,
+                &case_registry::CaseView::ContainerPile(&mut world), index as u64 + 1)?;
+        }
+    }
+    if let Some(writer) = recording
+    {
+        crate::replay_recording::complete_recording(writer)?;
+    }
+    if let Some(capture) = capture
+    {
+        crate::stack_state_capture::close(capture)?;
+    }
+    let elapsed_ms: f64 = step_durations.iter().map(Duration::as_secs_f64).sum::<f64>() * 1000.0;
+    let invalid_transform_count: usize = invalid_transform_count(&world);
+    let case_validity: result_writer::ResultValidity = if invalid_transform_count == 0
+        && world.dynamic_entities.len() == args.case_execution.dynamic_body_count as usize
+        && world.body_count == args.case_execution.body_count as usize
+        && world.shape_count == args.case_execution.shape_count as usize
+    {
+        result_writer::ResultValidity::Valid
+    }
+    else
+    {
+        result_writer::ResultValidity::Invalid
+    };
+    let metric_valid: bool = elapsed_ms > 0.0
+        && elapsed_ms.is_finite()
+        && world.completed_step_count == args.step_count
+        && world.body_count == args.case_execution.body_count as usize
+        && world.shape_count == args.case_execution.shape_count as usize
+        && world.dynamic_entities.len() == args.case_execution.dynamic_body_count as usize;
+    let metric_validity: result_writer::ResultValidity = if metric_valid
+    {
+        result_writer::ResultValidity::Valid
+    }
+    else
+    {
+        result_writer::ResultValidity::Invalid
+    };
+    let result: result_writer::BenchmarkResult = result_writer::BenchmarkResult
+    {
+        physics_settings: visual_physics_settings(&args.case_execution, effective_thread_count),
+        body_count: world.body_count,
+        shape_count: world.shape_count,
+        query_count: args.case_execution.query_count as usize,
+        constraint_count: args.case_execution.constraint_count as usize,
+        invalid_transform_count,
+        effective_thread_count,
+        effective_worker_count: effective_thread_count,
+        completed_work_unit_count: world.completed_step_count,
+        workload_elapsed_ms: elapsed_ms,
+        case_validity,
+        metric_validity,
+        observations: Vec::new(),
+    };
+    result_writer::write_result(args, &result)?;
+    result_writer::write_step_timing(args, &step_durations)
 }

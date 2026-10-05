@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "engine_id": "entasis",
+  "source": {
+    "type": "git",
+    "repository_url": "https://github.com/Abyssal-Engine/Entasis.git",
+    "revision": "c380d34c57cf83e1cb481d712de4460d16c08774",
+    "reference_child": "Entasis"
+  },
+  "prepare": {
+    "prepared_path": ".generated/engines/entasis",
+    "overlays": [
+      {
+        "source": "src/entasis/bench",
+        "target": "polygon/bench"
+      },
+      {
+        "source": "src/entasis/common",
+        "target": "polygon/common"
+      },
+      {
+        "source": "src/entasis/cases",
+        "target": "polygon/cases"
+      }
+    ]
+  },
+  "build": {
+    "route": "odin_windows_release",
+    "runner_directory": "polygon/bench",
+    "build_directory": ".build/entasis",
+    "package_directory": "release/windows-x64/entasis",
+    "executable_name": "entasis_polygon_runner.exe",
+    "compiler_version": "dev-2026-09-nightly:a2fb372",
+    "toolchain_id": "odin_dev_2026_09_windows_amd64_v3"
+  },
+  "report_metadata": {
+    "physics_settings": "Container/Islands/Pyramid: velocity_iterations=1; substeps=4; sleep=disabled; fixture friction; ccd=discrete; damping=0; restitution=0; case-scaled capacities; Islands: 50 groups, 30 warmup plus 300 measured steps in one world; Query: static mixed batches, unused solver, warmed world/pools retained, per-batch hit validation; caller plus N-1 workers",
+    "build_settings": "Odin dev-2026-09 a2fb372; Windows AMD64 x86-64-v3; Release -o:speed -no-bounds-check -disable-assert -source-code-locations:none -vet -warnings-as-errors -linker:lld; AVX2 FMA BMI1 BMI2 LZCNT POPCNT and OS-enabled XMM/YMM required",
+    "report_version": "1.0.0"
+  },
+  "native_settings": {
+    "solver": {
+      "velocity_iterations": {
+        "native_name": "velocity_iterations",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 1
+      },
+      "substeps": {
+        "native_name": "substeps",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 4
+      }
+    },
+    "sleep_enabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "continuous_collision_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "maximum_restitution": 1.0,
+    "ragdoll_damping_mode": "native_coefficient",
+    "continuous_collision_semantics": "discrete_swept_ccd"
+  }
+}

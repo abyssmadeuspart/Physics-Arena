@@ -1,114 +1,160 @@
 #include "box3d_result_writer.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+#include <array>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 namespace box3d_benchmark
 {
 constexpr const char* kCsvHeader =
-	"body_count,shape_count,invalid_transform_count,below_floor_count,out_of_bounds_count,case_status,metric_status,completed_step_count,physics_elapsed_ms\n";
+    "raw_schema_version,repeat_index,fixture_semantic,fixture_revision,physics_settings,body_count,shape_count,query_count,constraint_count,invalid_transform_count,case_status,metric_status,effective_thread_count,effective_worker_count,actual_taskgraph_worker_count,completed_work_unit_count,workload_elapsed_ms,render_elapsed_ms,present_wait_ms,visual_validation_status,proof_path\n";
+constexpr const char* kObservationCsvHeader = "repeat_index,metric_id,phase_id,sample_index,value\n";
 
-const char* CaseStatus(int invalidTransformCount, int belowFloorCount, int outOfBoundsCount)
-{
-	(void)outOfBoundsCount;
-	return invalidTransformCount == 0 && belowFloorCount == 0 ? "ok" : "invalid_stability_counters";
-}
+int WriteBox3DTiming(const Box3DRunRequest& request, const std::chrono::steady_clock::duration::rep* durations,
+                     int completedWorkUnitCount);
 
-const char* MetricStatus(const char* caseStatus)
+int WriteObservationSidecar(const Box3DRunRequest& request, const Box3DResult& result)
 {
-	return std::strcmp(caseStatus, "ok") == 0 ? "ok" : "invalid_result";
-}
-
-int WriteBox3DResultRow(const Box3DRunRequest& request, const Box3DCaseDescriptor& descriptor, const Box3DCaseState& state)
-{
-	FILE* existing = std::fopen(request.outputPath, "r");
-	int writeHeader = existing == nullptr ? 1 : 0;
+	if (request.outputPath == nullptr || (result.observationCount != 0 && result.observations == nullptr) ||
+	    result.observationCount > 200)
+		return 2;
+	std::string observationPath(request.outputPath);
+	constexpr const char* rawSuffix = "_raw.csv";
+	constexpr const char* observationSuffix = "_observations.csv";
+	if (observationPath.size() < std::strlen(rawSuffix) ||
+	    observationPath.compare(observationPath.size() - std::strlen(rawSuffix), std::strlen(rawSuffix), rawSuffix) !=
+	        0)
+		return 2;
+	observationPath.replace(observationPath.size() - std::strlen(rawSuffix), std::strlen(rawSuffix), observationSuffix);
+	std::string existingBytes;
+	FILE* existing = std::fopen(observationPath.c_str(), "rb");
 	if (existing != nullptr)
 	{
+		std::array<char, 4096> chunk = {};
+		for (std::size_t count = std::fread(chunk.data(), 1, chunk.size(), existing); count != 0;
+		     count = std::fread(chunk.data(), 1, chunk.size(), existing))
+			existingBytes.append(chunk.data(), count);
+		const int readStatus = std::ferror(existing);
 		std::fclose(existing);
+		if (readStatus != 0 || existingBytes.compare(0, std::strlen(kObservationCsvHeader), kObservationCsvHeader) != 0)
+			return 2;
 	}
+	else
+		existingBytes = kObservationCsvHeader;
+	const std::string temporaryPath = observationPath + ".tmp";
+	FILE* file = std::fopen(temporaryPath.c_str(), "wb");
+	if (file == nullptr)
+		return 2;
+	int status = std::fwrite(existingBytes.data(), 1, existingBytes.size(), file) == existingBytes.size() ? 0 : -1;
+	for (std::uint32_t index = 0; status == 0 && index < result.observationCount; ++index)
+	{
+		const Box3DObservationRow& row = result.observations[index];
+		if (row.metricId == nullptr || row.phaseId == nullptr)
+			status = -1;
+		else if (row.valueType == Box3DObservationValueType_Uint64)
+			status = std::fprintf(file, "%d,%s,%s,%u,%llu\n", request.repeatIndex, row.metricId, row.phaseId,
+			                      row.sampleIndex, static_cast<unsigned long long>(row.valueBits)) >= 0
+			             ? 0
+			             : -1;
+		else if (row.valueType == Box3DObservationValueType_Float64)
+		{
+			double value = 0.0;
+			std::memcpy(&value, &row.valueBits, sizeof(value));
+			status = std::isfinite(value) != 0 && std::fprintf(file, "%d,%s,%s,%u,%.17g\n", request.repeatIndex,
+			                                                   row.metricId, row.phaseId, row.sampleIndex, value) >= 0
+			             ? 0
+			             : -1;
+		}
+		else
+			status = -1;
+	}
+	const int flushStatus = std::fflush(file);
+	const int closeStatus = std::fclose(file);
+	if (status != 0 || flushStatus != 0 || closeStatus != 0 ||
+	    MoveFileExA(temporaryPath.c_str(), observationPath.c_str(),
+	                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) == 0)
+	{
+		DeleteFileA(temporaryPath.c_str());
+		return 2;
+	}
+	return 0;
+}
 
+int WriteBox3DTiming(const Box3DRunRequest& request, const std::chrono::steady_clock::duration::rep* durations,
+                     int completedWorkUnitCount)
+{
+	if (request.stepTimingOutputPath == nullptr)
+		return 0;
+	if (durations == nullptr || completedWorkUnitCount != request.stepCount)
+		return 2;
+	std::array<char, 4096> temporary = {};
+	const int pathSize = std::snprintf(temporary.data(), temporary.size(), "%s.tmp", request.stepTimingOutputPath);
+	if (pathSize <= 0 || static_cast<std::size_t>(pathSize) >= temporary.size())
+		return 2;
+	FILE* file = std::fopen(temporary.data(), "wb");
+	if (file == nullptr)
+		return 2;
+	int status = std::fprintf(file, "step_index,physics_step_ms,render_frame_ms\n");
+	for (int step = 0; status >= 0 && step < request.stepCount; ++step)
+	{
+		const double milliseconds =
+		    std::chrono::duration<double, std::milli>(std::chrono::steady_clock::duration(durations[step])).count();
+		status = std::fprintf(file, "%d,%.9f,\n", step + 1, milliseconds);
+	}
+	const int flushStatus = std::fflush(file);
+	const int closeStatus = std::fclose(file);
+	if (status < 0 || flushStatus != 0 || closeStatus != 0 ||
+	    MoveFileExA(temporary.data(), request.stepTimingOutputPath,
+	                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) == 0)
+	{
+		DeleteFileA(temporary.data());
+		return 2;
+	}
+	return 0;
+}
+
+int WriteBox3DResult(const Box3DRunRequest& request, const Box3DResult& result)
+{
+	if (WriteObservationSidecar(request, result) != 0)
+	{
+		std::fprintf(stderr, "result_failed reason=observation_sidecar path=%s\n", request.outputPath);
+		return 2;
+	}
+	FILE* existing = std::fopen(request.outputPath, "r");
+	const int writeHeader = existing == nullptr ? 1 : 0;
+	if (existing != nullptr)
+		std::fclose(existing);
 	FILE* file = std::fopen(request.outputPath, "a");
 	if (file == nullptr)
-	{
-		std::fprintf(stderr, "result_failed reason=open_output path=%s\n", request.outputPath);
 		return 2;
-	}
 	if (writeHeader != 0)
-	{
 		std::fprintf(file, "%s", kCsvHeader);
-	}
 
-	int invalidTransformCount = 0;
-	int belowFloorCount = 0;
-	int outOfBoundsCount = 0;
-	for (int index = 0; index < descriptor.dynamicBodyCount; ++index)
+	std::array<char, 64> duration = {};
+	if (request.caseExecution.fixtureKind != CaseFixtureKind_RagdollStairTumble)
+		std::snprintf(duration.data(), duration.size(), "%.9f", result.workloadElapsedMs);
+	const int writeStatus = std::fprintf(
+	    file, "3,%d,%s,%u,%s,%d,%d,%d,%d,%llu,%s,%s,%d,%d,,%d,%s,,,,\n", request.repeatIndex, result.fixtureSemantic,
+	    result.fixtureRevision, result.physicsSettings, result.bodyCount, result.shapeCount, result.queryCount,
+	    result.constraintCount, static_cast<unsigned long long>(result.invalidTransformCount), result.caseStatus,
+	    result.metricStatus, result.effectiveThreadCount, result.effectiveWorkerCount, result.completedWorkUnitCount,
+	    duration.data());
+	const int closeStatus = std::fclose(file);
+	if (writeStatus < 0 || closeStatus != 0 || std::strcmp(result.metricStatus, "ok") != 0)
 	{
-		b3Pos position = b3Body_GetPosition(state.dynamicBodies[index]);
-		b3Quat rotation = b3Body_GetRotation(state.dynamicBodies[index]);
-		double px = static_cast<double>(position.x);
-		double py = static_cast<double>(position.y);
-		double pz = static_cast<double>(position.z);
-		double rx = static_cast<double>(rotation.v.x);
-		double ry = static_cast<double>(rotation.v.y);
-		double rz = static_cast<double>(rotation.v.z);
-		double rw = static_cast<double>(rotation.s);
-
-		if (std::isfinite(px) == 0 || std::isfinite(py) == 0 || std::isfinite(pz) == 0 ||
-			std::isfinite(rx) == 0 || std::isfinite(ry) == 0 || std::isfinite(rz) == 0 ||
-			std::isfinite(rw) == 0)
-		{
-			invalidTransformCount += 1;
-		}
-		if (py < 0.0)
-		{
-			belowFloorCount += 1;
-		}
-		if (px < -descriptor.lateralEscapeLimit || px > descriptor.lateralEscapeLimit ||
-			pz < -descriptor.lateralEscapeLimit || pz > descriptor.lateralEscapeLimit ||
-			py < 0.0 || py > descriptor.maxY)
-		{
-			outOfBoundsCount += 1;
-		}
-	}
-
-	b3Counters counters = b3World_GetCounters(state.worldId);
-	double msPerStep = state.physicsElapsedMs / static_cast<double>(request.stepCount);
-	double stepsPerSecond = 1000.0 / msPerStep;
-	const char* caseStatus = CaseStatus(invalidTransformCount, belowFloorCount, outOfBoundsCount);
-	const char* metricStatus = MetricStatus(caseStatus);
-	if (state.physicsElapsedMs <= 0.0 || std::isfinite(state.physicsElapsedMs) == 0 ||
-		msPerStep <= 0.0 || std::isfinite(msPerStep) == 0 ||
-		stepsPerSecond <= 0.0 || std::isfinite(stepsPerSecond) == 0 ||
-		state.completedStepCount != request.stepCount)
-	{
-		std::fprintf(stderr,
-			"invalid_result reason=metric elapsed_ms=%.9f step_count=%d completed_step_count=%d\n",
-			state.physicsElapsedMs,
-			request.stepCount,
-			state.completedStepCount);
-		std::fclose(file);
+		std::fprintf(stderr, "invalid_result reason=result case_status=%s metric_status=%s invalid=%llu\n",
+		             result.caseStatus, result.metricStatus,
+		             static_cast<unsigned long long>(result.invalidTransformCount));
 		return 2;
 	}
-	if (std::strcmp(metricStatus, "ok") != 0)
-	{
-		std::fprintf(stderr, "invalid_result reason=case_status status=%s\n", caseStatus);
-		std::fclose(file);
-		return 2;
-	}
-	std::fprintf(file,
-		"%d,%d,%d,%d,%d,%s,%s,%d,%.9f\n",
-		counters.bodyCount,
-		counters.shapeCount,
-		invalidTransformCount,
-		belowFloorCount,
-		outOfBoundsCount,
-		caseStatus,
-		metricStatus,
-		state.completedStepCount,
-		state.physicsElapsedMs);
-	std::fclose(file);
-	return 0;
+	return request.caseExecution.fixtureKind == CaseFixtureKind_RagdollStairTumble
+	           ? 0
+			   : WriteBox3DTiming(request, result.durations, result.completedWorkUnitCount);
 }
 }

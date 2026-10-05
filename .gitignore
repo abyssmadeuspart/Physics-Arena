@@ -1,6 +1,7 @@
 # Unity editor project byproducts
 /src/unity_physics/*.csproj
 /src/unity_physics/*.sln
+/src/unity_physics/*.slnx
 /src/unity_physics/Library/
 /src/unity_physics/Temp/
 /src/unity_physics/Obj/
@@ -38,19 +39,26 @@
 *.tlog
 *.recipe
 *.binlog
+!/PhysicsArena.exe
 
 # Logs and scratch files
+/results/local/
+/.build/
+/results/**/build/
+/results/**/BenchmarkDotNet.Artifacts/
+/logs/
 *.log
 *.tmp
 *.bak
 *.swp
 *~
 
-# Python cache
-__pycache__/
-*.pyc
-
 # Checked-in Windows x64 release files
 !/release/
 !/release/windows-x64/
 !/release/windows-x64/**
+**/PhysicsArena.user.json
+
+/presets/
+
+/results/**/*.stack

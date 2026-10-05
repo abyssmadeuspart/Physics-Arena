@@ -1,0 +1,15 @@
+/.build/**
+/.generated/**
+/.external/**
+/external/**
+/release/**
+/worktrees/**
+/src/unity_physics/Library/**
+/src/unity_physics/Temp/**
+/src/unity_physics/Obj/**
+/src/unity_physics/Builds/**
+/src/unity_physics/Build/**
+/src/unreal_chaos/Intermediate/**
+/src/unreal_chaos/Binaries/**
+/src/unreal_chaos/DerivedDataCache/**
+/src/unreal_chaos/Saved/**

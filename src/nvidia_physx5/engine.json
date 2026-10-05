@@ -1,105 +1,81 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "nvidia_physx5",
-  "route_status": "working",
-  "supported_platforms": [
-    "windows"
-  ],
-  "prepared_path": ".generated/engines/nvidia_physx5",
-  "report_metadata": {
-    "physics_settings": "solver_iterations=4,1; sleep_threshold=0",
-    "build_settings": "Visual Studio 2026 MSBuild Release; NVIDIA PhysX 5.6 CPU SDK+runner"
+  "source": {
+    "type": "versioned",
+    "repository_url": "https://github.com/NVIDIA-Omniverse/PhysX",
+    "revision": "5.10.0.75b25f28f9",
+    "reference_child": "PhysX/physx"
   },
-  "case_support": [
-    {
-      "case_id": "box_container_pile_10k",
-      "headless": "working",
-      "visual": "supported"
-    },
-    {
-      "case_id": "box_drop_grid",
-      "headless": "unsupported",
-      "visual": "unsupported"
-    }
-  ],
-  "metadata_requirements": [
-    "engine_commit",
-    "physx_version",
-    "sdk_toolchain_id",
-    "sdk_build_config",
-    "runner_compiler",
-    "host_route",
-    "toolchain_id"
-  ],
-  "thread_support": {
-    "mode": "host_bounded",
-    "requested_worker_count": "thread_count",
-    "effective_worker_count": "thread_count",
-    "main_thread_participates": "yes"
-  },
-  "build": {
-    "route": "nvidia_physx5_vc17_cpu_release",
-    "route_id": "nvidia_physx5_vc17_cpu_release",
-    "source_subdir": "",
-    "runner_source_dir": "src/nvidia_physx5/bench",
-    "shared_source_dirs": [
+  "prepare": {
+    "prepared_path": ".generated/engines/nvidia_physx5",
+    "overlays": [
       {
         "source": "src/nvidia_physx5/cases",
         "target": "cases"
       }
-    ],
+    ]
+  },
+  "build": {
+    "route": "nvidia_physx5_vc17_cpu_release",
+    "runner_source_dir": "src/nvidia_physx5/bench",
     "runner_build_dir_windows": ".build/nvidia_physx5/runner/windows-vc17-cpu-release",
-    "package_dir_windows": "release/windows-x64/nvidia-physx-5.6",
+    "package_dir_windows": "release/windows-x64/nvidia-physx-5.10",
     "target": "nvidia_physx5_polygon_runner",
     "cmake_build_type": "Release",
     "toolchain_id_windows": "nvidia_physx5_vc17_cpu_release",
-    "cpu_isa_requirement": "x64",
-    "source_version": "5.6.1.51c1f783",
     "preset": "vc17win64-cpu-only",
     "preset_file": "buildtools/presets/public/vc17win64-cpu-only.xml",
     "generated_solution": "compiler/vc17win64-cpu-only/PhysXSDK.sln",
-    "install_dir": "install/vc17win64-cpu-only/PhysX"
-  },
-  "run": {
-    "route": "nvidia_physx5_polygon_runner_cli",
-    "route_status": "working",
-    "executable_env": "NVIDIA_PHYSX5_POLYGON_RUNNER_EXE",
+    "install_dir": "install/vc17win64-cpu-only/PhysX",
     "executable_names": [
       "nvidia_physx5_polygon_runner.exe"
     ],
-    "raw_output": "polygon_results.csv",
-    "runtime_route": "nvidia_physx5_polygon_runner",
-    "timing_scope": "physics_step_loop",
-    "sleeping_status": "threshold_zero",
-    "repeat_mode": "per_repeat",
-    "args": [
-      "--case={case_id}",
-      "--thread-count={thread_count}",
-      "--step-count={step_count}",
-      "--warmup-steps={warmup_steps}",
-      "--repeat-index={repeat_index}",
-      "--output={raw_output}"
-    ]
+    "executable_name_windows": "nvidia_physx5_polygon_runner.exe"
   },
-  "visual": {
-    "route": "shared_visual_renderer_cli",
-    "route_status": "supported",
-    "launch_mode": "render_owned_visual_runner",
-    "supported_modes": [
-      "live"
+  "report_metadata": {
+    "physics_settings": "position_iterations=5; velocity_iterations=1; sleep_threshold=0",
+    "build_settings": "NVIDIA PhysX 5.10 CPU SDK: Visual Studio 2022 MSBuild Release /MD; runner: Visual Studio 2026 MSVC Release /MD",
+    "report_version": "5.10.0"
+  },
+  "native_settings": {
+    "solver": {
+      "position_iterations": {
+        "native_name": "setSolverIterationCounts minPositionIters",
+        "minimum": 1,
+        "maximum": 255,
+        "authored_default": 5
+      },
+      "velocity_iterations": {
+        "native_name": "setSolverIterationCounts minVelocityIters",
+        "minimum": 0,
+        "maximum": 255,
+        "authored_default": 1
+      }
+    },
+    "sleep_enabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "connection_mode": "renderer_listens_loopback",
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "release": {
-      "platform": "windows-x64",
-      "route_status": "supported"
-    }
-  },
-  "release": {
-    "platform": "windows-x64",
-    "artifact_manifest": "release/windows-x64/nvidia-physx-5.6/artifact-manifest.json"
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "continuous_collision_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
+    ],
+    "maximum_restitution": 1.0,
+    "ragdoll_damping_mode": "native_coefficient",
+    "continuous_collision_semantics": "discrete_swept_ccd"
   }
 }

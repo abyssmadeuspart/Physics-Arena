@@ -1,44 +1,13 @@
 #include "nvidia_physx5_case_registry.h"
 
-#include <cstring>
+#include "nvidia_physx5_box_contact_islands_10k_case.h"
+#include "nvidia_physx5_box_container_pile_10k_case.h"
+#include "nvidia_physx5_large_pyramid_case.h"
+#include "nvidia_physx5_pyramid_wall_case.h"
+#include "nvidia_physx5_ragdoll_stair_tumble_case.h"
+#include "nvidia_physx5_spatial_query_trace_case.h"
+#include "nvidia_physx5_runner_args.h"
 
-namespace nvidia_physx5_benchmark
-{
-const PhysXCaseDescriptor& PhysXContainerPileCaseDescriptor()
-{
-	static const PhysXCaseDescriptor descriptor =
-	{
-		kCaseId,
-		kFixtureSemantic,
-		kFixtureVersion,
-		kDynamicBodyCount,
-		kStaticBodyCount,
-		kBodyCount,
-		kHalfExtent,
-		kOpenContainerLateralEscape,
-		kOpenContainerMaxY,
-		RunPhysXCaseWarmup,
-		CreatePhysXCaseState,
-		StepPhysXCase,
-		DestroyPhysXCaseState,
-		SamplePhysXTransforms,
-		CopyPhysXStaticBoxes,
-	};
-	return descriptor;
-}
-
-int ResolvePhysXCase(const char* caseId, const PhysXCaseDescriptor** descriptor)
-{
-	if (caseId == nullptr || descriptor == nullptr)
-	{
-		return 2;
-	}
-	const PhysXCaseDescriptor& containerPile = PhysXContainerPileCaseDescriptor();
-	if (std::strcmp(caseId, containerPile.caseId) == 0)
-	{
-		*descriptor = &containerPile;
-		return 0;
-	}
-	return 2;
-}
-}
+#define PHYSICS_ARENA_PHYSX_NAMESPACE nvidia_physx5_benchmark
+#include "../../common/physx_case_registry.inl"
+#undef PHYSICS_ARENA_PHYSX_NAMESPACE

@@ -30,13 +30,13 @@ require_nvidia_physx5_library(NVIDIA_PHYSX5_PHYSX_EXTENSIONS_LIBRARY PhysXExtens
 require_nvidia_physx5_library(NVIDIA_PHYSX5_PXFOUNDATION_LIBRARY PhysXFoundation_64 PhysXFoundation)
 require_nvidia_physx5_library(NVIDIA_PHYSX5_PXPVDSDK_LIBRARY PhysXPvdSDK_static_64 PhysXPvdSDK_static PhysXPvdSDK)
 
+file(GLOB NVIDIA_PHYSX5_CASE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/../cases/*_case.cpp")
 add_executable(nvidia_physx5_polygon_runner
 	nvidia_physx5_polygon_runner.cpp
 	nvidia_physx5_result_writer.cpp
 	nvidia_physx5_runner_args.cpp
-	nvidia_physx5_shared_visual_mode.cpp
 	../cases/nvidia_physx5_case_registry.cpp
-	../cases/nvidia_physx5_box_container_pile_10k_case.cpp)
+	${NVIDIA_PHYSX5_CASE_SOURCES})
 target_compile_features(nvidia_physx5_polygon_runner PRIVATE cxx_std_17)
 target_compile_definitions(nvidia_physx5_polygon_runner PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_include_directories(
@@ -44,6 +44,7 @@ target_include_directories(
 	PRIVATE
 		"${CMAKE_CURRENT_LIST_DIR}"
 		"${CMAKE_CURRENT_LIST_DIR}/../cases"
+		"${CMAKE_CURRENT_LIST_DIR}/../../common"
 		"${CMAKE_CURRENT_LIST_DIR}/../../rendering/include"
 		"${NVIDIA_PHYSX5_ROOT}/include")
 target_link_libraries(
@@ -56,10 +57,7 @@ target_link_libraries(
 		"${NVIDIA_PHYSX5_PXFOUNDATION_LIBRARY}"
 		"${NVIDIA_PHYSX5_PXPVDSDK_LIBRARY}")
 
-if(WIN32)
-	target_link_libraries(nvidia_physx5_polygon_runner PRIVATE ws2_32)
-endif()
 
 if(MSVC)
-	set_property(TARGET nvidia_physx5_polygon_runner PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
+	set_property(TARGET nvidia_physx5_polygon_runner PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 endif()

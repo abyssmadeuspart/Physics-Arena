@@ -1,100 +1,149 @@
 #include "jolt_result_writer.h"
 
-#include <cmath>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+#include <array>
+#include <chrono>
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <vector>
+#include <string>
+#include <string_view>
 
 namespace jolt_benchmark
 {
 constexpr const char* kCsvHeader =
-	"body_count,shape_count,invalid_transform_count,below_floor_count,out_of_bounds_count,case_status,metric_status,completed_step_count,physics_elapsed_ms\n";
+    "raw_schema_version,repeat_index,fixture_semantic,fixture_revision,physics_settings,body_count,shape_count,query_count,constraint_count,invalid_transform_count,case_status,metric_status,effective_thread_count,effective_worker_count,actual_taskgraph_worker_count,completed_work_unit_count,workload_elapsed_ms,render_elapsed_ms,present_wait_ms,visual_validation_status,proof_path\n";
+constexpr const char* kObservationCsvHeader = "repeat_index,metric_id,phase_id,sample_index,value\n";
 
-const char* CaseStatus(int invalidTransformCount, int belowFloorCount, int outOfBoundsCount)
+int WriteJoltTiming(const JoltRunRequest& request, const std::chrono::steady_clock::duration::rep* durations,
+                    int completedWorkUnitCount);
+
+int WriteJoltTiming(const JoltRunRequest& request, const std::chrono::steady_clock::duration::rep* durations,
+                    int completedWorkUnitCount)
 {
-	(void)outOfBoundsCount;
-	return invalidTransformCount == 0 && belowFloorCount == 0 ? "ok" : "invalid_stability_counters";
+	if (request.stepTimingOutputPath == nullptr)
+		return 0;
+	if (durations == nullptr || completedWorkUnitCount != request.stepCount)
+		return 2;
+	std::array<char, 4096> temporary = {};
+	const int pathSize = std::snprintf(temporary.data(), temporary.size(), "%s.tmp", request.stepTimingOutputPath);
+	if (pathSize <= 0 || static_cast<std::size_t>(pathSize) >= temporary.size())
+		return 2;
+	std::ofstream file(temporary.data(), std::ios::binary | std::ios::trunc);
+	if (!file)
+		return 2;
+	file << "step_index,physics_step_ms,render_frame_ms\n" << std::fixed << std::setprecision(9);
+	for (int step = 0; step < request.stepCount; ++step)
+		file << step + 1 << ','
+		     << std::chrono::duration<double, std::milli>(std::chrono::steady_clock::duration(durations[step])).count()
+		     << ",\n";
+	file.flush();
+	const int valid = file.good() ? 1 : 0;
+	file.close();
+	if (valid == 0 || MoveFileExA(temporary.data(), request.stepTimingOutputPath,
+	                              MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) == 0)
+	{
+		DeleteFileA(temporary.data());
+		return 2;
+	}
+	return 0;
 }
 
-const char* MetricStatus(const char* caseStatus)
+int WriteObservationSidecar(const JoltRunRequest& request, const JoltResult& result)
 {
-	return std::strcmp(caseStatus, "ok") == 0 ? "ok" : "invalid_result";
+	if (request.outputPath == nullptr || (result.observationCount != 0 && result.observations == nullptr) ||
+	    result.observationCount > 200)
+		return 2;
+	std::string observationPath(request.outputPath);
+	constexpr std::string_view rawSuffix = "_raw.csv";
+	constexpr std::string_view observationSuffix = "_observations.csv";
+	if (observationPath.size() < rawSuffix.size() ||
+	    observationPath.compare(observationPath.size() - rawSuffix.size(), rawSuffix.size(), rawSuffix) != 0)
+		return 2;
+	observationPath.replace(observationPath.size() - rawSuffix.size(), rawSuffix.size(), observationSuffix.data(),
+	                        observationSuffix.size());
+	std::ifstream existing(observationPath, std::ios::binary);
+	std::string existingBytes;
+	if (existing.good())
+	{
+		existingBytes.assign(std::istreambuf_iterator<char>(existing), std::istreambuf_iterator<char>());
+		if (existingBytes.compare(0, std::strlen(kObservationCsvHeader), kObservationCsvHeader) != 0)
+			return 2;
+	}
+	else
+		existingBytes = kObservationCsvHeader;
+	existing.close();
+	const std::string temporaryPath = observationPath + ".tmp";
+	std::ofstream file(temporaryPath, std::ios::binary | std::ios::trunc);
+	if (!file)
+		return 2;
+	file << existingBytes << std::setprecision(17);
+	for (std::uint32_t index = 0; index < result.observationCount; ++index)
+	{
+		const JoltObservationRow& row = result.observations[index];
+		if (row.metricId == nullptr || row.phaseId == nullptr)
+			return 2;
+		file << request.repeatIndex << ',' << row.metricId << ',' << row.phaseId << ',' << row.sampleIndex << ',';
+		if (row.valueType == JoltObservationValueType_Uint64)
+			file << row.valueBits;
+		else if (row.valueType == JoltObservationValueType_Float64)
+		{
+			double value = 0.0;
+			std::memcpy(&value, &row.valueBits, sizeof(value));
+			if (!std::isfinite(value))
+				return 2;
+			file << value;
+		}
+		else
+			return 2;
+		file << '\n';
+	}
+	file.flush();
+	const int valid = file.good() ? 1 : 0;
+	file.close();
+	if (valid == 0 || MoveFileExA(temporaryPath.c_str(), observationPath.c_str(),
+	                              MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) == 0)
+	{
+		DeleteFileA(temporaryPath.c_str());
+		return 2;
+	}
+	return 0;
 }
 
-int WriteJoltResultRow(const JoltRunRequest& request, const JoltCaseDescriptor& descriptor, const JoltCaseState& state)
+int WriteJoltResult(const JoltRunRequest& request, const JoltResult& result)
 {
+	if (WriteObservationSidecar(request, result) != 0)
+		return 2;
 	std::ifstream existing(request.outputPath);
+	const int writeHeader = existing.good() ? 0 : 1;
+	existing.close();
 	std::ofstream file(request.outputPath, std::ios::app);
 	if (!file)
-	{
-		std::cerr << "result_failed reason=open_output path=" << request.outputPath << '\n';
 		return 2;
-	}
-	if (!existing.good())
-	{
+	if (writeHeader != 0)
 		file << kCsvHeader;
-	}
-
-	std::vector<JoltTransform> transforms(descriptor.dynamicBodyCount);
-	if (descriptor.SampleTransforms(state, transforms.data(), descriptor.dynamicBodyCount) != 0)
+	file << std::fixed << std::setprecision(9) << "3," << request.repeatIndex << ',' << result.fixtureSemantic << ','
+	     << result.fixtureRevision << ',' << result.physicsSettings << ',' << result.bodyCount << ','
+	     << result.shapeCount << ',' << result.queryCount << ',' << result.constraintCount << ','
+	     << result.invalidTransformCount << ',' << result.caseStatus << ',' << result.metricStatus << ','
+	     << result.effectiveThreadCount << ',' << result.effectiveWorkerCount << ",," << result.completedWorkUnitCount
+	     << ',';
+	if (request.caseExecution.fixtureKind != CaseFixtureKind_RagdollStairTumble)
+		file << result.workloadElapsedMs;
+	file << ",,,,\n";
+	file.flush();
+	if (!file.good() || std::strcmp(result.metricStatus, "ok") != 0)
 	{
+		std::cerr << "invalid_result reason=result case_status=" << result.caseStatus
+		          << " metric_status=" << result.metricStatus << " invalid=" << result.invalidTransformCount << '\n';
 		return 2;
 	}
-	int invalidTransformCount = 0;
-	int belowFloorCount = 0;
-	int outOfBoundsCount = 0;
-	for (int index = 0; index < descriptor.dynamicBodyCount; ++index)
-	{
-		double px = static_cast<double>(transforms[index].positionX);
-		double py = static_cast<double>(transforms[index].positionY);
-		double pz = static_cast<double>(transforms[index].positionZ);
-		double rx = static_cast<double>(transforms[index].rotationX);
-		double ry = static_cast<double>(transforms[index].rotationY);
-		double rz = static_cast<double>(transforms[index].rotationZ);
-		double rw = static_cast<double>(transforms[index].rotationW);
-		if (std::isfinite(px) == 0 || std::isfinite(py) == 0 || std::isfinite(pz) == 0 ||
-			std::isfinite(rx) == 0 || std::isfinite(ry) == 0 || std::isfinite(rz) == 0 ||
-			std::isfinite(rw) == 0)
-		{
-			invalidTransformCount += 1;
-		}
-		if (py < 0.0)
-		{
-			belowFloorCount += 1;
-		}
-		if (px < -descriptor.lateralEscapeLimit || px > descriptor.lateralEscapeLimit ||
-			pz < -descriptor.lateralEscapeLimit || pz > descriptor.lateralEscapeLimit ||
-			py < 0.0 || py > descriptor.maxY)
-		{
-			outOfBoundsCount += 1;
-		}
-	}
-
-	double msPerStep = state.physicsElapsedMs / static_cast<double>(request.stepCount);
-	double stepsPerSecond = 1000.0 / msPerStep;
-	const char* caseStatus = CaseStatus(invalidTransformCount, belowFloorCount, outOfBoundsCount);
-	const char* metricStatus = MetricStatus(caseStatus);
-	if (state.physicsElapsedMs <= 0.0 || std::isfinite(state.physicsElapsedMs) == 0 ||
-		msPerStep <= 0.0 || std::isfinite(msPerStep) == 0 ||
-		stepsPerSecond <= 0.0 || std::isfinite(stepsPerSecond) == 0 ||
-		state.completedStepCount != request.stepCount)
-	{
-		std::cerr << "invalid_result reason=metric elapsed_ms=" << state.physicsElapsedMs
-				  << " step_count=" << request.stepCount
-				  << " completed_step_count=" << state.completedStepCount << '\n';
-		return 2;
-	}
-	if (std::strcmp(metricStatus, "ok") != 0)
-	{
-		std::cerr << "invalid_result reason=case_status status=" << caseStatus << '\n';
-		return 2;
-	}
-	file << std::fixed << std::setprecision(9)
-		 << descriptor.bodyCount << ',' << descriptor.bodyCount << ','
-		 << invalidTransformCount << ',' << belowFloorCount << ',' << outOfBoundsCount << ',' << caseStatus << ','
-		 << metricStatus << ',' << state.completedStepCount << ',' << state.physicsElapsedMs << '\n';
-	return 0;
+	return request.caseExecution.fixtureKind == CaseFixtureKind_RagdollStairTumble
+	           ? 0
+			   : WriteJoltTiming(request, result.durations, result.completedWorkUnitCount);
 }
 }

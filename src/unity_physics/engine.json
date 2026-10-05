@@ -1,94 +1,67 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "engine_id": "unity_physics",
-  "route_status": "working",
-  "supported_platforms": [
-    "linux",
-    "windows"
-  ],
-  "prepared_path": ".generated/engines/unity_physics",
-  "report_metadata": {
-    "physics_settings": "PhysicsStep default solver; synchronize_collision_world=on",
-    "build_settings": "Unity 6000.5.2f1 Release IL2CPP player; Burst on; safety off"
+  "source": {
+    "type": "built_in",
+    "repository_url": "built_in",
+    "revision": "unity-6000.5.2f1-com.unity.physics-6.5.0"
   },
-  "case_support": [
-    {
-      "case_id": "box_container_pile_10k",
-      "headless": "working",
-      "visual": "working"
-    },
-    {
-      "case_id": "box_drop_grid",
-      "headless": "unsupported",
-      "visual": "unsupported"
-    }
-  ],
-  "metadata_requirements": [
-    "unity_editor_version",
-    "unity_physics_package_version",
-    "entities_package_version",
-    "burst_package_version",
-    "collections_package_version",
-    "build_target",
-    "backend",
-    "burst_enabled_state",
-    "safety_check_state"
-  ],
-  "thread_support": {
-    "mode": "host_bounded",
-    "requested_worker_count": "thread_count_minus_one",
-    "effective_worker_count": "thread_count_minus_one",
-    "main_thread_participates": "yes"
+  "prepare": {
+    "prepared_path": ".generated/engines/unity_physics",
+    "overlays": []
   },
   "build": {
     "route": "unity_batchmode",
-    "route_status": "working"
+    "project_path": "src/unity_physics",
+    "build_dir": ".build/unity_physics/player-il2cpp",
+    "execute_method": "Bas3D.BenchmarkPolygon.UnityPhysics.Editor.BenchmarkPlayerBuild.BuildHeadlessPlayer",
+    "build_metadata_file": "player-build-metadata.json",
+    "package_dir_windows": "release/windows-x64/unity_physics",
+    "executable_name_windows": "BenchmarkPolygonUnityPhysics.exe",
+    "toolchain_id": "unity_player",
+    "engine_build_scope": "unity_project_packages_il2cpp_player"
   },
-  "run": {
-    "route": "unity_player",
-    "route_status": "working",
-    "executable_env": "UNITY_PHYSICS_PLAYER_EXE",
-    "executable_names": [
-      "BenchmarkPolygonUnityPhysics",
-      "BenchmarkPolygonUnityPhysics.exe",
-      "BenchmarkPolygonUnityPhysics.app"
-    ],
-    "raw_output": "polygon_results.csv",
-    "runtime_route": "unity_player",
-    "timing_scope": "physics_step_loop",
-    "sleeping_status": "not_applicable",
-    "repeat_mode": "per_repeat",
-    "args": [
-      "-batchmode",
-      "-nographics",
-      "--",
-      "--case={case_id}",
-      "--thread-count={thread_count}",
-      "--step-count={step_count}",
-      "--warmup-steps={warmup_steps}",
-      "--repeat-index={repeat_index}",
-      "--output={raw_output}"
-    ]
+  "report_metadata": {
+    "physics_settings": "solver_iterations=2; substeps=3; solver_type=iterative; stabilization=on; native_sleep=unsupported; ccd=discrete; synchronize_collision_world=on",
+    "build_settings": "Unity 6000.5.2f1 Release IL2CPP player; Burst on; safety off",
+    "report_version": "6.5"
   },
-  "visual": {
-    "route": "shared_visual_renderer_cli",
-    "route_status": "working",
-    "launch_mode": "render_owned_visual_runner",
-    "supported_modes": [
-      "live"
+  "native_settings": {
+    "solver": {
+      "solver_iterations": {
+        "native_name": "SolverIterationCount",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 2
+      },
+      "substeps": {
+        "native_name": "SubstepCount",
+        "minimum": 1,
+        "maximum": 2147483647,
+        "authored_default": 3
+      }
+    },
+    "sleep_enabled_fixtures": [],
+    "sleep_disabled_fixtures": [
+      "open_container_falling_pile",
+      "box_contact_islands",
+      "ragdoll_stair_tumble",
+      "large_pyramid",
+      "pyramid_wall"
     ],
-    "artifact_name": "{engine_id}_t{thread_count}_r{repeat_index}_visual.json",
-    "transport": "shared_visual_transport",
-    "protocol_version": 1,
-    "connection_mode": "renderer_listens_loopback",
-    "producer_mode_arg": "--producer-mode=shared-visual",
-    "release": {
-      "platform": "windows-x64",
-      "route_status": "working"
+    "continuous_collision_fixtures": [],
+    "maximum_restitution": 1.0,
+    "ragdoll_damping_mode": "native_coefficient",
+    "continuous_collision_semantics": "unavailable",
+    "solver_stabilization": {
+      "authored_default": "enabled",
+      "fixtures": [
+        "open_container_falling_pile",
+        "box_contact_islands",
+        "large_pyramid",
+        "pyramid_wall",
+        "ragdoll_stair_tumble"
+      ]
     }
-  },
-  "release": {
-    "platform": "windows-x64",
-    "artifact_manifest": "release/windows-x64/unity_physics/artifact-manifest.json"
   }
 }

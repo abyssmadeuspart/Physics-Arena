@@ -1,34 +1,20 @@
 #pragma once
 
+#include "stack_state_capture.h"
+
+#include "physx34_case_registry.h"
 #include "PxPhysicsAPI.h"
+
+#include <chrono>
+#include <cstddef>
+#include <vector>
 
 namespace physx34_benchmark
 {
-constexpr const char* kEngineId = "physx34";
-constexpr const char* kEngineRef = "2b13cae09734616d07d09ecf645326fa0bf43ef7";
-constexpr const char* kCaseId = "box_container_pile_10k";
-constexpr int kPileXCount = 25;
-constexpr int kPileYCount = 16;
-constexpr int kPileZCount = 25;
-constexpr int kDynamicBodyCount = kPileXCount * kPileYCount * kPileZCount;
-constexpr int kStaticBodyCount = 5;
-constexpr int kBodyCount = kDynamicBodyCount + kStaticBodyCount;
-constexpr float kHalfExtent = 0.5f;
-constexpr float kSpacing = 1.02f;
-constexpr float kInitialY = 24.51f;
-constexpr float kTimestep = 1.0f / 60.0f;
-constexpr float kOpenContainerLateralEscape = 15.5f;
-constexpr float kOpenContainerMaxY = 96.0f;
-constexpr const char* kFixtureSemantic = "open_container_falling_pile";
-constexpr const char* kFixtureVersion = "physx34_open_container_v1";
+struct PhysXRunRequest;
+struct PhysXCaseDescriptor;
 
-struct PhysXCaseConfig
-{
-	int threadCount;
-	int repeatIndex;
-	int stepCount;
-	int warmupSteps;
-};
+constexpr const char* kEngineId = "physx34";
 
 struct PhysXTransform
 {
@@ -43,12 +29,12 @@ struct PhysXTransform
 
 struct PhysXStaticBox
 {
-	float positionX;
-	float positionY;
-	float positionZ;
-	float halfExtentX;
-	float halfExtentY;
-	float halfExtentZ;
+	float centerX;
+	float centerY;
+	float centerZ;
+	float halfX;
+	float halfY;
+	float halfZ;
 };
 
 struct PhysXContext
@@ -60,22 +46,34 @@ struct PhysXContext
 	physx::PxDefaultCpuDispatcher* dispatcher;
 	physx::PxScene* scene;
 	physx::PxMaterial* material;
+	physx::PxConvexMesh* convexMesh;
 };
+
+int InitializePhysXResolvedShape(PhysXContext* context, const CaseExecutionSpec& execution);
+physx::PxQuat PhysXShapeRotation(CaseExecutionAxis axis);
+physx::PxShape* AttachPhysXResolvedShape(PhysXContext* context, physx::PxRigidActor* actor,
+                                         const CaseExecutionGeometry& geometry);
 
 struct PhysXCaseState
 {
 	PhysXCaseConfig config;
 	PhysXContext context;
-	physx::PxRigidDynamic* bodies[kDynamicBodyCount];
+	std::vector<physx::PxRigidDynamic*> bodies;
+	std::vector<std::chrono::steady_clock::duration::rep> rawStepDurations;
 	int completedStepCount;
 	double physicsElapsedMs;
+	double latestPhysicsStepMs;
 };
 
 int RequestedWorkerCount(int threadCount);
 int CreatePhysXCaseState(const PhysXCaseConfig& config, PhysXCaseState* state);
-int RunPhysXCaseWarmup(const PhysXCaseConfig& config);
+int RunPhysXCaseWarmup(PhysXCaseState* state, int warmupStepCount, benchmark_stack::Capture* capture);
 int StepPhysXCase(PhysXCaseState* state, int stepCount);
 void DestroyPhysXCaseState(PhysXCaseState* state);
 int SamplePhysXTransforms(const PhysXCaseState& state, PhysXTransform* transforms, int transformCapacity);
-int CopyPhysXStaticBoxes(PhysXStaticBox* boxes, int boxCapacity);
+std::uint64_t CountPhysXContainerPileInvalidTransforms(const PhysXCaseState& state);
+int RunPhysXContainerPileHeadless(const PhysXRunRequest& request);
+int FormatPhysXContainerPilePhysicsSettings(const CaseExecutionSpec& execution, int threadCount, char* settings,
+                                            std::size_t settingsCapacity);
+const PhysXCaseDescriptor& PhysXContainerPileCaseDescriptor();
 }
