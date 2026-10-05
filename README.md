@@ -4,7 +4,7 @@ Physics Arena compares physics engines on shared scenarios, with timing charts, 
 
 ## Quick start
 
-Open `PhysicsArena.exe` from the repository root. No engine build or editor is needed. The Microsoft Visual C++ x64 runtime and an OpenGL 3.3-capable graphics driver are required, as listed in [runtime requirements](SOURCES.md#runtime-requirements)
+Download and extract the Windows x64 package from [Releases](https://github.com/abyssmadeuspart/Physics-Arena/releases), then open `PhysicsArena.exe` from the extracted folder. You can also run it from a source checkout. No engine build or editor is needed. The Microsoft Visual C++ x64 runtime and an OpenGL 3.3-capable graphics driver are required, as listed in [runtime requirements](SOURCES.md#runtime-requirements)
 
 1. In **Run**, choose a case, engines, thread counts and repeats. The default is Box Container Pile 10k. **Shape** stays locked
 2. Review **Simulation** and **Fixture**, or open **Configuration** in a compact window. Optionally enable **Save replay** and choose **Replay threads**

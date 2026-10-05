@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.0.0 - 2026-10-05
 
-Changes since `46b2b469` (2026-07-13)
+Windows x64 release with the native application, prebuilt engine packages, recorded playback and physical verification
 
 ### Ports and cleanup
 
@@ -17,10 +17,13 @@ Changes since `46b2b469` (2026-07-13)
 - Added the Windows x64 `PhysicsArena.exe` with **Run**, **Results** and **Replay** workspaces
 - Added case, engine, thread and repeat selection, editable fixture and solver settings, and saved configuration presets. Shape stays locked for every GUI case
 - Added progress, cancellation and error reporting. Opening the application shows Run without starting a benchmark
+- Added queued runs, separate Test and Release destinations, and automatic navigation to the completed result
 - Added result browsing, engine comparisons, thread scaling, timing plots, repeat inspection and case explanations
 
 ### Engine settings and quality
 
+- Added per-run **Verify physics** On/Off. Off skips physical-quality collection and assessment while preserving simulation, timing and saved-data integrity. Completed Off repeats remain unverified
+- Set Unity DOTS Physics defaults to two solver iterations and three substeps
 - Moved material, Sleep, CCD and Ragdoll damping into each engine's physics/solver profile, preserving native benchmark defaults across reset, presets, queue, results and replay comparison
 - Added repeated `--physics engine:field=value` assignments and configurable Unity contact solver stabilization, default On. Corrected unavailable Unity Sleep and fixed-zero Chaos Ragdoll damping admission
 - Repaired scene, contact-pair and body participation for PhysX CCD and restored native Wall Sleep On thresholds
@@ -65,3 +68,8 @@ Exact revisions and package details are listed in [SOURCES.md](SOURCES.md#engine
 
 - Added the 2026-10-05 Release runs for Box Container Pile 10k, Box Contact Islands 10k and Large Pyramid, with 11 engines, 12 thread counts and five requested repeats per engine/thread pair
 - Linked the reports and charts in the [README](README.md#latest-release-results), with measured timing ranges, physical outcomes and skipped-repeat counts. Container used verification Off. Islands and Pyramid used verification On and retain their physical failures
+- Added a separate Large Pyramid run with verification Off: 132 completed repeats across 11 engines and 12 thread counts, with one repeat per configuration. Physical quality remains unverified
+
+### Known limitations
+
+- Heavy Ray Tracing remains experimental and was excluded from release qualification
